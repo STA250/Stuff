@@ -1,3 +1,5 @@
+out.*
+out_*
 *.acn
 *.acr
 *.alg
@@ -5,6 +7,7 @@
 *.bbl
 *.blg
 *.dvi
+*.err
 *.fdb_latexmk
 *.glg
 *.glo
