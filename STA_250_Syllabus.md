@@ -37,6 +37,8 @@ The course is designed to equip students with the basic skills required to tackl
 
 Before we get into the fun stuff, the first few classes will serve as a "boot camp" to make sure everyone has the mathematical and programming background to tackle the challenges later in the course. We will also use the first few weeks to become familiar with some of the key datasets that we will use throughout the course.
 
+Please complete the <a href="https://docs.google.com/forms/d/1yTSAotsVWZ2eVV98zDJK3-kmszg_o3WpQtbhmp326J4/viewform">pre-course survey</a>!
+
 ### Logistics ###
 
 * Instructor: Prof. Paul Baines (<http://www.stat.ucdavis.edu/~pdbaines/>)
