@@ -79,6 +79,37 @@ There is no final exam for the course.
 + Introduction to GPUs: Structure, CUDA, OpenCL
 + High-Level Programming for GPUs: RCUDA, PyCUDA, Applications 
 
+#### References ####
+
+Please note that since the topics for the course are taken from a variety of different areas, there will 
+be no single textbook for the class. Below are a list of useful references. It is not required that
+you purchase any of these books, and they will primarily serve as additional references
+for material presented in class.
+
++  Bayesian Data Analysis (2nd Edition), Gelman, A., Carlin, J. B., Stern, H. S., and Rubin, D. B., 
+**Chapman \& Hall/CRC Texts in Statistical Science** (2003) \\
+Available at <http://www.amazon.com/Bayesian-Analysis-Chapman-Statistical-Science/dp/158488388X>.
+and other online retailers. We will be focusing on material in Chapters 2, 3, 6 and 11.
+
++ Monte Carlo Statistical Methods (2nd Edition), Robert, C.P. and Casella, G., **Springer** (2004).
+Available at <http://www.amazon.com/Monte-Statistical-Methods-Springer-Statistics/dp/0387212396>.
+We wil be focusing on material in Chapters 3, 5, 6 and 12.
+
++ A First Course in Bayesian Statistical Methods, Hoff, P. D., **Springer** (2009) 
+The full text of this book is available in electronic form via the UC Davis library 
+for free. To access the full text as a pdf: 
+<https://vpn.lib.ucdavis.edu/content/m28q35/,DanaInfo=www.springerlink.com+#section=59276&page=11&locus=51>
+and login with your UC Davis username and Kerberos password. 
+Hard copies are available from:
+<http://www.amazon.com/Bayesian-Statistical-Methods-Springer-Statistics/dp/0387922997>
+and other online retailers.
+
++ The `Python` tutorial at: <http://docs.python.org/2/tutorial/> 
+
++ For some `R` references see: <http://heather.cs.ucdavis.edu/r.html>. For beginners interested
+in learning `R` you may want to start with <http://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf>
+
+
 #### Tentative Course Schedule ####
 
 <!-- Note: Table only renders on GitHub... -->
@@ -129,6 +160,9 @@ and, last, but by no means least:
 #### Projects: ####
  
 Below are very basic project descriptions to provide you a flavor of what to expect. Full final project descriptions and datasets will be provided later in the course. All final projects require a written report, and possibly an oral presentation. 
+Students are also welcome to submit their own proposals for final projects. This can be
+especially useful for PhD students with specific problems that they would like to address using
+the tools learned in class.
 
 1. **Bayesian Project** This project will allow you the opportunity to apply your newly acquired knowledge of Bayesian statistics and computational strategies to a complex model for real-world data (provided by the instructor). You will be required to demonstrate that you are able to effectively solve the problem using simulation results, and also to draw conclusions based on real data.
 
