@@ -59,7 +59,8 @@ Please complete the <a href="https://docs.google.com/forms/d/1yTSAotsVWZ2eVV98zD
 
 Grading for the course will be broken down with the following weighting:
 
-* Homeworks: 60% (4 x 15% each)
+* Homeworks: 50% (4 x 12.5% each)
+* Code-Swapping Assignments: 10% (4 x 2.5% each) 
 * Final project: 40%
 
 There is no final exam for the course.
@@ -149,13 +150,19 @@ The basic outline for homeworks is below. All due dates are subject to change.
 + Homework 03: *The EM Algorithm*: Theory, Applications (due Mon Nov 25th)
 + Homework 04: *Programming with GPUs*: Applications using RCUDA/PyCUDA (due Fri Dec 6th)
 
+Each homework will be followed by a "code-swapping" assignment, whereby each student will be 
+assigned to write a short critique of the homework code submitted by another student in the
+course. The plan is for `R` users to critique `Python` code, and `Python` users to critique
+`R` so that students are exposed to different programming models. 
+
 and, last, but by no means least:
 
 + Final Project: There will be a choice of four final projects, corresponding to the four modules of the course. Students will be allowed to select the project of their choice. Due during final exam period (Monday December 9th). Final projects will be posted early in the course to allow students to work on them throughout the quarter.
 
 #### Other Course Duties: ####
 
-+ **Note-taking:** Each lecture will have two assigned note-takers. Each note-taker will be required to produce an electronic copy of the lecture material presented. Preferred formats are `LaTeX` and `Markdown`. Other formats that can be converted to `.pdf` such as `.docx`, `.txt.` etc., are fine as well. Scanned versions of handwritten notes are discouraged as these cannot be easily edited by other students. With the anticipated course enrollment it is expected that each student will only need to take notes once during the quarter. Lecture notes will be available to all students.
++ **Note-taking:** Each lecture will have two assigned note-takers. Each note-taker will be required to produce an electronic copy of the lecture material presented. Acceptable formats are `LaTeX` and `Markdown`. Other formats that can be converted to `.pdf` such as `.docx`, `.txt.` etc., can be used when taking notes in class, but these must be converted into either LaTeX or Markdown prior to submission. Scanned versions of handwritten notes are not permitted as these cannot be edited by other
+students (although it is perfectly fine to take handwritten notes in class, and then `tex`/`md` them later). With the anticipated course enrollment it is expected that each student will only need to take notes once during the quarter. Lecture notes will be available to all students.
 
 #### Projects: ####
  
