@@ -225,7 +225,7 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 ## 7                                                     Mathematics      1
 ## 8  PhD student in Population Biology and MS student in Statistics      1
 ## 9                                               Political science      1
-## 10                                                     Statistics     21
+## 10                                                     Statistics     24
 </code></pre>
 
   </article>
@@ -246,7 +246,7 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 
 <pre><code>## 
 ## Masters     PhD 
-##       8      28
+##       8      31
 </code></pre>
 
   </article>
@@ -266,9 +266,9 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 </code></pre>
 
 <pre><code>##    STA 108   STA 131A  STA 131BC    STA 135    STA 137 STA 231ABC 
-##         28         28         24         18         18         16 
-##    STA 106    STA 141    STA 243    STA 242    STA 145 
-##         15         14          6          3          2
+##         31         31         27         19         19         18 
+##    STA 106    STA 141    STA 243    STA 145    STA 242 
+##         17         16          7          4          4
 </code></pre>
 
   </article>
@@ -288,13 +288,13 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 </code></pre>
 
 <pre><code>## Maximum Likelihood Estimation           Logistic Regression 
-##                            34                            22 
-##                 The Bootstrap          Mixed Effects Models 
-##                            21                            20 
+##                            37                            24 
+##          Mixed Effects Models                 The Bootstrap 
+##                            23                            23 
 ##              The EM Algorithm                          MCMC 
-##                            19                            17 
+##                            20                            18 
 ##          Time Series Analysis            Bayesian Inference 
-##                            17                            13 
+##                            18                            14 
 ##                Random Forests 
 ##                            12
 </code></pre>
@@ -316,7 +316,7 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 </code></pre>
 
 <pre><code>##  Windows    Linux Mac OS X 
-##       34       16       10
+##       37       18       10
 </code></pre>
 
   </article>
@@ -337,7 +337,7 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 
 <pre><code>## 
 ##                 I am an R guru! :)           I am comfortable using R 
-##                                  3                                 23 
+##                                  4                                 25 
 ##         I have never used R before I have used R before, but not much 
 ##                                  3                                  7
 </code></pre>
@@ -362,9 +362,9 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 ##           I am comfortable using Python 
 ##                                       5 
 ##         I have never used Python before 
-##                                      22 
+##                                      24 
 ## I have used Python before, but not much 
-##                                       9
+##                                      10
 </code></pre>
 
   </article>
@@ -383,9 +383,9 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 <pre><code class="r">count_responses(pcs[, 9], cats = compies)
 </code></pre>
 
-<pre><code>##                           Latex                             Git 
-##                              29                              10 
-##                       Databases                          GitHub 
+<pre><code>##                           Latex                       Databases 
+##                              31                              12 
+##                             Git                          GitHub 
 ##                              10                               9 
 ##                           Gauss Amazon Cloud Computing Services 
 ##                               5                               5 
@@ -410,7 +410,7 @@ data.frame(Field = names(foo), Number = as.numeric(foo))
 </code></pre>
 
 <pre><code>##          C        C++       Java        SQL Javascript    Fortran 
-##         27         20         16         11          6          3 
+##         30         22         17         12          7          3 
 ##       CUDA      Julia     OpenCL      Scala 
 ##          2          2          1          1
 </code></pre>
@@ -442,12 +442,13 @@ data.frame(Topic = names(foo), Votes = as.numeric(foo))
 ## 7                                        Insurance, Medicine     1
 ## 8                                                    Medical     1
 ## 9                                            Most Everything     1
-## 10      not really sure yet, but none of the above stand out     1
-## 11                                         signal processing     1
-## 12 Social Media (e.g., Analyzing Twitter, Facebook activity)     5
-## 13                      Social science/media / neuroscience      1
-## 14                              Sports and Physical Sciences     1
-## 15                                   Stochastic Optimization     1
+## 10             neuroimaging &amp; Multiscale data &amp; network data     1
+## 11      not really sure yet, but none of the above stand out     1
+## 12                                         signal processing     1
+## 13 Social Media (e.g., Analyzing Twitter, Facebook activity)     7
+## 14                      Social science/media / neuroscience      1
+## 15                              Sports and Physical Sciences     1
+## 16                                   Stochastic Optimization     1
 </code></pre>
 
   </article>
@@ -467,17 +468,17 @@ data.frame(Topic = names(foo), Votes = as.numeric(foo))
 </code></pre>
 
 <pre><code>##                                    The course sounded really interesting/useful 
-##                                                                              33 
+##                                                                              36 
 ##             I am hoping that the course content will be helpful for my research 
-##                                                                              25 
+##                                                                              27 
 ## I am hoping that the course content will be helpful for my future job prospects 
-##                                                                              22 
+##                                                                              23 
 ##                I needed more units and it seemed like the best available course 
-##                                                                               7 
+##                                                                               8 
 ##                I have to take the course to satisfy a requirement for my degree 
-##                                                                               6 
+##                                                                               7 
 ##                                           My advisor told me to take the course 
-##                                                                               6
+##                                                                               7
 </code></pre>
 
   </article>
@@ -497,8 +498,8 @@ data.frame(Topic = names(foo), Votes = as.numeric(foo))
 </code></pre>
 
 <pre><code>## 
-##    Both  Coffee Neither     Tea 
-##      13       5       2      16
+##            Both  Coffee Neither     Tea 
+##       1      13       6       2      17
 </code></pre>
 
 <ul>
@@ -509,8 +510,8 @@ data.frame(Topic = names(foo), Votes = as.numeric(foo))
 </code></pre>
 
 <pre><code>## 
-##    Both    Cats    Dogs Neither 
-##       6       9      11      10
+##            Both    Cats    Dogs Neither 
+##       1       6      11      11      10
 </code></pre>
 
   </article>
@@ -526,11 +527,12 @@ data.frame(Topic = names(foo), Votes = as.numeric(foo))
 </code></pre>
 
 <pre><code>##              Coffee.or.tea.
-## Cats.or.dogs. Both Coffee Neither Tea
-##       Both       2      0       0   4
-##       Cats       1      1       0   7
-##       Dogs       6      3       1   1
-##       Neither    4      1       1   4
+## Cats.or.dogs.   Both Coffee Neither Tea
+##               1    0      0       0   0
+##       Both    0    2      0       0   4
+##       Cats    0    1      2       0   8
+##       Dogs    0    6      3       1   1
+##       Neither 0    4      1       1   4
 </code></pre>
 
   </article>
