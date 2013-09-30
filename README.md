@@ -7,4 +7,6 @@ Lecture slides will be hosted here.
 
 To view slides go to: 
 
-<http://sta250.github.io/Stuff>
+<http://sta250.github.io/Stuff><br/>
+<http://sta250.github.io/Stuff/Lecture_Test.html><br/>
+<http://sta250.github.io/Stuff/Lecture_01.html><br/>
