@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250 -- Lecture 01</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 -- Lecture 01">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250 -- Lecture 01</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- 
+
+# To compile, from R:
+source("Analyze_PCS.R")
+library(slidify)
+slidify("Lecture_01.Rmd")
+
+-->
+
+<h2>Welcome to STA 250!</h2>
+
+<p>On the menu for today...</p>
+
+<ol class = "build">
+<li><p>Course logistics</p></li>
+<li><p>About (me|you)</p></li>
+<li><p>Appetizers</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Course Logistics</h2>
+  </hgroup>
+  <article>
+    <p><a href="https://github.com/STA250/Stuff/blob/master/STA_250_Syllabus.md">Syllabus</a> on <a href="https://github.com">Github</a>.</p>
+
+<p>Website: <a href="https://piazza.com/ucdavis/fall2013/sta250">https://piazza.com/ucdavis/fall2013/sta250</a></p>
+
+<p>Office Hours: Mon: 3:10-4:00pm (MSB 4105), Fri: 12:00-1:00pm (MSB 4105)</p>
+
+<ul class = "build">
+<li>Four &quot;modules&quot;: 
+
+<ol>
+<li>Bayesian Statistics </li>
+<li>Statistics for &quot;Big&quot; Data</li>
+<li>Optimization + The EM Algorithm</li>
+<li>Efficient Computation + GPUs</li>
+</ol></li>
+<li>Four homeworks (one per module, 4x12.5%=50%)</li>
+<li>Four code-swaps (one per module, 4x2.5%=10%)</li>
+<li>Final project (40%)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>What you need to do...</h2>
+  </hgroup>
+  <article>
+    <ul class = "build">
+<li>Register for a free account on <a href="https://github.com">GitHub</a></li>
+<li>Download the GitHub GUI at <a href="http://mac.github.com">http://mac.github.com</a> or <a href="http://windows.github.com">http://windows.github.com</a>.<br/> For Linux, just use the command line.</li>
+<li>Sign up for Piazza: <a href="https://piazza.com/ucdavis/fall2013/sta250">https://piazza.com/ucdavis/fall2013/sta250</a></li>
+<li>Obtain an account for Gauss, the Stat Dept cluster, if you do not already have one
+
+<ul>
+<li>Email <a href="mailto:help@cse.ucdavis.edu><a href="mailto:help@cse.ucdavis.edu">help@cse.ucdavis.edu</a></a> to request an account.<br/>
+<strong>You must state that you are enrolled in STA 250 and email them your ssh public key.</strong><br/>
+For instructions on how to create a public/private keypair see:<br/>
+<a href="http://wiki.cse.ucdavis.edu/support:general:security:ssh#setup">http://wiki.cse.ucdavis.edu/support:general:security:ssh#setup</a>.</li>
+</ul></li>
+<li>Email <a href="mailto:pdbaines@ucdavis.edu">Prof. Baines</a> your GitHub username</li>
+<li>Sign up as a note-taker for the course (sheet should be coming around...)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Course Goals</h2>
+  </hgroup>
+  <article>
+    <p><em>From the syllabus:</em></p>
+
+<blockquote>
+<p>The course is designed to equip students with the basic skills required to tackle challenging problems at the forefront of modern statistical applications. For statistics PhD students, there are many rich research topics in these areas. For masters students, and PhD students from other fields, the course is intended to cultivate practical skills that are required of the modern statistician/data scientst, and can be used in your own field of research or future career.</p>
+</blockquote>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Course Philosophy</h2>
+  </hgroup>
+  <article>
+    <p>The course is intended to be practical in nature. You will hopefully learn skills that
+will be useful outside of the course (be it in your own research or future work).</p>
+
+<p>The modern <code>(statistician|data scientist|person who analyzes data)</code> needs to possess many
+different skills. This course also requires many different skills. You will do tasks
+requiring some knowledge of statistical theory, programming skills, data analysis skills,
+as well as some intuition and problem-solving skills.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>About Me: Research Interests</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p><em>Efficient Bayesian computation</em> </p>
+
+<ul>
+<li>Developing fast algorithms for fitting complex Bayesian models</li>
+<li>Developing efficient parametrizations/models for scalability</li>
+</ul></li>
+<li><p><em>Statistical applciations in astrostatistics</em></p>
+
+<ul>
+<li>Log(N)-Log(S): Modeling astrophysical populations</li>
+<li>Color-Magnitude Diagrams: Understanding Star Formation</li>
+<li>Exoplanets: Using Kepler to find &quot;Earth-like&quot; planets</li>
+</ul></li>
+<li><p><em>Statistical computing using GPUs</em></p>
+
+<ul>
+<li>Designing &quot;GPU-ifiable&quot; algorithms for statistics</li>
+<li>Programming GPUs using <a href="https://github.com/duncantl/RCUDA">RCUDA</a> </li>
+</ul></li>
+</ul>
+
+<p>Other random stuff: <a href="http://en.wikipedia.org/wiki/England">I&#39;m English</a>, <a href="http://www.stat.ucdavis.edu/~pdbaines/Leo.jpg">I love dogs</a>, <a href="http://en.wikipedia.org/wiki/Espresso">I <em>love</em> coffee</a>, <a href="http://en.wikipedia.org/wiki/Marathon">I run</a>, <a href="https://github.com/pdbaines">I code</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>About You</h2>
+  </hgroup>
+  <article>
+    <p>Thanks for completing the pre-course survey (those who did :)</p>
+
+<p>Now for some of the results...</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which department are you based in?</li>
+</ul>
+
+<pre><code class="r">foo &lt;- table(pcs[, 2])
+data.frame(Field = names(foo), Number = as.numeric(foo))
+</code></pre>
+
+<pre><code>##                                                             Field Number
+## 1                                             Applied Mathematics      1
+## 2                                           Biomedical Department      1
+## 3                                          Biomedical Engineering      1
+## 4                                                   Biostatistics      6
+## 5                                                Computer Science      2
+## 6                                                       Economics      1
+## 7                                                     Mathematics      1
+## 8  PhD student in Population Biology and MS student in Statistics      1
+## 9                                               Political science      1
+## 10                                                     Statistics     21
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which degree are you enrolled in?</li>
+</ul>
+
+<pre><code class="r">table(pcs[, 3])
+</code></pre>
+
+<pre><code>## 
+## Masters     PhD 
+##       8      28
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which of the following courses have you taken? </li>
+</ul>
+
+<pre><code class="r">count_responses(pcs[, 4], cats = courses)
+</code></pre>
+
+<pre><code>##    STA 108   STA 131A  STA 131BC    STA 135    STA 137 STA 231ABC 
+##         28         28         24         18         18         16 
+##    STA 106    STA 141    STA 243    STA 242    STA 145 
+##         15         14          6          3          2
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which of the following statistical topics are you familiar with?</li>
+</ul>
+
+<pre><code class="r">count_responses(pcs[, 5], cats = topics)
+</code></pre>
+
+<pre><code>## Maximum Likelihood Estimation           Logistic Regression 
+##                            34                            22 
+##                 The Bootstrap          Mixed Effects Models 
+##                            21                            20 
+##              The EM Algorithm                          MCMC 
+##                            19                            17 
+##          Time Series Analysis            Bayesian Inference 
+##                            17                            13 
+##                Random Forests 
+##                            12
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which OS&#39;s are you familiar with? </li>
+</ul>
+
+<pre><code class="r">count_responses(pcs[, 6], cats = c(&quot;Linux&quot;, &quot;Windows&quot;, &quot;Mac OS X&quot;))
+</code></pre>
+
+<pre><code>##  Windows    Linux Mac OS X 
+##       34       16       10
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>What is your level of familiarity with R?</li>
+</ul>
+
+<pre><code class="r">table(pcs[, 7])
+</code></pre>
+
+<pre><code>## 
+##                 I am an R guru! :)           I am comfortable using R 
+##                                  3                                 23 
+##         I have never used R before I have used R before, but not much 
+##                                  3                                  7
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>What is your level of familiarity with Python?</li>
+</ul>
+
+<pre><code class="r">table(pcs[, 8])
+</code></pre>
+
+<pre><code>## 
+##           I am comfortable using Python 
+##                                       5 
+##         I have never used Python before 
+##                                      22 
+## I have used Python before, but not much 
+##                                       9
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which of the following tools/systems have you used before? </li>
+</ul>
+
+<pre><code class="r">count_responses(pcs[, 9], cats = compies)
+</code></pre>
+
+<pre><code>##                           Latex                             Git 
+##                              29                              10 
+##                       Databases                          GitHub 
+##                              10                               9 
+##                           Gauss Amazon Cloud Computing Services 
+##                               5                               5 
+##                          Hadoop 
+##                               0
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Which of the following languages have you coded in?</li>
+</ul>
+
+<pre><code class="r">count_responses(pcs[, 10], cats = langies, fixed = TRUE)
+</code></pre>
+
+<pre><code>##          C        C++       Java        SQL Javascript    Fortran 
+##         27         20         16         11          6          3 
+##       CUDA      Julia     OpenCL      Scala 
+##          2          2          1          1
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <ul>
+<li>What fields are you most interested in applying statistical methods to?</li>
+</ul>
+
+<pre><code class="r">foo &lt;- table(pcs[, 11])
+data.frame(Topic = names(foo), Votes = as.numeric(foo))
+</code></pre>
+
+<pre><code>##                                                        Topic Votes
+## 1                                                  Astronomy     2
+## 2                                                   big data     1
+## 3                                           Biological data      1
+## 4                                                  Economics     1
+## 5                                           Finance/Business    11
+## 6                                                   Genetics     7
+## 7                                        Insurance, Medicine     1
+## 8                                                    Medical     1
+## 9                                            Most Everything     1
+## 10      not really sure yet, but none of the above stand out     1
+## 11                                         signal processing     1
+## 12 Social Media (e.g., Analyzing Twitter, Facebook activity)     5
+## 13                      Social science/media / neuroscience      1
+## 14                              Sports and Physical Sciences     1
+## 15                                   Stochastic Optimization     1
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Why are you taking the course?</li>
+</ul>
+
+<pre><code class="r">count_responses(pcs[, 12], cats = respies)
+</code></pre>
+
+<pre><code>##                                    The course sounded really interesting/useful 
+##                                                                              33 
+##             I am hoping that the course content will be helpful for my research 
+##                                                                              25 
+## I am hoping that the course content will be helpful for my future job prospects 
+##                                                                              22 
+##                I needed more units and it seemed like the best available course 
+##                                                                               7 
+##                I have to take the course to satisfy a requirement for my degree 
+##                                                                               6 
+##                                           My advisor told me to take the course 
+##                                                                               6
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Coffee or tea?</li>
+</ul>
+
+<pre><code class="r">table(pcs$Coffee.or.tea.)
+</code></pre>
+
+<pre><code>## 
+##    Both  Coffee Neither     Tea 
+##      13       5       2      16
+</code></pre>
+
+<ul>
+<li>Cats or dogs?</li>
+</ul>
+
+<pre><code class="r">table(pcs$Cats.or.dogs.)
+</code></pre>
+
+<pre><code>## 
+##    Both    Cats    Dogs Neither 
+##       6       9      11      10
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Survey Results</h2>
+  </hgroup>
+  <article>
+    <pre><code class="r">xtabs(~Cats.or.dogs. + Coffee.or.tea., data = pcs)
+</code></pre>
+
+<pre><code>##              Coffee.or.tea.
+## Cats.or.dogs. Both Coffee Neither Tea
+##       Both       2      0       0   4
+##       Cats       1      1       0   7
+##       Dogs       6      3       1   1
+##       Neither    4      1       1   4
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Module 1 :: Bayesian Statistics</h2>
+  </hgroup>
+  <article>
+    <p>In modern applications of statistical analysis it is common to need to 
+model and understand highly complex processes. </p>
+
+<p>Many complex processes can be decomposed into smaller, simpler, and more comprehensible pieces
+When combined: many simple relationships can form exceptionally complex systems</p>
+
+<p>Bayesian modeling is ideal for such situations:</p>
+
+<ul>
+<li>It allows for &quot;modular&quot; (i.e., conditional) model-building</li>
+<li>It allows for domain scientists to introduce important &quot;prior&quot; knowledge </li>
+<li>It possesses mature computational tools to solve complex modeling problems</li>
+</ul>
+
+<p>Lets see an example...</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Bayesian Statistics in Action :: Astrophysics</h2>
+  </hgroup>
+  <article>
+    <p>In many astrophysics problems it is of interest to understand the star
+formation process, or the age of astrophysical objects.</p>
+
+<ul>
+<li>What data do we have?</li>
+<li>How can we estimate the age of a star using that data?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>From Science to Data</h2>
+  </hgroup>
+  <article>
+    <p>There are three main properties of a star that determine its brightness:</p>
+
+<ol>
+<li>Mass (denoted by \(M\))</li>
+<li>Age (What we care about, denoted by \(A\))</li>
+<li>Metallicity (characterized as the proportion of non-hydrogen/helium matter, denoted by \(Z\))</li>
+</ol>
+
+<p>What we observe is the brightness of the star at different wavelengths.</p>
+
+<p>A detector will typically record the brightness of the star as passed through three filters (e.g., UBV). So we have
+a measurement of the brightness of the star in U-, B- and V-bands. </p>
+
+<p>How can we get from \((M,A,Z)\) to \((U,B,V)\)?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Isochrones: Mapping Physics to Data</h2>
+  </hgroup>
+  <article>
+    <p>Fortunately, there are physical models that determine, given the mass, age
+and metallicity of a star, the expected brightness in each photometric band.</p>
+
+<p>i.e., we have a function \(f:\mathbb{R}^{3}\mapsto\mathbb{R}^{3}\) such that:</p>
+
+<p>\[ f(M,A,Z) = E[(U,B,V)] \]</p>
+
+<p>In short, for each of \(n\) stars, we have noisy observations in the \((U,B,V)\)-space, and need to infer things
+about the \((M,A,Z)\) space:</p>
+
+<p>\[ (U_i,B_i,V_i) | (M_i,A_i,Z_i) \sim f(M_i,A_i,Z_i) + \epsilon_i \]</p>
+
+<p>for \(i=1,\ldots,n\). Unfortunately \(f\) has no closed form and is not invertible.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>Isochrone Mapping</h2>
+  </hgroup>
+  <article>
+    <p>What does \(f\) look like? For fixed \(Z\), varying \((M,A)\) in the \((B-V,V)\) space we get:
+<br/>
+<img src="pics/isochrone_plot_met_004.jpg" style="width: 480px;"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-26" style="background:;">
+  <hgroup>
+    <h2>The Challenge</h2>
+  </hgroup>
+  <article>
+    <p>In short: the mapping is highly degenerate. </p>
+
+<p><br/></p>
+
+<p>Lots of different \((M,A,Z)\) combinations give the same value of \((B,V,I)\).</p>
+
+<p><br/>
+<br/></p>
+
+<p><strong>Are we doomed? Should we give up and go home?</strong></p>
+
+<p><br/>
+<br/></p>
+
+<p><strong>What could rescue us...?</strong></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-27" style="background:;">
+  <hgroup>
+    <h2>Bayesian Inference</h2>
+  </hgroup>
+  <article>
+    <p>Fortunately we have two things in our favour:</p>
+
+<ol>
+<li><p><strong>Prior information</strong>: We often know from previous surveys or background knowledge roughly
+how old, or how massive, or what range of metallicities to expect for a given dataset.</p></li>
+<li><p><strong>Pooling of Information</strong>: Stars in a &quot;cluster&quot; are expected to be formed at a similar time,
+so we can pool information across stars.</p></li>
+</ol>
+
+<p>Both things can be easily done by a Bayesian model...</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-28" style="background:;">
+  <hgroup>
+    <h2>Model Summary:</h2>
+  </hgroup>
+  <article>
+    <p>Observations + Science:</p>
+
+<p>\[ (U_i,B_i,V_i) | (M_i,A_i,Z_i) \sim f(M_i,A_i,Z_i) + \epsilon_i \]</p>
+
+<p>Pooling:
+\[ A_i \sim N(\mu_a,\sigma_a^2) \]</p>
+
+<p>Prior Information that specifies how old, and how much variability we would expect in the stellar ages:</p>
+
+<p>\[ p(\mu_a,\sigma_a^2) \]</p>
+
+<p>(Other model components for \((M_i,Z_i)\) etc. omitted for simplicity).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-29" style="background:;">
+  <hgroup>
+    <h2>Challenges: The Likelihood Surface</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/aa_mu_age_pdf.png" style="width: 480px;"></p>
+
+<p>Solution: Fancy computational (MCMC) strategies.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>Posterior Intervals for Stellar Ages</h2>
+  </hgroup>
+  <article>
+    <p>For the 47-Tuc dataset (~1600 stars):</p>
+
+<p><img src="pics/tuc_age_interval_colors_all_plot.jpg" style="width: 480px;"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Bayesian Inference</h2>
+  </hgroup>
+  <article>
+    <p>As illustrated by the astrophyics case study, Bayesian statistics:</p>
+
+<ul>
+<li>Can be used to provide rigorous statistical solutions to complex problems</li>
+<li>Allows the introduction of external scientific knowledge about a problem</li>
+<li>Can be used to pool information across observations in a natural manner</li>
+<li>Can overcome computational challenges using innovative computation</li>
+</ul>
+
+<p>Therefore: Module # 1. :)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-32" style="background:;">
+  <hgroup>
+    <h2>Module 2 :: Statistics for &quot;Big&quot; Data</h2>
+  </hgroup>
+  <article>
+    <p>What is &quot;big&quot; data?</p>
+
+<ul class = "build">
+<li>Megabytes?</li>
+<li>Gigabytes?</li>
+<li>Terabytes?</li>
+<li>Petabytes?</li>
+<li><p>Exabytes?</p></li>
+<li><p>It depends what you are trying to do with it!</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-33" style="background:;">
+  <hgroup>
+    <h2>Big Data for Statistics</h2>
+  </hgroup>
+  <article>
+    <p>When dealing with data on the order of Gigabytes (or more) it becomes
+infeasible to read it into <code>R</code> and proceed as we all did back in the
+good old days.</p>
+
+<p>How then do we deal with it?</p>
+
+<ul class = "build">
+<li>Clever computational tricks</li>
+<li>New computational infrastructure</li>
+<li>What statistical approaches work at such large scales?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-34" style="background:;">
+  <hgroup>
+    <h2>Application: Twitter Stream Data</h2>
+  </hgroup>
+  <article>
+    <p><img alt="Twitter Logo" src="pics/twitter.jpg" style="width: 180px;"><br/></p>
+
+<p>Twitter averages 500 <strong>million</strong> tweets per day. </p>
+
+<ul class = "build">
+<li><p>That is a huge amount of data about &quot;people&quot;: how they think, how they interact, social patterns, economic trends etc.</p></li>
+<li><p>Most of those tweets are lolcatz or complaints about too much foam in a cappuccino, but still, there is interesting information to be gleaned.</p></li>
+<li><p>Twitter has an open API that allows developers to stream samples of tweets. It is essentially possible to obtain as much data you want (and it is easy to get it). </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-35" style="background:;">
+  <hgroup>
+    <h2>Application: Twitter Stream Data</h2>
+  </hgroup>
+  <article>
+    <p>The other day, at around midnight PT (3am ET) I streamed a small sample of about 40Mb of tweets. </p>
+
+<p>Lets do the now traditional &quot;sentiment analysis&quot;.</p>
+
+<ul class = "build">
+<li>&quot;Sentiment analysis&quot; is a branch of natural language processing that studies how to assign a &quot;sentiment score&quot; to a piece of text.</li>
+<li>The simplest procedure is very simple, but lets go with that for illustrative purposes. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-36" style="background:;">
+  <hgroup>
+    <h2>Crude Sentiment Analysis: Twitter</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p>Create a &quot;dictionary&quot; of words, and assign each word a &quot;sentiment score&quot;. For example:</p>
+
+<p>happy = 5
+sad = -5
+apathetic = -2
+neutral = 0</p></li>
+</ul>
+
+<ul class = "build">
+<li><p>Go through a tweet word-by-word, and add up the sentiment scores (or you could do a per-word average)</p></li>
+<li><p>Words not in the dictionary are scored as zero (or omitted)</p></li>
+<li><p>Also, lets record the geo-tagged location (if available) of each tweet</p></li>
+<li><p>Lets see what we find...</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-37" style="background:;">
+  <hgroup>
+    <h2>Twitter Stream Map</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/tweetmap_midnight.jpg" style="width: 600px;"></p>
+
+<p>Crude, but any thoughts? Discuss.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-38" style="background:;">
+  <hgroup>
+    <h2>Distributed Computing: Hadoop</h2>
+  </hgroup>
+  <article>
+    <p><img alt="Hadoop Logo" src="pics/hadoop.jpg" style="width: 180px;"><br/></p>
+
+<ul class = "build">
+<li><p>When datasets become truly huge, it becomes infeasible to store them on a
+single machine, and a fundamentally new approach to computing is needed
+(ensuring fault tolerance etc.).</p></li>
+<li><p>That is where <em>Hadoop</em> comes in.</p></li>
+<li><p>Originally developed at Yahoo!, Hadoop is a distributed file system (DFS)
+that can handle internet-scale datasets. </p></li>
+<li><p>How to interact/program with Hadoop?</p></li>
+<li><p>New programming models were developed, notably the Map-Reduce framework.
+Higher-level interfaces have now matured and are gaining popularity e.g.,
+Hive and Pig. </p></li>
+<li><p>We will dive in and play with this in Module #2.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-39" style="background:;">
+  <hgroup>
+    <h2>Amazon Web Services (AWS) :: Cloud Computing</h2>
+  </hgroup>
+  <article>
+    <p>For the &quot;big data&quot; module (and possibly for the final project), we will
+also dabble with cloud computing using the EC2 and ElasticMapReduce (EMR) 
+components of AWS. EMR provides a Hadoop environment that takes care
+of much of the grunt-work necessary to use Hadoop+MapReduce. </p>
+
+<p>A big thank you to <strong>Amazon</strong> for providing us with an educational grant to cover 
+course expenses! :)</p>
+
+<p><a href="http://aws.amazon.com/grants/">http://aws.amazon.com/grants/</a></p>
+
+<p><a href="http://aws.amazon.com/what-is-cloud-computing">
+<img src="http://awsmedia.s3.amazonaws.com/AWS_logo_poweredby_black_127px.png" alt="Powered by AWS Cloud Computing">
+</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-40" style="background:;">
+  <hgroup>
+    <h2>Module 3 :: Optimization + The EM Algorithm</h2>
+  </hgroup>
+  <article>
+    <p>Any self-respecting statistician needs to know how to optimize a function.</p>
+
+<p>We do this all the time, whether it be for estimation or prediction. </p>
+
+<p>Knowing how to use <code>optim</code> is a great start, but it won&#39;t get you everywhere you need to go.</p>
+
+<p>Really understanding optimization strategies can help you solve complex problems
+that others may struggle with. </p>
+
+<p><em>In module 3:</em> Optimization + The EM Algorithm, we take a look at look
+at optimization strategies, and an in-depth look at a very popular and
+useful one: The Expectation-Maximization Algorithm.</p>
+
+<p><strong>WARNING/NOTE:</strong> This will be the math-iest of the modules. ;)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-41" style="background:;">
+  <hgroup>
+    <h2>Module 4 :: Efficient Computation and GPUs</h2>
+  </hgroup>
+  <article>
+    <p>Considering:</p>
+
+<ul>
+<li>The complexity of modern statistical models applied to cutting-edge applications</li>
+<li>The massive amounts of data available for statistical applications</li>
+</ul>
+
+<p>The strain on the computing capability of statistical procedures is
+immense. In this module we will look at some strategies to speed up
+statistical computation using <strong>parallelization</strong>. </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-42" style="background:;">
+  <hgroup>
+    <h2>Graphics Processing Units (GPUs)</h2>
+  </hgroup>
+  <article>
+    <h3>One-slide brutal simplification/history of GPUs:</h3>
+
+<p>Traditionally, most calculations performed by computers were done by the Central Processing Unit (CPU).
+CPUs can perform sequential calculations tremendously fast.</p>
+
+<p>Caclucations required for computer graphics typically involve &quot;massively parallel 
+computation&quot;. For example, they run the same calculation independently for all pixels to 
+produce an image. With the advent of graphics-heavy comuter games, specialist graphics
+ cards (GPUs) were developed to conduct these graphics-related computations. </p>
+
+<p><strong>Now the cool part...</strong> since GPUs are capable of running millions of calculations simultaneously,
+there was much interest from scientists and non-gamers in exploiting this computing power.
+With the development of languages such as CUDA and OpenCL it is now possible for 
+scientists (and statisitcians) to use the power of GPUs to accelerate scientific computation.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-43" style="background:;">
+  <hgroup>
+    <h2>GPUs</h2>
+  </hgroup>
+  <article>
+    <p>Thanks to:</p>
+
+<ul>
+<li>NVIDIA</li>
+<li>Duncan Temple Lang</li>
+</ul>
+
+<p>We have access to some extremely high-powered GPUs for the course.</p>
+
+<p><img src="pics/nvidia.jpg" align="middle"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-44" style="background:;">
+  <hgroup>
+    <h2>Meet the Tesla K20</h2>
+  </hgroup>
+  <article>
+    <p><img src="http://www.nvidia.com/content/tesla/images/tesla-k20-series.jpg" align="middle" style="width: 240px;"></p>
+
+<table><thead>
+<tr>
+<th>Specification</th>
+<th>Performance</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Peak double precision floating point performance</td>
+<td>1.17 Tflops</td>
+</tr>
+<tr>
+<td>Peak single precision floating point performance</td>
+<td>3.52 Tflops</td>
+</tr>
+<tr>
+<td>Memory bandwidth (ECC off)</td>
+<td>208 GB/sec</td>
+</tr>
+<tr>
+<td>Memory size (GDDR5)</td>
+<td>5 GB</td>
+</tr>
+<tr>
+<td>CUDA cores</td>
+<td>2496</td>
+</tr>
+</tbody></table>
+
+<p><br/>
+In module 4, you will learn the basics of GPU programming and get to play with these beasts. :)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-45" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/keep_off.jpg" alt="Keep Off" align="middle" style="width: 360px;"/></p>
+
+<p><br/>
+<a href="http://cheezburger.com/7797230080">http://cheezburger.com/7797230080</a></p>
+
+<p><em>Wed: Boot camp begins!</em></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
