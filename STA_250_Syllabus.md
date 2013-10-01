@@ -115,31 +115,33 @@ in learning `R` you may want to start with <http://cran.r-project.org/doc/contri
 
 <!-- Note: Table only renders on GitHub... -->
 
-| Lecture |   Date   | Topic                                  |       Notes       |
-|:-------:|----------|----------------------------------------|:-----------------:|
-| 01 | Mon 30th Sep: | Course Overview, Demos                 |                   | 
-| 02 | Wed  2nd Oct: | Boot Camp -- Basics, R, Python         |                   |
-| 03 | Mon  7th Oct: | Boot Camp -- Gauss, Linux, Stats       |                   |
-| 04 | Wed  9th Oct: | Bayes I -- Introduction to Bayes       |  Homework 0 Due   |
-| 05 | Mon 14th Oct: | Bayes II -- MCMC/Bayesian Computing    |                   |
-| 06 | Wed 16th Oct: | Bayes III -- Inference/Model Checking  |                   | 
-| 07 | Mon 21st Oct: | Bayes IV -- Applications/Extras        |                   |
-| 08 | Wed 23rd Oct: | Big Data I -- Types of "Big" Data      |                   |
-| 09 | Mon 28th Oct: | Big Data II -- "Big" data strategies   |  Homework 1 Due   |
-| 10 | Wed 30th Oct: | Big Data III -- "Big" data computation |                   |
-| 11 | Mon  4th Nov: | Big Data IV -- Applications/Extras     |                   |
-| 12 | Wed  6th Nov: | EM I -- Introduction to EM             |                   |
-| -- | Mon 11th Nov: | **NO CLASS -- VETERANS DAY**           |                   |
-| 13 | Wed 13th Nov: | EM II -- Variations on EM              |   Homework 2 Due  |
-| 14 | Mon 18th Nov: | EM III -- Parametrization, Convergence |                   | 
-| 15 | Wed 20th Nov: | EM IV -- Efficient algorithms          |                   | 
-| 16 | Mon 25th Nov: | GPUs I -- Overview of GPUs             |   Homework 3 Due  |
-| 17 | Wed 27th Nov: | GPUs II -- Programming GPUs            |                   |
-| 18 | Mon  2nd Dec: | GPUs III -- High-level GPU interfaces  |                   |
-| 19 | Wed  4th Dec: | GPUs IV -- Applications/extras         |                   |
-| -- | Fri  6th Dec: |                                        |   Homework 4 Due  |
-| -- | Mon  9th Dec: |                                        | Final Project Due |
- 
+
+| Lecture |      Date     | Topic                                  |       Notes       |
+|:-------:|---------------|----------------------------------------|:-----------------:|
+|   01    | Mon 30th Sep: | Course Overview, Demos                 |                   | 
+|   02    | Wed  2nd Oct: | Boot Camp -- Basics, R, Python         |                   |
+|   03    | Mon  7th Oct: | Boot Camp -- Gauss, Linux, Stats       |                   |
+|   04    | Wed  9th Oct: | Bayes I -- Introduction to Bayes       |  Homework 0 Due   |
+|   05    | Mon 14th Oct: | Bayes II -- MCMC/Bayesian Computing    |                   |
+|   06    | Wed 16th Oct: | Bayes III -- Inference/Model Checking  |                   | 
+|   07    | Mon 21st Oct: | Bayes IV -- Applications/Extras        |                   |
+|   08    | Wed 23rd Oct: | Big Data I -- Types of "Big" Data      |                   |
+|   09    | Mon 28th Oct: | Big Data II -- "Big" data strategies   |  Homework 1 Due   |
+|   10    | Wed 30th Oct: | Big Data III -- "Big" data computation |                   |
+|   11    | Mon  4th Nov: | Big Data IV -- Applications/Extras     |                   |
+|   12    | Wed  6th Nov: | EM I -- Introduction to EM             |                   |
+|   --    | Mon 11th Nov: | **NO CLASS -- VETERANS DAY**           |                   |
+|   13    | Wed 13th Nov: | EM II -- Variations on EM              |   Homework 2 Due  |
+|   14    | Mon 18th Nov: | EM III -- Parametrization, Convergence |                   | 
+|   15    | Wed 20th Nov: | EM IV -- Efficient algorithms          |                   | 
+|   16    | Mon 25th Nov: | GPUs I -- Overview of GPUs             |   Homework 3 Due  |
+|   17    | Wed 27th Nov: | GPUs II -- Programming GPUs            |                   |
+|   18    | Mon  2nd Dec: | GPUs III -- High-level GPU interfaces  |                   |
+|   19    | Wed  4th Dec: | GPUs IV -- Applications/extras         |                   |
+|   --    | Fri  6th Dec: |                                        |   Homework 4 Due  |
+|   --    | Mon  9th Dec: |                                        | Final Project Due |
+
+
 #### Assignments: ####
 
 The basic outline for homeworks is below. All due dates are subject to change.
