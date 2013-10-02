@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250 -- Lecture 02</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 -- Lecture 02">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250 -- Lecture 02</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- 
+
+# To compile, from R:
+source("Analyze_PCS.R")
+library(slidify)
+slidify("Lecture_01.Rmd")
+
+-->
+
+<h2>Welcome to STA 250!</h2>
+
+<p>On the menu for today...</p>
+
+<ol class = "build">
+<li><p>Coding warmups</p></li>
+<li><p>Working remotely: ssh, sftp, scp etc.</p></li>
+<li><p>Filesystem basics</p></li>
+<li><p>Git + GitHub</p></li>
+<li><p>Gauss: The Stat Cluster</p></li>
+<li><p>Python basics</p></li>
+<li><p>R basics</p></li>
+</ol>
+
+<p><strong>Notetakers for today: Christopher Aden, Xiongtao Dai, Shan-Yu Liu</strong></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Coding Warmup</h2>
+  </hgroup>
+  <article>
+    <p>Write a program that prints the numbers from 1 to 100.
+But for multiples of three print &quot;Fizz&quot; instead of the
+number and for the multiples of five print &quot;Buzz&quot;.
+For numbers which are multiples of both three and 
+five print &quot;FizzBuzz&quot;. </p>
+
+<p>(From: <a href="http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html">http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html</a>)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Working Remotely: Basics</h2>
+  </hgroup>
+  <article>
+    <h3>Remote Logins</h3>
+
+<p>SSH stands for &quot;Secure Shell&quot;, and is a protocol that allows users to login to
+remote machines. For example, you can login to the Stat Dept cluster (&quot;Gauss&quot;)
+while sitting having a cup of coffee in Australia.</p>
+
+<p>We will use <code>ssh</code> a lot in this course. </p>
+
+<p>Poll: Who has used <code>ssh</code> before?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Working Remotely: Basics II</h2>
+  </hgroup>
+  <article>
+    <h3>Copying Files</h3>
+
+<p>SSH is great for logging into a remote machine, but you will need a mechanism to
+transfer files between your laptop/desktop and, say, Gauss.</p>
+
+<p>Enter <code>scp</code> and <code>sftp</code>. This is where using Windows becomes painful.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>ssh</h2>
+  </hgroup>
+  <article>
+    <p>To <code>ssh</code> into a remote machine is nice and easy:</p>
+
+<pre><code>ssh pdbaines@gauss.ucdavis.edu
+</code></pre>
+
+<p>For more X11 forwarding:</p>
+
+<pre><code>ssh -X pdbaines@gauss.ucdavis.edu
+</code></pre>
+
+<p>For more debugging:</p>
+
+<pre><code>ssh -vX pdbaines@gauss.ucdavis.edu
+</code></pre>
+
+<p>Obviously login to <strong>your</strong> account on Gauss. Not mine.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>ssh for Windows users:</h2>
+  </hgroup>
+  <article>
+    <p>For Windows users:</p>
+
+<ul class = "build">
+<li><p>Dual-boot with Linux. </p></li>
+<li><p>Only joking (sort of). </p></li>
+<li><p>You can use a GUI tool such as:</p>
+
+<ul>
+<li><code>WinSCP</code>: <a href="http://winscp.net/eng/download.php">http://winscp.net/eng/download.php</a>, or,</li>
+<li><code>ssh secure shell client</code>:<br/> <a href="http://www.filewatcher.com/m/SSHSecureShellClient-3.2.9.exe.5517312-0.html">http://www.filewatcher.com/m/SSHSecureShellClient-3.2.9.exe.5517312-0.html</a></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>scp</h2>
+  </hgroup>
+  <article>
+    <p><code>scp</code> stands for secure copy, and allows you to copy files to/from your local machine 
+to a remote machine (e.g., Gauss). For example, to copy <code>foo.txt</code> from my Desktop to
+my &quot;Research&quot; folder on Gauss</p>
+
+<pre><code>scp ~/Desktop/foo.txt pdbaines@gauss.cse.ucdavis.edu:~/Research/
+</code></pre>
+
+<p>To copy directories you need to request <code>-r</code> for recursive copying. For example,
+to copy you <code>Desktop</code> directory to Gauss:</p>
+
+<pre><code>scp -r ~/Desktop pdbaines@gauss.cse.ucdavis.edu:~/
+</code></pre>
+
+<p>For more, try <code>man scp</code> or <a href="http://linux.die.net/man/1/scp">http://linux.die.net/man/1/scp</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>rsync</h2>
+  </hgroup>
+  <article>
+    <p><code>rsync</code> is a useful tool for more complicated file transfers. For example, 
+suppose you are copying 100,000 files from your laptop to Gauss and the file
+transfer fails midway (after 2 hours). With <code>rsync</code> it is trivial to resume
+the transfer and avoid recopying already copied files.</p>
+
+<p>For example, to copy my &quot;libraries&quot; folder on my laptop to Gauss, ignoring any
+files that had been uploaded first time around:</p>
+
+<pre><code>rsync --ignore-existing --recursive -av libraries/ pdbaines@gauss.cse.ucdavis.edu:~/
+</code></pre>
+
+<p>You can also add <code>--dry-run</code> if you want to see what files will be copied but not
+actually do the copy.</p>
+
+<p>For more, try <code>man rsync</code> or <a href="http://linux.die.net/man/1/rsync">http://linux.die.net/man/1/rsync</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Gauss: The Stat Dept Cluster</h2>
+  </hgroup>
+  <article>
+    <p>By now you should all have setup your account on Gauss.</p>
+
+<p>What is Gauss? <a href="http://wiki.cse.ucdavis.edu/support:systems:gauss#hardware">http://wiki.cse.ucdavis.edu/support:systems:gauss#hardware</a></p>
+
+<p>Lets use Gauss to explore <code>ssh</code>, <code>scp</code> and GitHub.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Aside: Authentication Keys</h2>
+  </hgroup>
+  <article>
+    <p>To login into Gauss you need to create public/private keypair. On Mac/Linux this
+is trivial:</p>
+
+<pre><code># Make the key:
+ssh-keygen -t rsa
+</code></pre>
+
+<p>This creates a public key (id_rsa.pub) and a private key (id_rsa)
+that reside in the <code>~/.ssh</code> directory. You will need to email the key 
+to <a href="mailto:help@cse.ucdavis.edu"><a href="mailto:help@cse.ucdavis.edu">help@cse.ucdavis.edu</a></a> to 
+get access to Gauss. Full instructions:<br/>
+<a href="http://wiki.cse.ucdavis.edu/support:general:security:ssh#setup">http://wiki.cse.ucdavis.edu/support:general:security:ssh#setup</a>.</p>
+
+<p>Once your account is ready, copy the public key to Gauss e.g., </p>
+
+<pre><code>scp ~/.ssh/id_rsa.pub yourusername@gauss.cse.ucdavis.edu:~/
+</code></pre>
+
+<p>Now you should be able to login:</p>
+
+<pre><code>ssh yourusername@gauss.cse.ucdavis.edu
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Aside: Scripts</h2>
+  </hgroup>
+  <article>
+    <p>Since you will be logging in to Gauss many times, it is advisable to
+create a script to save you some typing. Create a file, say,
+<code>gauss_ssh</code> and type:</p>
+
+<pre><code>#!/bin/bash
+ssh -vX myusername@gauss.cse.ucdavis.edu
+</code></pre>
+
+<p>You may also need to change the permissions to make the script 
+executable:</p>
+
+<pre><code>chmod u+x gauss_ssh
+</code></pre>
+
+<p>To run the script (and login to Gauss), just type:</p>
+
+<pre><code>./gauss_ssh
+</code></pre>
+
+<p>Nice. That saved a few keystrokes. Now you are a pro.
+If you are not already a proficient script writer, then I 
+highly recommend becoming one!</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Archiving/Compressing/Uncompressing</h2>
+  </hgroup>
+  <article>
+    <p>It is frequently necessary to compress large files into smaller ones using standard tools. While the <code>.zip</code> archives are familiar for Windows users, the recommend [un]compression tool for this class is <code>tar</code>. Other standards such as <code>.bz2</code> are also fine, and you may use your preferred approach. Again, on Windows it is usually easier to handle archives via a GUI such as <code>WinZIP</code>. </p>
+
+<p>To create a <code>.tar.gz</code> archive from a single file on Mac/Linux:</p>
+
+<pre><code>tar -cvzf myarchive.tar.gz big_file.txt
+</code></pre>
+
+<p>To create an archive containing a whole directory:</p>
+
+<pre><code>tar -cvzf myarchive.tar.gz dir_to_compress/
+</code></pre>
+
+<p>To uncompress a <code>.tar.gz</code> archive into the current directory:</p>
+
+<pre><code>tar -xvzf myarchive.tar.gz ./
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Linux File Editing</h2>
+  </hgroup>
+  <article>
+    <p>When logged into Gauss you will frequently need to edit files. </p>
+
+<p>Since Gauss provides now GUI, this can be tricky for first-timers.</p>
+
+<p>You have two main options:</p>
+
+<ol>
+<li>Nano</li>
+<li>Vi(m)</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Basic Editing with nano</h2>
+  </hgroup>
+  <article>
+    <p>To open a file (e.g., <code>foo.txt</code>) with <code>nano</code>:</p>
+
+<pre><code>nano foo.txt
+</code></pre>
+
+<p>Note: If <code>foo.txt</code> does not exist, it will be created (but not saved).</p>
+
+<p>Just type/edit the file as you see it. </p>
+
+<ul>
+<li>To quit: <code>CTRL+X</code> (it will prompt for save)</li>
+<li>All commands are listed on the bottom of the screen</li>
+</ul>
+
+<p>Nano is nice and easy to use (but not very powerful).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Basic Editing with Vi(m)</h2>
+  </hgroup>
+  <article>
+    <p>Vi is an old but popular text editor originally written for Unix in the 1970&#39;s.</p>
+
+<p>It is fundamentally different from most text editors in that it has two distinct modes:</p>
+
+<ul>
+<li>Normal mode: Commands typed are designed to control the session, not appear in the document.</li>
+<li>Insert mode: All typing appears in the document itself.</li>
+</ul>
+
+<p>To enter insert mode press <code>i</code>, to exit press <code>Esc</code>.</p>
+
+<p>When in &quot;Insert mode&quot;, the bottom of the screen should read:</p>
+
+<pre><code>-- INSERT --
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Vi(m) Basics</h2>
+  </hgroup>
+  <article>
+    <p>All of the following commands must be typed from normal mode, not insert mode:</p>
+
+<ul>
+<li><code>:w</code> Save (i.e., write) to file</li>
+<li><code>:w foobar.txt</code> Save to file with filename <code>foobar.txt</code></li>
+<li><code>:q</code> Quit the program</li>
+<li><code>:q!</code> Quit without saving</li>
+<li><code>/foo</code> Search for the text &#39;foo&#39; within the document</li>
+<li><code>n</code> Repeat the search (jump to next occurence)</li>
+<li><code>G</code> Jump to last line of file</li>
+<li><code>:10</code> Jump to line ten of the file</li>
+<li><code>yy</code> Copy the current line to the clipboard</li>
+<li><code>10 yy</code> Copy the next ten lines to the clipboard</li>
+<li><code>y$</code> Copy from the cursor to the end of the line</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Vi(m) Basics cont...</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><code>p</code> Paste the contents of the clipboard</li>
+<li><code>dd</code> Delete the current line</li>
+<li><code>10 dd</code> Delete the next ten lines</li>
+<li><code>u</code> Undo the last command</li>
+<li><code>:%s/foo/bar/cg</code> Search and replace the text &quot;foo&quot; with &quot;bar&quot; globally, confirming first (hence the cg)</li>
+</ul>
+
+<p>See: <a href="http://www.math.ntu.edu.tw/~wwang/mtxcomp2010/cssd2011/download/vi_cheat%20sheet.pdf"> Vi Cheat Sheet</a> for more.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Git Basics</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p>What is Git?</p>
+
+<ul>
+<li>Git is a distributed version control system</li>
+</ul></li>
+<li><p>Why use git?</p>
+
+<ul>
+<li>Ideal for collaboration, easily allows multiple people to work on the same project</li>
+<li>Tracks history of all file changes, allows reversion</li>
+</ul></li>
+<li><p>Nice intro videos: <a href="http://git-scm.com/videos">http://git-scm.com/videos</a></p></li>
+<li><p>References: <a href="http://git-scm.com">http://git-scm.com</a>, <a href="http://git-ref.org">http://git-ref.org</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Why use GitHub?</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p>What is GitHub?</p>
+
+<ul>
+<li>Rich web-based hosting of git</li>
+</ul></li>
+<li><p>Why use GitHub?</p>
+
+<ul>
+<li>Lots of additional features: issues, social components, search, documentation</li>
+<li>Unlimited free public repositories</li>
+<li>Private repositories require subscription</li>
+</ul></li>
+</ul>
+
+<p>Register for free use of 5 private repositories via an educational account at <a href="http://github.com/edu">http://github.com/edu</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>GitHub Basics</h2>
+  </hgroup>
+  <article>
+    <p>Pretty much everything you need to know:</p>
+
+<pre><code>git clone
+git add 
+git commit -a
+git push
+git pull
+git status
+git diff
+git merge
+git mv
+git rm
+</code></pre>
+
+<p>Useful references: <a href="http://gitref.org/basic/">http://gitref.org/basic/</a>, <a href="https://help.github.com/articles/fork-a-repo">https://help.github.com/articles/fork-a-repo</a></p>
+
+<p>Lets see this in action...</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Gauss: Batch Jobs</h2>
+  </hgroup>
+  <article>
+    <p>When you login to Gauss, you are logging in to the &quot;Head node&quot;. The head node
+is designed to manage the system, not do major calculations: that is what the
+compute nodes are for.</p>
+
+<p>If you just type <code>R</code> (or <code>python</code>) at the command line, you will be running <code>R</code>/<code>python</code> on the
+head node. Generally speaking, never do this.</p>
+
+<p>To use the compute nodes on Gauss you need to submit a batch, or array, job.</p>
+
+<p>The compute nodes on Gauss cannot be used interactively: you need to provide a script that
+will run, and make sure your script saves the output/writes to file to store the results.</p>
+
+<p>In light of this non-interactive nature, it is helpful to develop code locally and make 
+sure it is running properly, before running batch jobs on Gauss.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Using Gauss:</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p>Please read the Wiki: <a href="http://wiki.cse.ucdavis.edu/support:systems:gauss">http://wiki.cse.ucdavis.edu/support:systems:gauss</a></p></li>
+<li><p>Check out: <a href="http://wiki.cse.ucdavis.edu/_media/support:systems:intro_to_gauss_slides.pdf">http://wiki.cse.ucdavis.edu/_media/support:systems:intro_to_gauss_slides.pdf</a></p></li>
+</ul>
+
+<p>The <code>Boot_Camp</code> folder of the course GitHub repo has an example of a python batch job on Gauss.</p>
+
+<pre><code>sarray boot_camp_demo.sh
+squeue
+scancel
+</code></pre>
+
+<p>Be sure to read the <code>.err</code> and <code>.out</code> files to check everything ran smoothly.</p>
+
+<p>Finally: Copy everything from Gauss to your laptop.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>Python Basics</h2>
+  </hgroup>
+  <article>
+    <p>Who is new to python? Who is planning to use it?</p>
+
+<p>First, check you have python installed:</p>
+
+<pre><code>python --version
+</code></pre>
+
+<p>If not, then install it. To develop in python, there are a number of IDE&#39;s. </p>
+
+<ul>
+<li>See: <a href="https://wiki.python.org/moin/IntegratedDevelopmentEnvironments">https://wiki.python.org/moin/IntegratedDevelopmentEnvironments</a></li>
+<li>I use Spyder: <a href="http://pythonhosted.org/spyder/">http://pythonhosted.org/spyder/</a>, but to each their own.</li>
+</ul>
+
+<p>We&#39;ll spend more time on Python in future weeks.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>R Basics</h2>
+  </hgroup>
+  <article>
+    <p>To develop on your laptop in <code>R</code> I recommend using RStudio (<a href="http://rstudio.org">http://rstudio.org</a>). It provides a comprehensive IDE,
+and makes it easy to debug.</p>
+
+<p>Who is new to R? Who is planning to use R?</p>
+
+<p>Some resources for learning R: <a href="http://www.ats.ucla.edu/stat/r/">http://www.ats.ucla.edu/stat/r/</a></p>
+
+<p>You could try: <a href="http://tryr.codeschool.com/">http://tryr.codeschool.com/</a></p>
+
+<p>Or Google &quot;R tutorial&quot; or &quot;R introduction&quot; and pick your favourite guide.</p>
+
+<p>We&#39;ll spend more time on R in future weeks.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/punching.gif" alt="Keep Off" align="middle" style="width: 480px;"/></p>
+
+<p><br/>
+<a href="http://cheezburger.com">http://cheezburger.com</a><br/>
+Speaking of Twitter... <a href="http://what-if.xkcd.com/65/">http://what-if.xkcd.com/65/</a></p>
+
+<p><em>Next Week: More Boot Camp + Bayes!</em></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>

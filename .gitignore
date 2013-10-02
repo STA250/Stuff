@@ -2,4 +2,6 @@ Lecture_[0-9][0-9].Rmd
 Lecture_[0-9][0-9].md
 Gemfile.lock
 _site*
+my_secret_codes.txt
+tweetdump.txt
 
