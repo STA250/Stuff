@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013) by STA250</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/STA250/Stuff">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013)</h1>
+          <p>Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/STA250">STA250</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+<style TYPE="text/css">
+code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
+</style>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'] // removed 'code' entry
+    },
+  TeX: { equationNumbers: { autoNumber: "AMS" } }    
+});
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+<h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Homework 00</h1>
+
+<p><em>For all questions you must show your work. This enables us to understand your thought process, give partial credit and prevent crude cheating. Please see the code of the conduct in the Syllabus for rules about collaborating on homeworks.</em></p>
+<p><em>For questions requiring computing, if you use <code>R</code>, <code>python</code> or any programming environment then you must turn in a printout of your output with your solutions.<br />In addition, a copy of your code must be uploaded to your <code>HW0</code> directory as per Q6 below.</em></p>
+<p><br/></p>
+
+<h2>Homework 0 (No Credit -- Practice Only)</h2>
+<h2>Due: In Class, 5:30pm Wed October 9th</h2>
+<h4>Assigned: Wednesday Oct 2nd</h4>
+<p>Some basic coding problems to get you back in the swing.</p>
+<ol>
+<li><p>Write a program that prints the numbers from 1 to 100.<br />But for multiples of three print &quot;Fizz&quot; instead of the<br />number and for the multiples of five print &quot;Buzz&quot;.<br />For numbers which are multiples of both three and<br />five print &quot;FizzBuzz&quot;.<br />(From: <a href="http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html">http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html</a>)</p></li>
+<li><p>Write a program that generates 1000 uniform random numbers<br />between 0 and <embed src="http://latex.codecogs.com/gif.latex?2%5Cpi" /> (call this <embed src="http://latex.codecogs.com/gif.latex?x" />),<br />and 1000 uniform random<br />numbers between 0 and 1 (call this <embed src="http://latex.codecogs.com/gif.latex?y" />).<br />You will then have<br />10,000 pairs of random numbers.<br/><br />Transform <embed src="http://latex.codecogs.com/gif.latex?%28x%2Cy%29" /> to <embed src="http://latex.codecogs.com/gif.latex?%28u%2Cv%29" /> where:<br /><embed src="http://latex.codecogs.com/gif.latex?u%3Dy*%5Ccos%28x%29%2C" />, and,<br /><embed src="http://latex.codecogs.com/gif.latex?v%3Dy*%5Csin%28x%29" />.<br/><br />Make a 2D scatterplot of the 10,000 (u,v) pairs.<br />What is the distribution of: <embed src="http://latex.codecogs.com/gif.latex?r%3D%5Csqrt%28u%5E2%2Bv%5E2%29" />?</p></li>
+<li><p>Consider the following snippet:</p>
+<pre><code>Hello, my name is Bob. I am a statistician. I like statistics very much.</code></pre>
+<p>a. Write a program to spit out every character in the snippet<br />to a separate file (i.e., file <code>out_01.txt</code> would contain the character <code>H</code>,<br />file <code>out_02.txt</code> would contain <code>e</code> etc.). Note that the <code>,</code>, <code>.</code> and spaces<br />should also get their own files.</p>
+<p>b. Write a program to combine all files back together into a single file<br />that contains the original sentence. <strong>Take care to respect whitespace<br />and punctuation!</strong></p></li>
+<li><p>Run <code>boot_camp_demo.py</code> as a batch job on <code>Gauss</code> using the submission script <code>boot_camp_sarray.sh</code> in the Github repo. Follow the instructions in class for how to do this.</p></li>
+<li>Run the Twitter code provided in lecture. Make sure to run the tweet-grabbing portion of code for a sufficient length of time (It is recommended to open another terminal and run <code>ls -alh</code> to check the size of the output file). The <code>README</code> provides full instructions for each of the steps.<br /></li>
+</ol>
+<ul>
+<li>See how your plot differs from the one shown in lecture 01<br /></li>
+<li>Modify the code to report the percentage of tweets that had geo-tagged data at the end of the sentiment analysis.</li>
+</ul>
+<ol>
+<li><p>Consider the autoregressive process of order 1, usually called an AR(1) process:<br/></p>
+<p><embed src="http://latex.codecogs.com/gif.latex?y_t%3D%5Crho_t%20y_%7Bt-1%7D%20%2B%20%5Cepsilon_t" /><br /><br/><br />for t=1,2,…,n. Let <embed src="http://latex.codecogs.com/gif.latex?y_0%3D0" /> and <embed src="http://latex.codecogs.com/gif.latex?%5Cepsilon_t%20%5Csim%20N%280%2C1%29" /> being independent.</p>
+a. Simulate from this process with n=1000. Plot the resulting series.
+b. Repeat part (a) 200 times, storing the result in a 1000x200 matrix. Each column should correspond to a realization of the random process.
+c. Compute the mean of the 200 realizations at each time point (i=1,2,…,1000). Plot the means.
+d. Plot the variance of the 200 realizations at each time point (i=1,2,…,1000). Plot the variances.
+e. Compute the mean of each of the 200 series across time points (j=1,2,…,200). Plot the means.
+f. Compute the variance of each of the 200 series across time points (j=1,2,…). Plot the variances.
+<p>g. Justify the results you have seen in parts b.--f. theoretically.</p></li>
+<li><p>In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <a href="https://github.com/STA250/Stuff">https://github.com/STA250/Stuff</a>.</p></li>
+</ol>
+<ul>
+<li>Click on the &quot;Fork&quot; button: <br/><br /><img src="https://raw.github.com/exosamsi/detrending/master/fork.png"><br /></li>
+<li>Wait for the fork to complete. When it does, you will be taken to the newly forked repo. For example:<br/><br /><img src="pics/Screenshot 2013-09-26 10.54.38.png"><br/><br />This has forked the repo to your GitHub.com account, but the repo is not stored on your laptop/desktop at this point.<br />On Mac/Windows, load the GitHub GUI you should have installed, and then proceed as below:<br /></li>
+<li>Go to the GitHub GUI, click on your username under the &quot;GitHub.com&quot; tab, click on &quot;Refresh&quot; (on the bottom of the screen). The forked repo should appear with the option to &quot;Clone to Computer&quot;. For example:<br/><br /><img src="pics/Screenshot 2013-09-26 10.56.22.png" style="width: 600px;"><br /></li>
+<li><p>Click &quot;Clone to Computer&quot;. Select where to save the repo, and wait for the clone to complete:<br/><br /><img src="pics/Screenshot 2013-09-26 10.58.21.png" style="width: 600px;"><br/><br />Congratulations, you have now successfully forked the course repo. Any time you need to update the repo (e.g., if Prof. Baines posts new code/slides/assignments) you can click on &quot;My Repositories&quot; and the forked &quot;Stuff&quot; repo. Then click on the &quot;Sync Branch&quot; icon in the top left of the GUI:<br/><br /><img src="pics/Screenshot 2013-09-26 11.08.38.png"><br /><br/><br />Note: In general, you will need to commit any changes for the sync to proceed.</p></li>
+<li><p>For the Linux-ers on Mac command-line folks, you can do all of the above via (with obvious modifications):</p>
+<pre><code>git config --global user.name &quot;John Doe&quot;
+git config --global user.email johndoe@example.com
+git clone git://github.com/[yourgithubusername]/[yourforkedrepo].git</code></pre>
+<p>To get the current status (note: you must be in the local repo directory):</p>
+<pre><code>cd Stuff # Change to the newly downloaded repo
+ls # Check files are there… 
+git status # Should be up-to-date</code></pre>
+<p>To get the latest updates:</p>
+<pre><code>git pull</code></pre>
+<p>Again, any local changes must be committed prior to the <code>git pull</code> request.</p></li>
+<li>Now, move your <code>HW0.(R|py)</code> into the <code>HW0</code> directory on your local machine. If you now run <code>git status</code> (or check the status via the GUI) you should receive a message informing you that you have uncommitted files.<br /></li>
+<li><p>If using the command line, run (from the local repo directory):</p>
+<pre><code>git add HW0/HW0.py</code></pre>
+or similar, depending on what your code file is called. This will add the file to the repo.<br /></li>
+<li><p>Next, commit the change to the repo (run this from the local repo directory):</p>
+<pre><code>git commit -m</code></pre>
+<p>Add a message for the update e.g., &quot;Added HW0 code&quot;. This stages the commit on your local machine, but the commit will not appear on GitHub.com until you push it to the site. If using the GUI you can commit via the &quot;Changes&quot; tab. In the &quot;Commit Summary&quot; box, enter a message for the update, then click &quot;Commit&quot;. The committed changes should appear in the &quot;Unsynced Commits&quot; tab.</p></li>
+<li><p>To push the change to GitHub, from the local repo directory:</p>
+<pre><code>git push </code></pre>
+<p>Using the GUI, push to GitHub using the &quot;Sync Branch&quot; button.</p></li>
+<li><p>Voila. If you go to your GitHub account, and navigate to the <code>HW0</code> folder of the forked repo, you should see your homework code! :)</p></li>
+</ul>
+<h3>(: Happy Coding! :)</h3>
+
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>

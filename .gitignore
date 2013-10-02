@@ -4,4 +4,5 @@ Gemfile.lock
 _site*
 my_secret_codes.txt
 tweetdump.txt
+*~
 
