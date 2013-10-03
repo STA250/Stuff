@@ -109,7 +109,7 @@ Note: In general, you will need to commit any changes for the sync to proceed.
 
 		git config --global user.name "John Doe"
 		git config --global user.email johndoe@example.com
-		git clone git://github.com/[yourgithubusername]/[yourforkedrepo].git
+		git clone https://github.com/[yourgithubusername]/[yourforkedrepo].git
 
 	To get the current status (note: you must be in the local repo directory):
 	
