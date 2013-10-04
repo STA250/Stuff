@@ -68,13 +68,13 @@ should also get their own files.
 that contains the original sentence. **Take care to respect whitespace
 and punctuation!**
 
-4. Run `boot_camp_demo.py` as a batch job on `Gauss` using the submission script `boot_camp_sarray.sh` in the Github repo. Follow the instructions in class for how to do this.
+4. Run `boot_camp_demo.py` as a batch job on `Gauss` using the submission script `boot_camp_sarray.sh` in the Github repo. Follow the instructions in class for how to do this. Note: You will want to fork and clone the course repo if you have not done so already, please see Q7 for details.
 
 5. Run the Twitter code provided in lecture. Make sure to run the tweet-grabbing portion of code for a sufficient length of time (It is recommended to open another terminal and run `ls -alh` to check the size of the output file). The `README` provides full instructions for each of the steps.
   + See how your plot differs from the one shown in lecture 01
   + Modify the code to report the percentage of tweets that had geo-tagged data at the end of the sentiment analysis.
 
-5. Consider the autoregressive process of order 1, usually called an AR(1) process:<br/>
+6. Consider the autoregressive process of order 1, usually called an AR(1) process:<br/>
 
 	![equation](http://latex.codecogs.com/gif.latex?y_t%3D%5Crho_t%20y_%7Bt-1%7D%20%2B%20%5Cepsilon_t)
 	<br/>
@@ -88,7 +88,7 @@ and punctuation!**
 	f. Compute the variance of each of the 200 series across time points (j=1,2,…). Plot the variances.
 	g. Justify the results you have seen in parts b.--f. theoretically.
 
-6. In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <https://github.com/STA250/Stuff>.
+7. In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <https://github.com/STA250/Stuff>.
 
   + Click on the "Fork" button: <br/>
 <img src="https://raw.github.com/exosamsi/detrending/master/fork.png">
