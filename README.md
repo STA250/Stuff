@@ -1,12 +1,14 @@
-Stuff
-=====
+Stuff (gh-pages)
+================
 
-Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)
+This is the GitHub-Pages branch of Prof. Baines' STA 250
+course on "Advanced Statistical Computation" (UC Davis,
+Fall 2013). 
 
-Lecture slides will be hosted here.
+Most course materials are stored, on the master branch, 
+this branch hosts the course website materials.
 
-To view slides go to: 
+The course website can be found here:
 
 <http://sta250.github.io/Stuff><br/>
-<http://sta250.github.io/Stuff/Lecture_01><br/>
 
