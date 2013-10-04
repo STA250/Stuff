@@ -1,0 +1,56 @@
+\documentclass[]{article}
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+
+%opening
+\title{STA 250 Lecture 02 Notes}
+\author{Taken by Xiongtao Dai}
+\date{Oct 02, 2013}
+
+\begin{document}
+
+\maketitle
+
+\section{Things to do}
+\begin{itemize}
+	\item See \url{http://sta250.github.io/Stuff/Lecture_01#4}
+\end{itemize}
+
+\section{Setting up your Windows machine for SSH}
+Since I am a Windows user I will focus solely on Windows OS in this note. You can use the software Prof. Baines recommended on slide page 7, or use PuTTY (\url{http://www.putty.org/}). You can also download PuTTYgen to generate public and private keys for setting up the Gauss account.
+
+\section{Log in Gauss using PuTTY}
+\begin{enumerate}
+	\item Make a RSA public and private key pair using PuTTYgen. See \url{http://wiki.cse.ucdavis.edu/support:general:security:ssh#windows1}
+	\item Send your public key to \texttt{help@cse.ucdavis.edu} stating you are a STA 250 student
+	\item After CSE installed your public key, use PuTTY to SSH in \\ \texttt{your\_name@gauss.cse.ucdavis.edu}, with your private key installed
+\end{enumerate}
+
+\section{Navigating Gauss}
+Gauss is a Linux system so some knowledge about basic Linux operation is needed, like file system navigation (Google it), and file editing (slide page 14-18.
+
+\section{Transferring Files across Platforms}
+WinSCP allows you to easily transfer your files from your local computer to Gauss using its GUI. You can first writing your codes on your computer, test and run them, and then transfer the codes to Gauss and run there. 
+
+Git is a version control system that is perfect for code developments. Github integrates a Git system and make it more usable by providing web-based interface (\url{http://github.com}) and Windows GUI (\url{http://windows.github.com/}). If you are new to the idea of GitHub then you can just think of it as a specialized version of Dropbox, which let you synchronize your codes much easier.\\
+
+This is how you can use GitHub to transfer the STA250/Stuff file to Gauss:
+\begin{enumerate}
+	\item Log in to GitHub. Go to \url{https://github.com/STA250/Stuff} and click ``Fork"
+	\item In Gauss, type \texttt{
+	git clone https://github.com/[yourgithubusername] /[yourforkedrepo].git}\\
+\end{enumerate}
+
+After you have modifies the files on Gauss, you can send the modification back to GitHub:
+\begin{enumerate}
+	\item \texttt{git add new\_file\_to\_upload}
+	\item \texttt{git commit -a} (Note: you can add commit messages)
+	\item \texttt{git push}\\
+\end{enumerate}
+
+The next time you want to get the files from GitHub to Gauss, just use  \texttt{git pull} on Gauss.
+
+\section{Python}
+Chris suggested PyCharm as an IDE for python, which works quite well on Windows.
+
+
+\end{document}
