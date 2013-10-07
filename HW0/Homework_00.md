@@ -90,7 +90,7 @@ and punctuation!**
 	
 7. 
 	a. Let ![equation](http://latex.codecogs.com/gif.latex?Z%5Csim%7B%7DN%280%2C1%29). 
-Compute ![equation](http://latex.codecogs.com/gif.latex?E%5B%5Cexp%5E%7B-Z%5E%7B2%7D%7D%5D) using Monte Carlo integration.
+Compute ![equation](http://latex.codecogs.com/gif.latex?E%5B%5Cexp%5E%7B-Z%5E%7B2%7D%7D%5D) using Monte Carlo integration.<br/>
 	b. Let ![equation](http://latex.codecogs.com/gif.latex?Z%5Csim%7B%7DTruncated-Normal%280%2C1%3B%5B-2%2C1%5D%29). 
 Compute ![equation](http://latex.codecogs.com/gif.latex?E%5BZ%5D) using importance sampling.
 
