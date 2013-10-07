@@ -87,6 +87,19 @@ and punctuation!**
 	e. Compute the mean of each of the 200 series across time points (j=1,2,…,200). Plot the means.
 	f. Compute the variance of each of the 200 series across time points (j=1,2,…). Plot the variances.
 	g. Justify the results you have seen in parts b.--f. theoretically.
+	
+7. 
+	a. Let ![equation](http://latex.codecogs.com/gif.latex?Z%5Csim%7B%7DN%280%2C1%29). 
+Compute ![equation](http://latex.codecogs.com/gif.latex?E%5B%5Cexp%5E%7B-Z%5E%7B2%7D%7D%5D) using Monte Carlo integration.
+	b. Let ![equation](http://latex.codecogs.com/gif.latex?Z%5Csim%7B%7DTruncated-Normal%280%2C1%3B%5B-2%2C1%5D%29). 
+Compute ![equation](http://latex.codecogs.com/gif.latex?E%5BZ%5D) using importance sampling.
+
+8. Let ![equation](http://latex.codecogs.com/gif.latex?x_%7Bij%7D%5Csim%7B%7DN%280%2C1%29) for i=1,...,n and j=1,2, ![equation](http://latex.codecogs.com/gif.latex?x_%7Bi0%7D%3D1)
+for i=1,...,n, ![equation](http://latex.codecogs.com/gif.latex?x_%7Bi%7D%5E%7BT%7D%3D%28x_%7Bi0%7D%2Cx_%7Bi1%7D%2Cx_%7Bi2%7D%29%5E%7BT%7D),
+![equation](http://latex.codecogs.com/gif.latex?%5Cbeta%3D%281.2%2C0.3%2C-0.9%29%5E%7BT%7D) and 
+![equation](http://latex.codecogs.com/gif.latex?%5Cepsilon_%7Bi%7D%5Csim%7B%7DN%280%2C1%29) for i=1,...,n.
+Simulate from the linear regression model with n=100. Use the bootstrap procedure to estimate the
+SE of ![equation](http://latex.codecogs.com/gif.latex?%5Chat%7B%5Cbeta%7D) based on B=1000 bootstrap resamples.
 
 7. In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <https://github.com/STA250/Stuff>.
 
