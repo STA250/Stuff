@@ -43,9 +43,9 @@ For numbers which are multiples of both three and
 five print "FizzBuzz". 
 (From: <http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html>)
 
-2. Write a program that generates 1000 uniform random numbers
+2. Write a program that generates 10,000 uniform random numbers
 between 0 and ![equation](http://latex.codecogs.com/gif.latex?2%5Cpi) (call this ![equation](http://latex.codecogs.com/gif.latex?x)), 
-and 1000 uniform random 
+and 10,000 uniform random 
 numbers between 0 and 1 (call this ![equation](http://latex.codecogs.com/gif.latex?y)).
 You will then have 
 10,000 pairs of random numbers.<br/>
