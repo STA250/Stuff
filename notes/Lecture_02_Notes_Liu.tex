@@ -1,0 +1,117 @@
+\documentclass[10pt]{article}
+%\usepackage[center]{caption2}
+\usepackage{graphicx,float,pict2e,easylist}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{booktabs}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{rotating}
+\usepackage{hyperref}
+%\usepackage{float,tabularx}
+\topmargin=0cm \oddsidemargin=0.5cm \textwidth=16cm \textheight=21cm
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+\begin{document}
+\begin{center}
+{ \LARGE \bfseries Statistics 250 Lecture Note 02 }\\[0.4cm]
+\textsc{\Large\bfseries 10.02.2013}\\[0.5cm]
+{\Large\bfseries Taken by Shan-Yu Liu}
+\end{center}
+
+\section{Warmup Exercise}
+\begin{itemize}
+\item Write a program that prints the numbers from 1 to 100. But for multiples of three print "Fizz" instead of the number and for the multiples of five print "Buzz". For numbers which are multiples of both three and five print "FizzBuzz".
+\item source: http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html
+\end{itemize}    
+
+\section{SSH: secure shell}
+\begin{itemize}
+\item To ssh into a remote machine, you can use the following command. \\
+  For example, if you want to access \verb"Gauss"\\
+  \begin{center}
+  \textsf{ssh username@gauss.ucdavis.edu}
+  \end{center}
+  
+\item For Windows users, you can use GUI(graphical user interface) tools like \verb"WinSCP", \verb"ssh secure shell client" or \verb"PuTTY".
+    
+\item \textsf{ssh}: tells shell to access the server
+\item \textsf{chmod}: gives permission to run the script
+\item \textsf{cd}: change directory
+\item \textsf{scp}: allow you to copy files to/from local machine to a server 
+\item \textsf{rsync}: uses remote-update protocol which allows us to transfer just the differences between two sets of files
+\item \textsf{man}: shows user manual that is built in Linux    
+\end{itemize} 
+
+
+\section{Gauss}
+\begin{itemize}
+\item See 	\href{http://wiki.cse.ucdavis.edu/support:general:security:ssh}{http://wiki.cse.ucdavis.edu
+    /support:general:security:ssh} for how to set up a Gauss account
+\item Create a script(use nano, vi,or emacs) to log into \verb"Gauss" faster. For example, create a file called \verb"gauss_log" and use the following command
+ \begin{itemize}
+  \item \begin{verbatim}
+  #!/bin/bash
+  \end{verbatim}
+  It tells the shell what program to interpret the script with, when executed.
+  \item \textsf{ssh -vX username@gauss.cse.ucdavis.edu} \\
+  It will connect to \verb"Gauss".
+  \item \textsf{chmod u+x gauss\_log}  \\
+  It gives permission to execute the script, otherwise you would get permission denied when you run the script.
+  \item \textsf{./gauss\_ssh}  \\
+  It will run the script.
+ \end{itemize} 
+\item use \textsf{tar -cvzf} and \textsf{tar -xvzf} to compress and uncompress your file
+\item use \textsf{nano} and \textsf{vi(m)} to create/open a file. See lecture 02 slides page 15-18 for more detail.
+\end{itemize} 
+
+
+\section{GitHub}
+\begin{itemize}
+\item \textsf{git clone git://github.com/[username]/Stuff.git} \\
+  It sync file from \verb"GitHub" to \verb"Gauss".
+\item \textsf{git add}: Add file contents to the index
+\item \textsf{git commit -a}: Record changes to the repository and \textsf{-a} tell the command to automatically stage all files that have been modified and deleted.
+\item \textsf{git push}: Upload files to \verb"GitHub" 
+\item \textsf{git pull}: Download files from \verb"GitHub" 
+\item \textsf{git status}: Show the working tree status
+\item \textsf{git diff}: Show changes between commits, commit and working tree,etc.
+\item \textsf{git merge}: Join two or more development histories together
+\item \textsf{git mv}: Move or rename a file, a directory, or a symlink.
+\item \textsf{git rm}: Delete files from the working tree and from the index.
+\item \textsf{.gitignore}: Git will use its rules when looking at files to commit. Therefore it can tell git what files to ignore.
+\end{itemize} 
+
+\section{Gauss: Batch file}
+The head node(Gauss) is not designed to do major calculation. Therefore we need to use computer nodes for calculation.
+\begin{itemize}
+\item \textsf{.sh}: Tell \verb"Gauss" how to run R code. \\
+      \textsf{.py}: Tell \verb"Gauss" how to run Python code. 
+\item \textsf{\#SBATCH - -job-name}: Give a name for this particular job
+\item \textsf{srun}: Run parallel jobs. \\
+  For example, use srun \textsf{R \underline{script} -o out \underline{filename}}
+\item \textsf{squeue}: show the status of running jobs
+\item \textsf{scancel}:	Cancel a job
+\item \textsf{.err}- error file ; \textsf{.out}- output file
+\end{itemize} 
+
+
+\section{Python and R}
+\begin{itemize}
+\item Python
+ \begin{itemize}
+   \item For Windows- you can use Spyder, PyCharm
+   \item For Mac- already installed, use \textsf{python - -version} to check version
+ \end{itemize}  
+\item R
+\begin{itemize}
+   \item RStudio is recommended.
+ \end{itemize}  
+
+\end{itemize} 
+
+
+\end{document}
