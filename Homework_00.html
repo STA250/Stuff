@@ -42,23 +42,6 @@
 <style TYPE="text/css">
 code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
 </style>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'] // removed 'code' entry
-    },
-  TeX: { equationNumbers: { autoNumber: "AMS" } }    
-});
-MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i = 0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-});
-</script>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 
 <h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Homework 00</h1>
 
@@ -71,7 +54,7 @@ MathJax.Hub.Queue(function() {
 <h4>Assigned: Wednesday Oct 2nd</h4>
 <p>Some basic coding problems to get you back in the swing.</p>
 <ol>
-<li><p>Write a program that prints the numbers from 1 to 100.<br />But for multiples of three print &quot;Fizz&quot; instead of the<br />number and for the multiples of five print &quot;Buzz&quot;.<br />For numbers which are multiples of both three and<br />five print &quot;FizzBuzz&quot;.<br />(From: <a href="http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html">http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html</a>)</p></li>
+<li><p>Write a program that prints the numbers from 1 to 100. But for multiples of three print &quot;Fizz&quot; instead of the number and for the multiples of five print &quot;Buzz&quot;. For numbers which are multiples of both three and five print &quot;FizzBuzz&quot;.<br />(From: <a href="http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html">http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html</a>)</p></li>
 <li><p>Write a program that generates 10,000 uniform random numbers between 0 and \(2\pi\) (call this \(x\)), and 10,000 uniform random numbers between 0 and 1 (call this \(y\)). You will then have 10,000 pairs of random numbers. Transform \((x,y)\) to \((u,v)\) where:</p>
 \[\begin{aligned}
 u &amp; = y\cdot\cos(x) \\
@@ -81,29 +64,43 @@ v &amp; = y\cdot\sin(x) .
 <p>What is the distribution of: \(r=\sqrt{u^{2}+v^{2}}\)</p></li>
 <li><p>Consider the following snippet:</p>
 <pre><code>Hello, my name is Bob. I am a statistician. I like statistics very much.</code></pre>
-<p>a. Write a program to spit out every character in the snippet<br />to a separate file (i.e., file <code>out_01.txt</code> would contain the character <code>H</code>,<br />file <code>out_02.txt</code> would contain <code>e</code> etc.). Note that the <code>,</code>, <code>.</code> and spaces<br />should also get their own files.</p>
-<p>b. Write a program to combine all files back together into a single file<br />that contains the original sentence. <strong>Take care to respect whitespace<br />and punctuation!</strong></p></li>
+<p>a. Write a program to spit out every character in the snippet to a separate file (i.e., file <code>out_01.txt</code> would contain the character <code>H</code>, file <code>out_02.txt</code> would contain <code>e</code> etc.). Note that the <code>,</code>, <code>.</code> and spaces should also get their own files.</p>
+<p>b. Write a program to combine all files back together into a single file that contains the original sentence. <strong>Take care to respect whitespace and punctuation!</strong></p></li>
 <li><p>Run <code>boot_camp_demo.py</code> as a batch job on <code>Gauss</code> using the submission script <code>boot_camp_sarray.sh</code> in the Github repo. Follow the instructions in class for how to do this.</p></li>
 <li>Run the Twitter code provided in lecture. Make sure to run the tweet-grabbing portion of code for a sufficient length of time (It is recommended to open another terminal and run <code>ls -alh</code> to check the size of the output file). The <code>README</code> provides full instructions for each of the steps.<br /></li>
-</ol>
 <ul>
 <li>See how your plot differs from the one shown in lecture 01<br /></li>
 <li>Modify the code to report the percentage of tweets that had geo-tagged data at the end of the sentiment analysis.</li>
 </ul>
-<ol>
-    <li><p>Consider the autoregressive process of order 1, usually called an AR(1) process:<br/>
+
+<li><p>Consider the autoregressive process of order 1, usually called an AR(1) process:<br/>
     \[
     y_{t} = \rho_{t}y_{t-1} + \epsilon_{t} , \quad \epsilon_{t}\sim{}N(0,1) ,
     \]
     <p>for \(t=1,2,…,n\). Let \(y_{0}=0\) and the \(\epsilon_{t}\) be independent.</p>
 
-a. Simulate from this process with \(\rho=0.9\) and n=1000. Plot the resulting series.
-b. Repeat part (a) 200 times, storing the result in a 1000x200 matrix. Each column should correspond to a realization of the random process.
-c. Compute the mean of the 200 realizations at each time point (i=1,2,…,1000). Plot the means.
-d. Plot the variance of the 200 realizations at each time point (i=1,2,…,1000). Plot the variances.
-e. Compute the mean of each of the 200 series across time points (j=1,2,…,200). Plot the means.
-f. Compute the variance of each of the 200 series across time points (j=1,2,…). Plot the variances.
-<p>g. Justify the results you have seen in parts b.--f. theoretically.</p></li>
+    <p>a. Simulate from this process with \(\rho=0.9\) and \(n=1000\). Plot the resulting series.</p>
+    <p>b. Repeat part (a) 200 times, storing the result in a \(1000\times{}200\) matrix. Each column should correspond to a realization of the random process.</p>
+    <p>c. Compute the mean of the 200 realizations at each time point \((i=1,2,…,1000)\). Plot the means.</p>
+    <p>d. Plot the variance of the 200 realizations at each time point (i=1,2,…,1000)\). Plot the variances.</p>
+    <p>e. Compute the mean of each of the 200 series across time points (j=1,2,…,200)\). Plot the means.</p>
+    <p>f. Compute the variance of each of the 200 series across time points \((j=1,2,\ldots)\). Plot the variances.</p>
+    <p>g. Justify the results you have seen in parts b.--f. theoretically.</p></li>
+
+    <li>
+    <p>a. Let \(Z\sim{}N(0,1)\). Compute \(\mathbb{E}\left[\exp^{-Z^{2}}\right]\) using Monte Carlo integration.</p>
+    <p>b. Let \(Z\sim{}\textrm{Truncated-Normal}(0,1;[-2,1])\). Compute \(\mathbb{E}\left[Z\right]\) using importance sampling.</p>
+    </li>
+
+    <li>
+    <p>Let \(x_{ij}\sim{}N(0,1)\) for \(i=1,\ldots,n\) and \(j=1,2\), and \(x_{i0}=1\) for \(i=1,\ldots,n\). Define \(x_{ij}^{T}=(x_{i0},x_{i1},x_{i2})^{T}\) and \(\beta=(1.2,0.3,-0.9)^{T}\) and let \(\epsilon_{i}\sim{}N(0,1)\) for \(i=1,\ldots,n\).</p>
+    <p>Simulate from the linear regression model:</p>
+    \[
+     y_{i} = x_{i}^{T}\beta + \epsilon_{i} , \quad i=1,\ldots,n ,
+    \]
+    <p>with n=100. Use the bootstrap procedure to estimate \(\textrm{SD}(\hat{\beta})\) based on \(B=1000\) bootstrap resamples.
+    Compare to the asymptotic results reported by <code>lm</code> or computed using the square root of the diagonal elements of \(\hat{\sigma^{2}}(X^{T}X)^{-1}\).</p>
+    </li>
 
 <li><p>In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <a href="https://github.com/STA250/Stuff">https://github.com/STA250/Stuff</a>.</p></li>
 </ol>
@@ -115,7 +112,7 @@ f. Compute the variance of each of the 200 series across time points (j=1,2,…)
 <li><p>For the Linux-ers on Mac command-line folks, you can do all of the above via (with obvious modifications):</p>
 <pre><code>git config --global user.name &quot;John Doe&quot;
 git config --global user.email johndoe@example.com
-git clone git://github.com/[yourgithubusername]/[yourforkedrepo].git</code></pre>
+git clone https://github.com/[yourgithubusername]/[yourforkedrepo].git</code></pre>
 <p>To get the current status (note: you must be in the local repo directory):</p>
 <pre><code>cd Stuff # Change to the newly downloaded repo
 ls # Check files are there… 
