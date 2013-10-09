@@ -43,9 +43,9 @@ For numbers which are multiples of both three and
 five print "FizzBuzz". 
 (From: <http://www.codinghorror.com/blog/2007/02/why-cant-programmers-program.html>)
 
-2. Write a program that generates 1000 uniform random numbers
+2. Write a program that generates 10,000 uniform random numbers
 between 0 and ![equation](http://latex.codecogs.com/gif.latex?2%5Cpi) (call this ![equation](http://latex.codecogs.com/gif.latex?x)), 
-and 1000 uniform random 
+and 10,000 uniform random 
 numbers between 0 and 1 (call this ![equation](http://latex.codecogs.com/gif.latex?y)).
 You will then have 
 10,000 pairs of random numbers.<br/>
@@ -68,13 +68,13 @@ should also get their own files.
 that contains the original sentence. **Take care to respect whitespace
 and punctuation!**
 
-4. Run `boot_camp_demo.py` as a batch job on `Gauss` using the submission script `boot_camp_sarray.sh` in the Github repo. Follow the instructions in class for how to do this.
+4. Run `boot_camp_demo.py` as a batch job on `Gauss` using the submission script `boot_camp_sarray.sh` in the Github repo. Follow the instructions in class for how to do this. Note: You will want to fork and clone the course repo if you have not done so already, please see Q7 for details.
 
 5. Run the Twitter code provided in lecture. Make sure to run the tweet-grabbing portion of code for a sufficient length of time (It is recommended to open another terminal and run `ls -alh` to check the size of the output file). The `README` provides full instructions for each of the steps.
   + See how your plot differs from the one shown in lecture 01
   + Modify the code to report the percentage of tweets that had geo-tagged data at the end of the sentiment analysis.
 
-5. Consider the autoregressive process of order 1, usually called an AR(1) process:<br/>
+6. Consider the autoregressive process of order 1, usually called an AR(1) process:<br/>
 
 	![equation](http://latex.codecogs.com/gif.latex?y_t%3D%5Crho_t%20y_%7Bt-1%7D%20%2B%20%5Cepsilon_t)
 	<br/>
@@ -87,8 +87,21 @@ and punctuation!**
 	e. Compute the mean of each of the 200 series across time points (j=1,2,…,200). Plot the means.
 	f. Compute the variance of each of the 200 series across time points (j=1,2,…). Plot the variances.
 	g. Justify the results you have seen in parts b.--f. theoretically.
+	
+7. 
+	a. Let ![equation](http://latex.codecogs.com/gif.latex?Z%5Csim%7B%7DN%280%2C1%29). 
+Compute ![equation](http://latex.codecogs.com/gif.latex?E%5B%5Cexp%5E%7B-Z%5E%7B2%7D%7D%5D) using Monte Carlo integration.<br/>
+	b. Let ![equation](http://latex.codecogs.com/gif.latex?Z%5Csim%7B%7DTruncated-Normal%280%2C1%3B%5B-2%2C1%5D%29). 
+Compute ![equation](http://latex.codecogs.com/gif.latex?E%5BZ%5D) using importance sampling.
 
-6. In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <https://github.com/STA250/Stuff>.
+8. Let ![equation](http://latex.codecogs.com/gif.latex?x_%7Bij%7D%5Csim%7B%7DN%280%2C1%29) for i=1,...,n and j=1,2, ![equation](http://latex.codecogs.com/gif.latex?x_%7Bi0%7D%3D1)
+for i=1,...,n, ![equation](http://latex.codecogs.com/gif.latex?x_%7Bi%7D%5E%7BT%7D%3D%28x_%7Bi0%7D%2Cx_%7Bi1%7D%2Cx_%7Bi2%7D%29%5E%7BT%7D),
+![equation](http://latex.codecogs.com/gif.latex?%5Cbeta%3D%281.2%2C0.3%2C-0.9%29%5E%7BT%7D) and 
+![equation](http://latex.codecogs.com/gif.latex?%5Cepsilon_%7Bi%7D%5Csim%7B%7DN%280%2C1%29) for i=1,...,n.
+Simulate from the linear regression model with n=100. Use the bootstrap procedure to estimate the
+SE of ![equation](http://latex.codecogs.com/gif.latex?%5Chat%7B%5Cbeta%7D) based on B=1000 bootstrap resamples.
+
+7. In this question you will fork the course GitHub repo and upload your homework code to Q1-Q5 to the repo. Go to <https://github.com/STA250/Stuff>.
 
   + Click on the "Fork" button: <br/>
 <img src="https://raw.github.com/exosamsi/detrending/master/fork.png">
