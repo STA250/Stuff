@@ -45,8 +45,21 @@ code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inher
 
 <h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Practice Questions</h1>
 
-<p><em>NOTE: These are practice questions, they are not due in class, and there is no credit for completing the questions (other than your own sense of satisfaction).</em></p>
+<p><em>NOTE: These are practice questions, they are not due in class, and there is no credit for completing the questions (other than your own sense of satisfaction). These questions are intended to be slightly easier than the homework questions, to allow you to get started on the topics at a comfortable pace.</em></p>
 <p><br/></p>
+
+<h2>Boot Camp</h2>
+<h4>The Bootstrap:</h4>
+<ol>
+    <li>Let \(x_{ij}\sim{}N(0,1)\) for \(i=1,\ldots,n\) and \(j=1,2\), and \(x_{i0}=1\) for \(i=1,\ldots,n\). Define \(x_{ij}^{T}=(x_{i0},x_{i1},x_{i2})^{T}\) and \(\beta=(1.2,0.3,-0.9)^{T}\) and let \(\epsilon_{i}\sim{}N(0,1)\) for \(i=1,\ldots,n\).</p>
+    <p>Simulate from the linear regression model:</p>
+    \[
+     y_{i} = x_{i}^{T}\beta + \epsilon_{i} , \quad i=1,\ldots,n ,
+    \]
+    <p>with n=100. Use the bootstrap procedure to estimate \(\textrm{SD}(\hat{\beta})\) based on \(B=1000\) bootstrap resamples.
+    Compare to the asymptotic results reported by <code>lm</code> or computed using the square root of the diagonal elements of \(\hat{\sigma^{2}}(X^{T}X)^{-1}\).</p>
+    </li>
+</ol>
 
 <h2>Bayesian Statistics Module</h2>
 <h4>The Basics:</h4>
@@ -54,10 +67,20 @@ code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inher
     <li>Let \(Y_{i}|\lambda\sim\textrm{Pois}(\lambda)\) for \(i=1,\ldots,n\), with the \(Y_{i}\) being independent.
     <p>a. Derive the Jeffreys prior for \(\lambda\).</p>
     <p>b. Is the Jeffreys prior a proper prior?</p>
-    <p>c. Find the family of conjugate priors for \(\lambda).</p>
+    <p>c. Find the family of conjugate priors for \(\lambda\).</p>
     <p>d. Derive the posterior distribution for \(\lambda\) under both the Jeffreys and conjugate prior.</p>
     <p>e. Does the Jeffreys prior lead to a proper posterior distribution for \(\lambda\)?</p>
     <p>f. Let \(n=20\) and \(\sum_{i=1}^{n}y_{i}=97\). Provide a central \(95\%\) credible interval for \(\lambda\).</p>
+    </li> 
+    <li>Let \(Y_{i}|\mu,\sigma^{2}\sim\textrm{N}(\mu,\sigma^{2})\) for \(i=1,\ldots,n\), with the \(Y_{i}\) being independent. Let \(\theta=(\mu,\sigma^{2})\).
+    <p>a. Derive the (joint) Jeffreys prior for \(\theta\).</p>
+    <p>b. Is the Jeffreys prior a proper prior?</p>
+    <p>c. Find the family of conjugate priors for \(\theta\).</p>
+    <p>d. Derive the posterior distribution for \(\theta\) under both the Jeffreys and conjugate prior.</p>
+    <p>e. Does the Jeffreys prior lead to a proper posterior distribution for \(\theta\)?</p>
+    <p>f. What is the conditional posterior distribution \(\mu|\sigma^{2},y\)?</p>
+    <p>g. What is the conditional posterior distribution \(\sigma^{2}|\mu,y\)?</p>
+    <p>h. Are you able to derive the marginal posterior distribution for \(\mu\) i.e., \(p(\mu|y)\)?</p>
     </li> 
 </ol>
 
