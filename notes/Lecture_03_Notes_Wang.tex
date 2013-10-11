@@ -1,0 +1,136 @@
+\documentclass[12pt]{article}
+\usepackage{setspace, amsmath, mathdots, amssymb, graphicx, multirow, gensymb, listings}
+\onehalfspacing
+
+\begin{document}
+\begin{center}
+	\Large\textbf{STA 250 Lecture 3} \newline
+	\small\textbf{Rick Wang} \newline
+	\small\textbf{Oct.7, 2013} \newline
+\end{center}
+\textbf{1. Preliminary Knowledge} \newline \newline
+Data $x \in \chi, x_j \in \chi_j$ \newline Parameter $\theta \in \Theta$ \newline
+Joint pdf:
+\[
+	p(x_1, x_2 | \theta)
+\]
+"Marginal" pdf for $x_1 | \theta$:
+\[
+	p(x_1 | \theta) = \int_{\chi_2} p(x_1, x_2 | \theta) dx_2
+\]
+"Conditional" pdf for $x_1 | x_2, \theta$:
+\[
+	p(x_1 | x_2, \theta) = \frac{p(x_1, x_2 | \theta)}{p(x_2 | \theta)} = \frac{p(x_1, x_2 | \theta)}{\int p(x_1, x_2 | \theta) dx_1}
+\]
+\[
+	\Rightarrow p(x_1, x_2 | \theta) = p(x_2 | \theta) p(x_1 | x_2, \theta) = p(x_1 | \theta) p(x_2 | x_1, \theta)
+\]
+Furthermore,
+\begin{align*}
+	p(x_1, \cdots, x_n | \theta) = 
+	\begin{cases} 
+		\Pi_{i = 1}^n p(x_i | \theta), \text{ if $x_1, \cdots, x_n$ are independent} \\
+		\Pi_{i = 1}^n p(x_i | x_{[0:i-1]}, \theta), \text{ in general} \\
+		\Pi_{i = 1}^n p(x_i | x_{i-1}, \theta), \text{ if $x_1, \cdots, x_n$ is Markov}
+	\end{cases}
+\end{align*}
+where $x_{[i:j]} = (x_i, x_{i+1}, \cdots, x_j)$. \newline \newline
+\textbf{Example} \newline
+$Y_{ij} | \lambda_i \stackrel{indep.}{\sim} Poisson(e_{ij} \lambda_i)$, for $i = 1, \cdots, K$, $j = 1, \cdots, n_i$; $\lambda_i \stackrel{iid}{\sim} Gamma(\alpha, \beta)$ \newline
+Observations: $\{y_{ij}\}$ \newline
+Unknown: $\{\lambda_i, \alpha, \beta\}$ \newline
+Known constants: $\{e_{ij}\}$ \newline
+Model
+\[
+	\Pi_{i=1}^K \{p(\lambda_i | \alpha, \beta) \Pi_{j = 1}^{n_i} p(y_{ij} | \lambda_i)\} = p(\mathbf{y}, \boldsymbol{\lambda} | \alpha, \beta)
+\]
+marginalize if only interested in $\alpha, \beta$:
+\[
+	p(\mathbf{y} | \alpha, \beta) = \int p(\mathbf{y}, \boldsymbol{\lambda} | \alpha, \beta)d\boldsymbol{\lambda} 
+\]
+\newline
+\textbf{2. Maximum Likelihood Estimation} \newline \newline
+$\hat{\theta}$ is said to be the MLE of $\theta$ if
+\[
+	\hat{\theta} = \text{argmax}_{\theta \in \Theta} p(y | \theta) = \text{argmax}_\theta p(data | parameters)
+\]
+i.e. value of the parameter that makes the data "most likely". \newline
+Practically we use $\hat{\theta}_n = \text{argmax}_\theta l_n(\theta)$, where $l_n(\theta) = \log p(y_1, \cdots, y_n | \theta)$. \newline
+\textbf{Properties:} \newline
+(1) Let $y_i \,'s \stackrel{iid}{\sim} p(y | \theta_0)$, then $\hat{\theta}_n \stackrel{P}{\rightarrow} \theta_0 \text{ as } n \rightarrow \infty$, i.e. $\theta_0$ is the "true value" of the parameter, the MLE converges to the true parameter as $n \rightarrow \infty$. \newline
+(2) $\sqrt{n}(\hat(\theta)_n - \theta_0) \stackrel{d}{\rightarrow} N(0, I_1^{-1}(\theta))$, where $I_1^{-1}(\theta) = E[-\frac{\partial^2}{\partial \theta^2} \log p(y|\theta)|\theta]$. \newline
+\textbf{Example:} \newline
+$Y_1, \cdots, Y_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$
+\[
+	p(y_1, \cdots, y_n | \mu, \sigma^2) = \Pi_{i=1}^n p(y_i | \mu, \sigma^2) = \Pi_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{1}{2\sigma^2}(y_i - \mu)^2}
+\]
+Take log, then take derivatives:
+\[
+	\hat{\mu} = \frac{1}{n} \sum_{i = 1}{n} y_i = \bar{y}, \hat{\sigma}^2 = \frac{1}{n}\sum_{i=1}{n}(y_i - \bar{y})^2 = \frac{n-1}{n} s^2
+\]
+where $s^2$ is the sample variance. \newline
+Suppose the data were generated from $N(0, 1)$, i.e. $\mu_0 = 0, \sigma^2_0 = 1$, then as $n \rightarrow 0, \hat{\mu} \rightarrow 0, \hat{\sigma}^2 \rightarrow 1$. \newline \newline
+\textbf{Confidence Intervals} \newline
+$C^{1 - \alpha}(\mathbf{y})$ is a $100(1-\alpha)\%$ CI for $\theta$ if
+\[
+	P_\theta(\theta \in C^{1 - \alpha}(\mathbf{y})) = 1 - \alpha, \forall \ \theta \in \Theta
+\]
+i.e. under repeated sampling of datasets, $100(1-\alpha)\%$ of intervals will contain the true value of the parameter.\newline
+\textbf{Example:} $Y_1, \cdots, Y_n \stackrel{iid}{\sim}N(\mu, \sigma^2)$ \newline
+To estimate $\mu$, we use $\hat{\mu} = \bar{y}$. \newline
+A $100(1-\alpha)\%$ CI for $\mu$ turns out to be
+\[
+	(\bar{y} - t_{n-1, 1- \frac \alpha 2}\frac{s}{\sqrt{n}}, \bar{y} + t_{n-1, 1- \frac \alpha 2}\frac{s}{\sqrt{n}})
+\]
+where $t_{n-1, 1- \frac \alpha 2}$ is the $(1 - \frac \alpha 2)^{th}$ percentile of a t-distribution with $n-1$ degrees of freedom.\newline \newline
+\textbf{Model Misspecification} \newline
+We use a density $p(\mathbf y | \theta)$ to model our data, but what happens if the data comes from a different density, say, $g$, i.e. the model is wrong. Then
+\[
+	\hat{\theta}_n \rightarrow \theta^* \text{ as } n \rightarrow \infty
+\]
+where $\theta^*$ generates the member of $p(\mathbf y | \theta)$ that is "closest" to $g$.
+Also
+\[
+	\sqrt{n}(\hat{\theta} - \theta^*) \stackrel{d}{\rightarrow} N(0, J_1^{-1}(\theta)V_1(\theta)J_1^{-1}(\theta))
+\]
+where
+\[
+	J_1(\theta) = E[-\frac{\partial^2}{\partial \theta^2} \log p(y|\theta)|\theta],\ V_1(\theta) = Var[\frac{\partial}{\partial\theta}\log p(y|\theta)|\theta]
+\]
+If the model is true, $V_1(\theta) = J_1(\theta)$, we get usual result; when model is wrong, we have extra $J$ terms either side, which leads to the so-called "sandwich estimate for the variance of $\hat{\theta}$". \newline
+Note:
+\[
+	V_n(\theta) = Var[\frac{\partial}{\partial\theta}\log p(y_1, \cdots, y_n|\theta)|\theta]
+\]
+\newline
+\textbf{2. Bootstrap}\newline \newline
+The bootstrap is a method to obtain standard errors for parameter estimates, and it is a very general methodology. \newline
+Let $Y_1, \cdots, Y_n \stackrel{iid}{\sim} F$, we want to estimate $\theta = T(F)$ (population quantity), $T$ is a function applied on $F$. We use the "plug-in" estimate $\hat{\theta}_n = T(\hat{F}_n) = t(\chi_n)$, where $\hat{F}_n$ is the empirical distribution (CDF) of the data, $\chi_n = (Y_1, \cdots, Y_n)$.\newline
+\textbf {Example:}\newline
+To estimate median
+\[
+	\theta = F^{-1}(0.5) = \text{population median}
+\]
+\[
+	\hat{\theta}_n = \hat{F}_n^{-1} (0.5) = \text{sample median}
+\]
+If we have an estimate $\hat{\theta}_n$, we want to estimate its distribution or specifically standard error.\newline
+Idea: resample from empirical distribution to approximate the distribution of $\hat{\theta}_n$ under the true model.\newline
+Algorithm: (pseudo R code) 
+\lstset{language=R}
+\begin{lstlisting}[texcl]
+for (b in 1:B) {
+	# B is large
+	# sample with replacement (size n) from data
+	bdata = sample(data, replace = TRUE)
+	# compute estimate of $\theta$ for the bootstrap dataset
+	theta_hat = estimate(bdata)
+	estimate_vec[b] = theta_hat
+}
+\end{lstlisting}
+To estimate standard deviation of $\hat{\theta}_n$, we use
+\[
+	SD(\{\hat{\theta}^*_{n, b}, b = 1, \cdots, B\})
+\]
+where $\hat{\theta}^*_{n, b}$ is the estimate of $\theta$ from the $b^{th}$ bootstrap dataset.
+\end{document}
