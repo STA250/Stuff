@@ -6,4 +6,7 @@ _site*
 my_secret_codes.txt
 tweetdump.txt
 *~
-
+*.aux
+*.log
+*.out
+*.backup

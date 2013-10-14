@@ -1,0 +1,212 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amsthm, amssymb, graphicx, psfrag, dcolumn, bm, accents, textcomp, hyperref, url}
+\usepackage{graphicx,psfrag,textcomp,amsmath,amsthm,amssymb,fancyhdr,fancybox}
+\usepackage{setspace,url,color,wasysym,pstricks,multirow,rotating}
+
+\setlength{ \topmargin}{-.5in} \setlength{ \oddsidemargin} {-.4in}
+\setlength{ \evensidemargin} {-.4in}
+\setlength{ \textwidth} {6.5in}
+\setlength{ \textheight} {9.0 in}
+
+\usepackage{ifthen}
+\newboolean{solutions}
+\setboolean{solutions}{false}
+
+\newcommand{\sols}[2]{\ifthenelse{\boolean{solutions}}{\small\emph{#1}\normalsize}{#2}}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{positioning}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+%% 
+%% Custom colors...
+%%
+%\newrgbcolor{lightblue}{0. 0. 0.80}
+%\newrgbcolor{white}{1. 1. 1.}
+%\newrgbcolor{whiteblue}{.80 .80 1.}
+%\newrgbcolor{crimson}{0.6 0.00 0.20}
+%\newrgbcolor{lightcrimson}{0.6 0. 0.1}
+%\newrgbcolor{whitecrimson}{1. 0.8 0.8}
+%\newrgbcolor{indigo}{0.33 0. 0.49}
+
+%\renewcommand{\labelenumi}{(r\oman{enumi})}
+%\renewcommand{\labelenumii}{(\alph{enumii})}
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\theenumii}{\alph{enumii}}
+\renewcommand{\labelenumi}{\bf \theenumi.}
+\renewcommand{\labelenumii}{\bf (\theenumii)}
+
+\def\Pr{\mathbb{P}}
+
+\newenvironment{questions}{\begin{enumerate}}{\end{enumerate}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\hwknumber{2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\textbf{Lecture 05: Bayesian Inference Lecture \# 2}
+
+\begin{itemize}
+
+\item Improper priors: Prior $p(\theta)$ is called \emph{proper} if $\int{}p(\theta)d\theta<\infty$, and is called \emph{improper} if $\int{}p(\theta)d\theta=\infty$. Proper priors guarantee proper posterior distributions, improper priors do not (need to verify on case-by-case basis). Safer to use proper priors.
+
+\item Multivariate priors: derive $(\mu,\sigma^{2})$. Let $X_{i}\sim{}N(\mu,\sigma^{2})$ then:
+\begin{align*}
+ p(\mu,\sigma^{2}|x) &\propto p(\mu,\sigma^{2})\prod_{i=1}^{n}p(x_{i}|\mu,\sigma^{2}) \\
+  &\propto p(\mu,\sigma^{2})(\sigma^{2})^{-n/2}\exp\left\{-\frac{1}{2\sigma^{2}}\sum_{i=1}^{n}(x_{i}-\mu)^{2}\right\}
+\end{align*}
+Conjugate prior:
+\begin{align*}
+ \mu | \sigma^{2} \sim N\left(\mu,\frac{1}{\kappa_{0}}\sigma^{2}\right) , \qquad \sigma^{2} \sim \textrm{Inv-}\chi^{2}(\nu_{0},\sigma_{0}^{2}) . 
+\end{align*}
+For details on the Scaled-Inverse-$\chi^{2}$ distribution see footnote\footnote{Note: The density of a Scaled-Inverse-$\chi^{2}$ random variable is given by:
+\begin{align}
+ p(x|\nu,\sigma^{2}) &= \frac{(\nu/2)^{\nu/2}}{\Gamma(\nu/2)}(\sigma^{2})^{\nu/2}x^{-(\frac{\nu}{2}+1)}e^{-\frac{\nu\sigma^{2}}{2x}} , \qquad x>0, \quad \nu>0, \quad \sigma^{2}>0 .
+\end{align}
+Mean/Variance/Mode:
+\begin{align*}
+ \mathbb{E}\left[X|\nu,\sigma^{2}\right] = \frac{\nu}{\nu-2}\sigma^{2} , \qquad \textrm{Var}\left(X|\nu,\sigma^{2}\right) = \frac{2\nu^{2}}{(\nu-2)^{2}(\nu-4)}\sigma^{4} , \qquad \textrm{ Mode } = \frac{\nu}{\nu+2}\sigma^{2} . 
+\end{align*}
+}.\\ The posterior is then seen to be (ex: prove this):
+\begin{align*}
+ \mu | \sigma^{2},x &\sim N\left(\frac{\frac{\kappa_{0}}{\sigma^{2}}\mu_{0} + \frac{n}{\sigma^{2}}\bar{x}}{\frac{\kappa_{0}}{\sigma^{2}}+\frac{n}{\sigma^{2}}},\frac{1}{\frac{\kappa_{0}}{\sigma^{2}}+\frac{n}{\sigma^{2}}}\right) \\
+ \sigma^{2} | x &\sim \textrm{Inv-}\chi^{2}\left(\nu_{0}+n,\frac{1}{\nu_{0}+n}\left[\nu_{0}\sigma^{2}_{0}+(n-1)s^{2}+\frac{\kappa_{0}n}{\kappa_{0}+n}(\bar{y}-\mu_{0})\right]\right) ,
+\end{align*}
+where $s^{2}=\frac{1}{n-1}\sum_{i=1}^{n}(x_{i}-\bar{x})^{2}$ and $\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_{i}$. See Chapter 3 of Gelman \emph{et al} for more details.
+
+\item Multivariate normal: derive $(\mu,\Sigma)$. Let $x_{i}\sim{}N(\mu,\Sigma)$ then:
+\begin{align*}
+ p(\mu,\Sigma|x) &\propto p(\mu,\Sigma)\prod_{i=1}^{n}p(x_{i}|\mu,\Sigma) \\
+  &\propto p(\mu,\Sigma)\|\Sigma\|^{-n/2}\exp\left\{-\frac{1}{2}\sum_{i=1}^{n}(x_{i}-\mu)\Sigma^{-1}(x_{i}-\mu)\right\} \\
+  &\propto p(\mu,\Sigma)\|\Sigma\|^{-n/2}\exp\left\{-\frac{1}{2}\textrm{tr}\left(\Sigma^{-1}\sum_{i=1}^{n}(x_{i}-\mu)(x_{i}-\mu)^{T}\right)\right\}
+\end{align*}
+Conjugate prior:
+\begin{align*}
+ \mu | \Sigma \sim N\left(\mu_{0},\frac{1}{\kappa_{0}}\Sigma\right) , \qquad \Sigma \sim \textrm{Inv-Wishart}(\nu_{0},\Lambda_{0}^{-1}) . 
+\end{align*}
+For details on the Inverse-Wishart distribution see footnote\footnote{Note: The density of (a $k\times{}k$) Inverse-Wishart random variable is given by:
+\begin{align*}
+ p(W|\nu,S^{-1}) = \left(2^{\nu{}k/2}\pi^{k(k-1)/4}\prod_{i=1}^{k}\Gamma(\frac{\nu+1-i}{2})\right)^{-1}|S|^{\nu/2}|W|^{-(\nu+k+1)/2}\exp\left\{-\frac{1}{2}\textrm{tr}\left(W^{-1}S\right)\right\} .
+\end{align*}
+Mean: $\mathbb{E}\left[W\right]=(\nu-k-1)^{-1}S$. 
+}. The posterior is then seen to be:
+\begin{align*}
+ \mu | \Sigma, x \sim N\left(\mu_{n},\frac{1}{\kappa_{n}}\Sigma\right) , \qquad \Sigma | x \sim \textrm{Inv-Wishart}(\nu_{n},\Lambda_{n}^{-1}) , 
+\end{align*}
+where:
+\begin{align*}
+ \mu_{n} &= \frac{\kappa_{0}}{\kappa_{0}+n}\mu_{0} + \frac{n}{\kappa_{0}+n}\bar{x} , \\
+ \kappa_{n} &= \kappa_{0} + n \\
+ \nu_{n} &= \nu_{0} + n \\
+ \Lambda_{n} &= \Lambda_{0} + S + \frac{\kappa_{0}n}{\kappa_{0}+n}(\bar{x}-\mu_{0})(\bar{x}-\mu_{0})^{T} .
+\end{align*}
+See Chapter 3 of Gelman \emph{et al} for more details.
+
+\item Monte Carlo Integration: Let $\pi(x)$ be the pdf/pmf of a random variable $X$. To compute
+\begin{align*}
+ \theta = \mathbb{E}_{\pi}\left[X\right] = \int x \pi(x) dx ,
+\end{align*}
+we can:
+\begin{itemize}
+\item Sample $x_{1},x_{2},\ldots,x_{m}$ from $\pi$
+\item Estimate $\theta$ using:
+\begin{align*}
+\hat{\theta} = \frac{1}{m}\sum_{i=1}^{m}x_{i} .
+\end{align*}
+\end{itemize}
+As $m\rightarrow\infty$, $\hat{\theta}$ converges to $\theta$. More generally, to estimate $\mathbb{E}_{\pi}\left[g(X)\right]$ we can use:
+\begin{align*}
+\frac{1}{m}\sum_{i=1}^{m}g(x_{i}) .
+\end{align*}
+\textbf{Example:} Let $Z\sim{}N(0,1)$. Compute (a) $\mathbb{E}\left[Z\right]$, (b) $\mathbb{E}\left[e^{Z}\right]$. 
+
+\item Gibbs sampling: Algorithm for two components:
+\begin{enumerate}
+    \item Start at $(x_{1}^{(0)},x_{2}^{(0)})$ and set $t=0$.
+    \item Sample $x_{1}^{(t+1)}$ from $p(x_{1}|x_{2}^{(t)})$
+    \item Sample $x_{2}^{(t+1)}$ from $p(x_{2}|x_{1}^{(t+1)})$
+    \item Increment $t\mapsto{}t+1$ and return to 2.
+\end{enumerate}
+We obtain samples:
+\begin{verbatim}
+		          x_1   x_2
+		iter_001  0.0   0.0
+		iter_002  3.1   2.3
+		iter_003  2.4   1.9
+		...
+\end{verbatim}
+  In the long-tun these samples represent a sample from the joint distribution $p(x_1,x_2)$.\\
+ $ $\\
+  \textbf{Application:}\\ 
+  $ $\\
+  Gibbs sampler for $(\mu,\Sigma)$:
+  \begin{enumerate}
+    \item Set $(\mu^{(0}),\Sigma^{(0)})$ and $t=0$.
+  	\item Sample $\mu^{(t+1)}$ from $p(\mu|\Sigma^{(t)},y)$
+  	\item Sample $\Sigma^{(t+1)}$ from $p(\Sigma|\mu^{(t+1)},y)$
+  \end{enumerate}
+  General Gibbs Sampling Algorithm:
+\begin{enumerate}
+    \item Start at $(x_{1}^{(0)},x_{2}^{(0)},\ldots,x_{p}^{(0}))$ and set $t=0$.
+    \item Sample $x_{1}^{(t+1)}$ from $p(x_{1}|x_{2}^{(t)},\ldots,x_{p}^{(t)})$
+    \item Sample $x_{2}^{(t+1)}$ from $p(x_{2}|x_{1}^{(t+1)},x_{3}^{(t)},\ldots,x_{p}^{(t)})$
+    \item (\ldots Sample $x_{k}^{(t+1)}$ from $p(x_{k}|x_{1:(k-1)}^{(t+1)},x_{(k+1):p}^{(t)})$ \ldots)
+    \item Sample $x_{p}^{(t+1)}$ from $p(x_{p}|x_{1}^{(t+1)},\ldots,x_{p-1}^{(t+1)})$
+    \item Increment $t\mapsto{}t+1$ and return to 2.
+\end{enumerate}
+\item Markov Chains
+\begin{itemize}
+	\item Stochastic process for which future states are conditionally independent of past states given the current state. 
+	\item Sequence $(x^{(0)},x^{(1)},x^{(2)},\ldots)$
+	\item Markov: $p(x^{(t+1)}|x^{(t)},x^{(t-1)},\ldots,x^{(0)}) = p(x^{(t+1)}|x^{(t)})$
+	\item Jumps are stochastic and governed by a transition kernel
+	\item For discrete state spaces (with $k$ states) this is controlled by:
+	$p(x^{(t+1)}=j|x^{(t)}=i) = p_{ij}$ and the  $k\times{}k$ matrix $P=(p{ij})$)
+	\item For continuous state spaces we have a transition density:
+	\begin{align*}
+	  p(x^{(t+1)}\in\mathcal{A}|x^{(t)}=u) = p(u,\mathcal{A})
+    \end{align*}
+    \item Important definitions:
+    \begin{itemize}
+    \item Irreducibility: It is possible to reach every state from every other state (in a finite number of moves)
+    \item Aperiodicity: Starting from state $i$, returns to $i$ can occur at irregular times (e.g., not only after $2,4,6,8,\ldots$ moves)
+    \item Transience: A state $i$ is said to be transient if, starting at $i$, there is a non-zero probability of never returning to $i$
+    \item Recurrence: A state $i$ is recurrent if it is not transient.
+    \item Positive recurrence: A recurrent state $i$ is said to be positive recurrent if it is recurrent and its expected return time is finite (otherwise it is null recurrent)
+    \item Ergodicity: Aperiodicity $+$ positive recurrence. 
+    \item A Markov Chain is said to be ergodic if all states are ergodic.
+    \end{itemize}
+    \item For irreducible ... we have:
+    \item In other words, the long-run time average of the chain converges to a stationary distribution $\pi$ with:
+    \begin{align*}
+     \pi = \pi P \quad \textrm{(discrete)} , \qquad \pi(y) = \int \pi(x) p(x,y) dx , \quad \forall\,\, y \quad \textrm{(continuous)}
+    \end{align*}
+    Ergodicity gives:
+    \begin{align*}
+    \Pr(X^{(t)}=j) \longrightarrow \pi_{j} , \qquad \textrm{ as } t \rightarrow \infty, \quad \forall{}\,\,  j .
+    \end{align*}
+    Time-averaged state of chain converges to the stationary distribution (regardless of the starting point!). 
+    \item Can prove that Gibbs sampler has stationary distribution $p(x_{1},\ldots,x_{p})$. 
+    \item In a Bayesian context, suppose we can construct a Markov Chain (e.g., a Gibbs sampler) to obtain samples from $p(\theta|y)$. How can we estimate, say, $\mathbb{E}\left[\theta|y\right]$ (the posterior mean)? Well:\\$ $\\
+    %\begin{theorem}
+    \textbf{Theorem:}  Let $\theta^{(1)},\theta^{(2)},\ldots$ be an ergodic Markov Chain with stationary distribution $\pi$ and $\mathbb{E}_{\pi}\left[g(\theta)\right]<\infty$. Then with probability 1:
+    \begin{align*}
+    \frac{1}{M}\sum_{i=1}^{M}g(\theta^{(i)}) \rightarrow \int g(\theta)\pi(\theta)d\theta = \mathbb{E}_{\pi}\left[g(\theta)\right] .
+    \end{align*}
+    as $M\rightarrow\infty$. This generalizes the earlier Monte Carlo integration result to allow for \emph{dependent} samples.\\$ $\\
+    \item A Markov Chain with transition density $p(x,y)$ is said to be \emph{reversible} if:
+    \begin{align*}
+    \pi(x)p(x,y) = \pi(y)p(y,x) , \qquad \forall\,\, x, y .
+    \end{align*}
+    This is also known as the \emph{detailed balance} condition. For general transition kernels this condition ensures that the MC has stationary distribution $\pi$. 
+    \item The Metropolis-Hastings Algorithm
+\end{itemize}
+
+\end{itemize}
+
+\end{document}
