@@ -1,58 +1,186 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013) by STA250</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013) by STA250</title>
+        <link rel="stylesheet" href="stylesheets/styles.css">
+        <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="javascripts/respond.js"></script>
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <!--[if lt IE 8]>
+        <link rel="stylesheet" href="stylesheets/ie.css">
+        <![endif]-->
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-  </head>
-  <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/STA250/Stuff">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/STA250/Stuff/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/STA250/Stuff/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+    </head>
+    <body>
+        <div id="header">
+            <nav>
+            <li class="fork"><a href="https://github.com/STA250/Stuff">View On GitHub</a></li>
+            <li class="downloads"><a href="https://github.com/STA250/Stuff/zipball/master">ZIP</a></li>
+            <li class="downloads"><a href="https://github.com/STA250/Stuff/tarball/master">TAR</a></li>
+            <li class="title">DOWNLOADS</li>
+            </nav>
+        </div><!-- end header -->
 
-    <div class="wrapper">
+        <div class="wrapper">
 
-      <section>
-        <div id="title">
-          <a href="http://sta250.github.io/Stuff"><h1>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013)</h1></a>
-          <p>Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/STA250">STA250</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+            <section>
+            <div id="title">
+                <a href="http://sta250.github.io/Stuff"><h1>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013)</h1></a>
+                <p>Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)</p>
+                <hr>
+                <span class="credits left">Project maintained by <a href="https://github.com/STA250">STA250</a></span>
+                <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+            </div>
+
+            <style TYPE="text/css">
+                code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
+            </style>
+
+            <h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Syncing A Forked GitHub Repo</h1>
+            <p>Note: Most of the following explanations can be found on the <a href="https://help.github.com/articles/syncing-a-fork">GitHub</a> help page.</p>
+            <h3>The Long Version</h3>
+            <p>Background: Suppose you have forked the course repo, made changes, synced to GitHub etc. Everything is going well, until the course repo gets updated. Since your repo is a fork of the official course repo, changes made to the official repo will not appear in your fork with a simple <code>git pull</code>. Instead, to sync the changes from the official repo to your fork, you need to follow the instructions below. Note: these instructions are intended for use on Linux (e.g., Gauss) or Mac via the command line. For Windows users it is recommended to perform these steps on Gauss, push to GitHub and then sync to your laptop/desktop.</p>
+            <p>First, run <code>git remote -v</code> to check the status of your repo. You should see something like:</p>
+<pre><code>
+$ git remote -v
+origin  https://github.com/yourusername/Stuff.git (fetch)
+origin  https://github.com/yourusername/Stuff.git (push)
+</code></pre>
+            <p>Next up, add a remote that points to the upstream repo by typing:</p>
+<pre><code>
+$ git remote add upstream https://github.com/STA250/Stuff.git
+</code></pre>
+            <p>To check all went well, re-run <code>git remote -v</code> and you should see two new items:</p>
+<pre><code>
+$ git remote -v
+origin  https://github.com/yourusername/Stuff.git (fetch)
+origin  https://github.com/yourusername/Stuff.git (push)
+upstream    https://github.com/STA250/Stuff.git (fetch)
+upstream    https://github.com/STA250/Stuff.git (push)
+</code></pre>
+            <p>Now, time to fetch the new version of the official course repo:</p>
+<pre><code>
+$ git fetch upstream
+remote: Counting objects: 6, done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 4 (delta 1), reused 4 (delta 1)
+Unpacking objects: 100% (4/4), done.
+From https://github.com/STA250/Stuff
+ * [new branch]      gh-pages   -> upstream/gh-pages
+ * [new branch]      master     -> upstream/master
+</code></pre>
+            <p>The changes are now on the local machine, but not yet merged. To check the branch status run:</p>
+<pre><code>
+$ git branch -va
+ * master                    a731cf7 Not much
+   remotes/origin/HEAD       -> origin/master
+   remotes/origin/gh-pages   8d936da Removed dead file
+   remotes/origin/master     a731cf7 Not much
+   remotes/upstream/gh-pages 8d936da Removed dead file
+   remotes/upstream/master   522df7d Added fork sync link file
+</code></pre>
+            <p>Next, check the branch you are currently on (should be master):</p>
+<pre><code>
+$ git branch
+ * master
+</code></pre>
+<p>If it is not the master branch then run:</p>
+<pre><code>
+$ git checkout master
+</code></pre>
+<p>Finally, time to merge the changes to your repo:</p>
+<pre><code>
+$ git merge upstream/master
+ Updating a731cf7..522df7d
+ Fast-forward
+ Docs/Sync_Fork.md |    6 ++++++
+ 1 file changed, 6 insertions(+)
+ create mode 100644 Docs/Sync_Fork.md
+</code></pre>
+<p>The latest changes to the official course repo (e.g., new homeworks) should appear in your local repo. If you run <code>git status</code> you should be ahead of the master branch:</p> 
+<pre><code>
+$ git status
+# On branch master
+# Your branch is ahead of 'origin/master' by 1 commit.
+#
+nothing to commit (working directory clean)
+</code></pre>
+<p>Lastly, to push the changes to GitHub, do the usual:</p>
+<pre><code>
+$ git push
+</code></pre>
+
+<h3>The Short Version</h3>
+<p>In short, the first time you do this you need to run:</p>
+<pre><code>
+git remote add upstream https://github.com/STA250/Stuff.git
+</code></pre>
+<p>Once you have done this once, just run the following:</p>
+<pre><code>
+git fetch upstream
+git checkout master # you won't need this if you are already on the master branch
+git merge upstream/master
+</code></pre>
+<p>Note that this just updates the repo on Gauss (or whatever machine you are working on), not your GitHub repo. To push the changes to GitHub:</p>
+<pre><code>
+git push
+</code></pre>
+
+<h3>The Fancy Version</h3>
+<p>To make life easier you can also use a Git alias. Open up your <code>~/.gitconfig</code> file using Vim or Nano and add the following lines to it:</p>
+<pre><code>
+[alias]
+    syncsetup = remote add upstream https://github.com/STA250/Stuff.git
+    syncfork = "!git fetch upstream ; git checkout master ; git merge upstream/master"
+</code></pre>
+<p>You may already have other things defined in the file (e.g., I have <code>[user]</code> and <code>[credential]</code> defined), in which case
+just add the alias definitions below. Save the file and exit. Now, to set up the fork sync run:</p>
+<pre><code>
+git syncsetup 
+</code></pre>
+<p>You only need to run this command once. If you get an error saying:</p>
+<pre><code>
+fatal: remote upstream already exists.
+</code></pre>
+<p>then you already have setup the upstream branch. Next, to sync the fork use:</p>
+<pre><code>
+git syncfork 
+</code></pre>
+<p>You should see a message along the lines of:</p>
+<pre><code>
+$ git syncfork 
+ remote: Counting objects: 7, done.
+ remote: Compressing objects: 100% (3/3), done.
+ remote: Total 4 (delta 1), reused 4 (delta 1)
+ Unpacking objects: 100% (4/4), done.
+ From https://github.com/STA250/Stuff
+ 522df7d..ccef041  master     -> upstream/master
+ Already on 'master'
+ Your branch is ahead of 'origin/master' by 1 commit.
+ Updating 522df7d..ccef041
+ Fast-forward
+ Docs/Sync_Fork.md |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+</code></pre>
+<p>As above, this syncs the local repo, but not GitHub. To update GitHub:</p>
+<pre><code>
+git push
+</code></pre>
+
+            <h3>(: Happy Coding! :)</h3>
+
+            </section>
+
         </div>
+        <!--[if !IE]><script>fixScale(document);</script><![endif]-->
 
-<style TYPE="text/css">
-code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
-</style>
-
-<h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Syncing A Forked GitHub Repo</h1>
-
-
-<h3>(: Happy Coding! :)</h3>
-
-      </section>
-
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
-  </body>
+    </body>
 </html>
 
