@@ -1,0 +1,165 @@
+\documentclass[]{article}
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{amsmath}
+%opening
+\title{STA 250 Lecture 4 Notes}
+\author{Taken by Teresa Filshtein}
+\date{Oct 09, 2013}
+
+\begin{document}
+
+\maketitle
+
+\section{Intro to Bayesian Inference}
+\begin{itemize}
+	\item In Bayesian models, parameters are not fixed but treated as random variables that follow a probability distribution
+	\item \textbf{\textit{Definition:}} \textbf{Prior Distribution} ($\pi(\theta)$) - the distribution of the parameter ($\theta$) assumed, \textit{before} observing any data. 
+	\item A goal of Bayesian inference is to make inference about $\theta$ (the parameter).
+	\item The 100(1-$\alpha$)$\%$ confidence interval from a classical stand point is one defined for a fixed parameter under repeated sampling. In other words, we could make statements like "the 100(1-$\alpha$)$\%$ confidence interval is expected to contain our true parameter $\theta$, 100(1-$\alpha$)$\%$ of the time under repeated sampling from the model". For any given interval, however, the true parameter is either in the interval or it isn't, since the parameter is fixed. In the
+        classical case, therefore, under repeated sampling, the parameter is fixed, and the CI is random. 
+    \item Bayesian Inference is based on the idea that the parameter itself (or our state of knowledge about it) is random (or described by a probability distribution) and allows us to make probability statements about $\theta$. For example, we can make statements like: \lq{}there is a (1-$\alpha$)$\%$ chance that $theta$ is between 0.12 and 0.85\rq{}. 
+\item The idea is that with the likelihood function $p(\textbf{y}|\theta)$, the probability of our data \textbf{y} given the parameter $\theta$, we would like to find $\pi(\theta|\textbf{y})$, the probability of the parameter $\theta$ given our data \textbf{y}
+\item \textbf{\textit{Definition:} Posterior Distribution} ($\pi(\theta|\textbf{y})$): the conditional distribution of $\theta$ given the observed data \textbf{y}
+\end{itemize}
+\begin{equation}
+\pi(\theta|\textbf{y}) = \frac{p(\textbf{y}|\theta)\pi(\theta)}{\int{p(\textbf{y}|\theta)\pi(\theta)d\theta}}
+\label{prior}
+\end{equation}
+
+
+\section{Prior Distribution}
+\begin{itemize}
+	\item A main topic in Bayesian inference is the determination of the prior distribution. How do you know what the prior distribution of $\theta$ should be?
+	\item There are three main methods for determining which distributions are appropriate for $\theta$. 
+	\begin{enumerate}
+		\item Reference Priors (Jose Bernado, Jim Berger \~ 1970s)
+				\begin{itemize}
+					\item Idea: Maximize the "`distance"' (e.g. the K-L divergence) between the prior distribution and the posterior distribution
+					\item This method puts the most "`impact"' to the data. Because the prior is 'far away' it is not informative, and therefore most of the information is contained in the data. 
+					\item Excellent rule but tricky to derive for complex models
+				\end{itemize}
+		
+	\item Probability Matching Prior (Welch/Peers 1956)
+			\begin{itemize}
+				\item Idea: select a prior distribution such that the posterior distribution allows the construction of intervals with frequentist coverage (i.e. confidence intervals).
+				\item Nice in theory but is not practical and can be hard to derive. 
+			\end{itemize}
+			
+		\item Invariance
+		
+			\begin{itemize}
+				\item Idea: construct a rule such that the prior distributions constructed in different parametizations are consistent.
+				\item The most famous invariant prior is Jeffreys Prior,
+	
+				\begin{equation}
+				\pi(\theta)\propto |I(\theta)|^{\frac{1}{2}},
+				\label{jprior}
+				\end{equation}
+	
+				\item where  $I(\theta)$ is the Fisher Information and this is the square root of the determinant
+				\end {itemize}
+				
+	\end{enumerate}
+\end{itemize}
+
+\section{Jeffreys Prior}
+\begin{itemize}
+	\item The idea behind the invariance property of Jeffreys Prior is that (for example) take $\theta = e^{\mu}$. You could derive the JP for $\mu$ and then transform it accordingly and you would obtain the results as if you were to find the JP on $\theta$ directly.
+	\item \textbf{Example}
+	\begin{equation*}
+	y_{i}|\theta \sim^{ind} Bin(n_i,\theta), (i=1,...m)
+	\end{equation*}
+	\begin{itemize}
+		\item Therefore the likelihood function for all $m$ observations is: 
+		\begin{equation*}
+		p(\textbf{y}|\theta) = \prod_{i=1}^{m}{\left(\begin{array}{c} n_i \\ y_i \end{array}\right)\theta^{y_i}(1-\theta)^{n_i-y_i}}
+		\end{equation*}
+		
+		\begin{equation*}
+		\propto\theta^{\sum{y_i}}(1-\theta)^{\sum{n_i-y_i}}
+		\end{equation*}
+		
+		\item And the Posterior Distribution is
+		
+		\begin{equation}
+		\pi(\theta|\textbf{y})\propto \pi(\theta)p(\textbf{y}|\theta)=\pi(\theta)\theta^{\sum{y_i}}(1-\theta)^{\sum{n_i-y_i}}
+		\label{post}
+		\end{equation}
+	If you do the calculations, you find that 
+	\begin{equation*}
+	I(\theta) = \frac{\sum n_i}{\theta(1-\theta)}
+	\end{equation*}
+	and Jefferey's Prior is
+	\begin{equation*}
+	\pi(\theta) \propto \theta^{-\frac{1}{2}}(1-\theta)^{-\frac{1}{2}}
+	\end{equation*}
+	Which changes \ref{post} to 
+	\begin{equation}
+	\pi(\theta|\textbf{y})\propto \theta^{\sum{y_i}-\frac{1}{2}}(1-\theta)^{\sum{(n_i-y_i)}-\frac{1}{2}}
+	\label{post1}
+	\end{equation}
+	\item We recognize this as a Beta$(\alpha,\beta)$ distribution with Beta parameters $\alpha = \sum{y_i}+\frac{1}{2}$ and $\beta = \sum{(n_i-y_i)}+\frac{1}{2}$ and we use the property that for any probability density $f(x)$, $\int{f(x)} = 1$, to find the proportionality constant. We need
+	\begin{equation*}
+	\int{\pi(\theta|\textbf{y})} = 1,
+	\end{equation*}
+	
+	Recall that if $X\sim$ Beta$(\alpha,\beta)$, for $x\in(0,1)$
+	\begin{equation*}
+	p(x) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}x^{\alpha-1}(1-x)^{\beta-1}
+	\end{equation*}
+	Therefore \ref{post1} can be expressed as
+	\begin{equation}
+	\pi(\theta|\textbf{y})\propto \theta^{(\sum{y_i}+\frac{1}{2})-1}(1-\theta)^{(\sum{(n_i-y_i)}+\frac{1}{2})-1}
+	\end{equation}
+	And we can obtain our proportionality constant
+	\begin{equation*}
+	\frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}
+	\end{equation*}
+	\item Note that Jefferey's Prior, $\pi(\theta)\sim$ Beta($\frac{1}{2},\frac{1}{2}$)
+	
+	\item When the prior and posterior distribution are in the same family, we call the prior a \textit{\textbf{Conjugate Prior}}
+	\item Some examples of Conjugate/Likelihoods are Normal/Normal, Binomial/Beta.	
+	\item Lets continue. We now have our posterior distribution
+	\begin{equation*}
+	\theta|\textbf{y}\sim Beta\left(\frac{1}{2}+\sum{y_i}, \frac{1}{2}+\sum{(n_i-y_i})\right)
+	\end{equation*}
+	Suppose we get data with $\#$ of successes and $\#$ of failures, respectively, $\sum{y_i} = 10, \sum{(n_i-y_i)} = 20,$
+	our posterior distribution (now that we have observed this data) is 
+	\begin{equation*}
+		\theta|\textbf{y}\sim Beta(10.5,20.5)
+	\end{equation*}
+	\item Now we need a point estimate
+		\begin{itemize}
+			\item posterior mean
+			\item posterior median
+			\item posterior mode (usually this is great to use but can be hard to compute in practice)
+		\end{itemize}
+		We also need an uncertainty quantification/interval or "`Credible Interval"' (in Bayesian Context a Posterior Interval is called a Credible Interval). \linebreak\linebreak
+			$S^{1-\alpha}(y)$ is defined to be the $100(1-\alpha)\%$ Credible Interval. If
+		\begin{equation}
+		\int_{S^{1-\alpha}(y)}{\pi(\theta|\textbf{y})} = (1-\alpha)
+		\label{eq:}
+		\end{equation}
+	\end{itemize}
+	\end{itemize}
+
+\section{Credible Intervals}
+\begin{itemize}
+	\item There are two main types of Intervals
+		\begin{enumerate}
+			\item Central Interval
+				\begin{itemize}
+					\item this is defined by the $\frac{\alpha}{2},1-\frac{\alpha}{2}$ percentiles of the posterior
+				\end{itemize}
+			\item HPD, Highest Posterior Density Interval
+			\begin{itemize}
+				\item This is an interval $S$ such that: 
+				\begin{equation}
+				S = \{\theta:\pi(\theta) > \pi(\theta'), \int_S{\pi(\theta|\textbf{y})} = (1-\alpha)\}
+				\end{equation}
+				$\forall$\hspace{3pt} $\theta \in S$ and \hspace{3pt} $\theta'\notin S$
+			\end{itemize}
+		\end{enumerate}
+\end{itemize}
+
+\end{document}

@@ -307,6 +307,14 @@ sub {
    ========================================================================== */
 
 /*
+ * Added by PDB
+ */
+
+li {
+  margin-bottom: 1.4em;
+}
+
+/*
  * Addresses margins set differently in IE6/7
  */
 dl,

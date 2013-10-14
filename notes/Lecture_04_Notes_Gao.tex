@@ -1,0 +1,128 @@
+
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{bm}
+\usepackage{hyperref}
+
+\makeatletter
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}%
+\newsavebox{\mybox}\newsavebox{\mysim}
+\newcommand{\distras}[1]{%
+  \savebox{\mybox}{\hbox{\kern3pt$\scriptstyle#1$\kern3pt}}%
+  \savebox{\mysim}{\hbox{$\sim$}}%
+  \mathbin{\overset{#1}{\kern\z@\resizebox{\wd\mybox}{\ht\mysim}{$\sim$}}}%
+}
+\makeatother
+
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{-0.35in}
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9in}
+\setlength{\footskip}{0.5in}
+\renewcommand{\baselinestretch}{1.3}
+
+\begin{document}
+
+\title{\bf STA 250 Lecture 4}
+\author{Qi GAO}
+\maketitle
+
+\textbf{\Large Bayesian Inference}
+\begin{itemize}
+\item Based on Bayes' Theorem.
+\item Different from classical inference by regarding parameters as random variables.
+\end{itemize}
+
+\textbf{\large Introduction}\\
+\underline{Interpretation of a confidence interval:} under repeated sampling, $100(1-\alpha)\%$ of confidence intervals would contain $\theta$.\\
+$\leadsto$We would prefer to say things like ``there is a $95\%$ chance that $\theta$ is between 0.1 and 0.9".\\
+\underline{Idea}: The likelihood function $p(y|\theta)$ can be interpreted as $p(data|parameters)$. \\
+\underline{Goal}: We are interested to know $p(\theta|y)$ i.e., $p(parameter|data)$. \\
+Here $\theta$ becomes a random variable!\\
+Using Bayes' Theorem:
+$$p(\theta|y)=\frac{p(y|\theta)p(\theta)}{p(y)}=\frac{p(y|\theta)p(\theta)}{\int p(y|\theta)p(\theta) d\theta}$$.
+Therefore, to be able to get $p(\theta|y)$, we need
+\begin{enumerate}
+\item[(1)] likelihood $p(y|\theta)$
+\item[(2)] "prior" $p(\theta)$ \\
+Once we have these, basic probability rules allow us to get
+\item[(3)] "posterior" $p(\theta|y)$.
+\end{enumerate}
+
+\textbf{\large Prior Distribution}\\
+A \underline{prior distribution} $p(\theta)$ encodes an analyst's beliefs about what values of $\theta$ are plausible before seeing any data. \\
+Example: Undergraduate GPA of STA 250 students. Since most students enrolled in STA 250 are graduate students, it is reasonable to believe that they have higher undergraduate GPA on average. Assuming that $\sigma^2$ is known, we can use a truncated normal distribution centered around say 3.6 to model $\mu$. \\
+\underline{\large How to specify priors?}\\
+\underline{Note}: There is no unique/correct prior!\\
+\underline{Two (or Three) Camps}
+\begin{enumerate}
+\item[(1)] Subjective Bayes. Prior encodes the belief of the analyst.
+\item[(2)] Objective Bayes. Priors are determined by formal rule/criteria.
+\item[(3)] Pragmatic Bayes. In real world, we just do whatever works! 
+\end{enumerate}
+
+\textbf{Formal Rules}
+\begin{enumerate}
+\item[(1)] \underline{Reference priors} (Bernardo, Berger. $\sim 1970$)\\
+\underline{Idea}: Maximize the ``distance" (e.g. Kullback¨CLeibler divergence) between the prior and the posterior. These priors have excellent properties, but it can be tricky to derive them for complex models.
+\item[(2)] \underline{Probability matching priors} (Welch\&Peers. $\sim 1956$)\\
+\underline{Idea}: Select a prior such that posterior distribution allows the construction of intervals with frequentist coverage (i.e., confidence intervals). Nice theory exists, but not practical (computation-intensive)!
+\item[(3)] \underline{Invariance} \\
+\underline{Idea}: Construct a rule such that the prior distributions constructed in different parametrizations are consistent.\\
+E.g., For prior $\mu$ where $\mu \sim N(0,1)$, if we reparametrize it to $\theta=e^{\mu}$, prior on $theta$ is transformed accordingly. \\
+The most famous invariance prior is \emph{\underline{Jefferey's Prior}} where $p(\theta)\propto \Vert I(\theta) \Vert ^{1/2}$. $I(\theta)$ is the Fisher information and in multivariate case, $\Vert I(\theta) \Vert ^{1/2}$ is the square root of the determinant of $I(\theta)$. We are able to obtain equivalent priors after transformation. Considering the following two recipes:
+\begin{description}
+  \item[Recipe 1] Derive Jeffrey's prior for $\theta$.
+  \item[Recipe 2] Derive Jeffrey's prior for $\mu$, then transform via $\theta=e^{\mu}$ and find the induced prior in $\theta$.
+\end{description}
+Using Jeffrey's prior, both recipes give the same answer.
+\end{enumerate}
+
+\underline{\underline{\large Example}}: $y_i|\theta \distas{ind.}Bin(n_i, \theta),i=1,...,m.$ Need prior on $\theta$.\\
+(\underline{Aside}: Recall $p(\theta|y)=\frac{p(y|\theta)p(\theta)}{p(y)}\propto p(y|\theta)p(\theta)$ since $p(y)$ does not involve $\theta$.)\\
+$p(\bm{y}|\theta)=\prod\limits_{i=1}^n \binom {n_i}{y_i} \theta^{y_i} (1-\theta)^{n_i-y_i} \propto 
+\theta^{\sum y_i}(1-\theta)^{\sum(n_i-y_i)}$. \\
+\underline{Posterior}: $p(\theta|y) \propto p(\theta)\theta^{\sum y_i}(1-\theta)^{\sum(n_i-y_i)}$.\\
+It turns out that $I(\theta)=\frac{\sum n_i}{\theta(1-\theta)}$.\\
+$\Rightarrow$ Jeffrey's prior: $p(\theta) \propto I(\theta)^{1/2} \propto \theta^{-1/2}(1-\theta)^{-1/2}$. \\
+$\Rightarrow$ Posterior: $p(\theta|y) \propto \theta^{(\sum y_i)-1/2}(1-\theta)^{\sum(n_i-y_i)-1/2}$. \\
+We need $\int p(\theta|y) d\theta=1$.\\
+Recall that if $X \sim Beta(a,b)$, then $p(x)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}x^{a-1}(1-x)^{b-1}I_{\{0<x<1\}}$.\\
+We have $p(\theta|y) \propto \theta^{(\sum y_i + 1/2)-1}(1-\theta)^{[\sum(n_i-y_i)+1/2]-1}$.\\
+$\Rightarrow$ $\theta|y \sim Beta(\sum y_i + 1/2,\sum(n_i-y_i)+1/2)$.\\
+Jeffrey's prior is actually a $Beta(1/2,1/2)$. It turns out that is we use a $Beta(a,b)$ as the prior, we get a posterior 
+$\theta|y \sim Beta(a+\sum y_i,b+\sum(n_i-y_i))$.\\
+
+We call a prior a \textbf{conjugate prior} if the posterior distribution remains in the same family as the prior.\\
+E.g., Prior for $\theta$ was Beta, posterior was also Beta. \\
+We have $\theta|y \sim Beta(\sum y_i + 1/2,\sum(n_i-y_i)+1/2)$. Suppose I have data $\sum y_i=10$, $\sum(n_i-y_i)=20$.\\
+$\Rightarrow$ Posterior is $\theta|y \sim Beta(10.5, 20.5)$. The plot of $p(\theta|y)$ is shown below.\\
+\includegraphics[scale=0.75]{beta} 
+
+\textbf{\large Credibel Interval}\\
+To get a point estimate for $\theta$, we can use:
+\begin{enumerate}
+\item[(1)] Posterior mean.
+\item[(2)] Posterior median.
+\item[(3)] posterior mode (can be hard to compute in practice).
+\end{enumerate}
+We also need an uncertainty quantification/interval. In the Bayesian context, a posterior interval is known as a \underline{credible interval}.\\
+$S^{1-\alpha}(y)$ is defined to be a $100(1-\alpha)\%$ \textbf{credible interval} for $\theta$ if $\int_{S^{1-\alpha}(y)} p(\theta|y)d\theta=1-\alpha$.\\
+A \underline{central credible interval} takes the $\alpha/2$ and $(1-\alpha/2)$ percentiles of the posterior.\\
+A \underline{highest posterior density (HPD)} interval is an interval S such that
+$$S=\{\theta: p(\theta)>p(\theta ') \quad \forall \theta \in S, \theta ' \notin S, \int_Sp(\theta|y)d\theta=1-\alpha \}.$$
+An illustration of these two intervals can be found at \url {http://www.bayesian-inference.com/credible}.
+
+
+\textbf{\large Program Demonstration}\\
+The R code for binomial coverage simulation can be found at \url {https://github.com/STA250/Stuff/blob/master/Lecture_Code/Bayes/binom_coverage_sim.R}.\\
+As we can see from the output of the simulation, if we use Jeffrey's prior, the frequentist coverage of Bayesian interval is reasonably good.
+
+\end{document}
