@@ -1,0 +1,187 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amsthm, amssymb, graphicx, psfrag, dcolumn, bm, accents, textcomp, hyperref, url}
+\usepackage{graphicx,psfrag,textcomp,amsmath,amsthm,amssymb,fancyhdr,fancybox}
+\usepackage{setspace,url,color,wasysym,pstricks,multirow,rotating}
+
+\setlength{ \topmargin}{-.5in} \setlength{ \oddsidemargin} {-.4in}
+\setlength{ \evensidemargin} {-.4in}
+\setlength{ \textwidth} {6.5in}
+\setlength{ \textheight} {9.0 in}
+
+\usepackage{ifthen}
+\newboolean{solutions}
+\setboolean{solutions}{false}
+
+\newcommand{\sols}[2]{\ifthenelse{\boolean{solutions}}{\small\emph{#1}\normalsize}{#2}}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{positioning}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+%% 
+%% Custom colors...
+%%
+%\newrgbcolor{lightblue}{0. 0. 0.80}
+%\newrgbcolor{white}{1. 1. 1.}
+%\newrgbcolor{whiteblue}{.80 .80 1.}
+%\newrgbcolor{crimson}{0.6 0.00 0.20}
+%\newrgbcolor{lightcrimson}{0.6 0. 0.1}
+%\newrgbcolor{whitecrimson}{1. 0.8 0.8}
+%\newrgbcolor{indigo}{0.33 0. 0.49}
+
+%\renewcommand{\labelenumi}{(r\oman{enumi})}
+%\renewcommand{\labelenumii}{(\alph{enumii})}
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\theenumii}{\alph{enumii}}
+\renewcommand{\labelenumi}{\bf \theenumi.}
+\renewcommand{\labelenumii}{\bf (\theenumii)}
+
+\def\Pr{\mathbb{P}}
+
+\newenvironment{questions}{\begin{enumerate}}{\end{enumerate}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\hwknumber{2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\textbf{Lecture 06: Bayesian Inference Lecture \# 3}
+
+\begin{itemize}
+
+\item Overview: Outside of very simple Bayesian models, it is hard to rely on doing things analytically. However, as we will see today, in most cases it is posisble to sample from posterior distributions using MCMC. These samples can then be used to approximate posterior quantities of interest such as posterior means, medians, intervals etc.
+
+\item  Recap: General Gibbs Sampling Algorithm:
+\begin{enumerate}
+    \item Start at $(x_{1}^{(0)},x_{2}^{(0)},\ldots,x_{p}^{(0}))$ and set $t=0$.
+    \item Sample $x_{1}^{(t+1)}$ from $p(x_{1}|x_{2}^{(t)},\ldots,x_{p}^{(t)})$
+    \item Sample $x_{2}^{(t+1)}$ from $p(x_{2}|x_{1}^{(t+1)},x_{3}^{(t)},\ldots,x_{p}^{(t)})$
+    \item (\ldots Sample $x_{k}^{(t+1)}$ from $p(x_{k}|x_{1:(k-1)}^{(t+1)},x_{(k+1):p}^{(t)})$ \ldots)
+    \item Sample $x_{p}^{(t+1)}$ from $p(x_{p}|x_{1}^{(t+1)},\ldots,x_{p-1}^{(t+1)})$
+    \item Increment $t\mapsto{}t+1$ and return to 2.
+\end{enumerate}
+Let $x^{(t)}=(x_{1}^{(t)},x_{2}^{(t)},\ldots,x_{p}^{(t)})$ i.e., $x^{(t)}$ is the vector of all components at time $t$. The Gibbs sampler generates a sequence:
+\begin{align*}
+ x^{(1)}, x^{(2)}, x^{(3)}, \ldots .
+\end{align*}
+ It is straightforward to see that the sequence forms a Markov Chain (next sample only depends on the current state). To see what the chain converges to, we need some general Markov Chain theory.
+ 
+\item Recap: Markov Chains
+\begin{itemize}
+    \item For ergodic Markov chains, the time spent in each state over the long-run converges to a constant value. In other words, the long-run time average of the chain converges to a stationary distribution $\pi$ that satisfies the following:
+    \begin{align*}
+     \pi = \pi P \quad \textrm{(discrete)} , \qquad \pi(y) = \int \pi(x) p(x,y) dx , \quad \forall\,\, y \quad \textrm{(continuous)}
+    \end{align*}
+    Ergodicity gives:
+    \begin{align*}
+    \Pr(X^{(t)}=j) \longrightarrow \pi_{j} , \qquad \textrm{ as } t \rightarrow \infty, \quad \forall{}\,\,  j .
+    \end{align*}
+    Time-averaged state of chain converges to the stationary distribution (regardless of the starting point!). 
+\end{itemize}
+
+\item Applications of Markov Chain Theory
+\begin{itemize}
+    \item Homework: prove that Gibbs sampler has stationary distribution $p(x_{1},\ldots,x_{p})$. What is the transition kernel?
+    \item In a Bayesian context, suppose we can construct a Markov Chain (e.g., a Gibbs sampler) to obtain samples from $p(\theta|y)$. How can we estimate, say, $\mathbb{E}\left[\theta|y\right]$ (the posterior mean)?\\$ $\\
+    %\begin{theorem}
+    \textbf{Theorem:}  Let $\theta^{(1)},\theta^{(2)},\ldots$ be an ergodic Markov Chain with stationary distribution $\pi$, $g$ be a bounded function and $\mathbb{E}_{\pi}\left[g(\theta)\right]<\infty$. Then with probability 1:
+    \begin{align*}
+    \frac{1}{M}\sum_{i=1}^{M}g(\theta^{(i)}) \rightarrow \int g(\theta)\pi(\theta)d\theta = \mathbb{E}_{\pi}\left[g(\theta)\right] .
+    \end{align*}
+    as $M\rightarrow\infty$. This generalizes the earlier Monte Carlo integration result to allow for \emph{dependent} samples. This is crucial, as independent samples are often impossible to obtain.
+    \item The Gibbs sampler provides a simple way to construct an ergodic Markov chain with stationary distribution $p(\theta|y)$. \\
+    $ $\\
+    \textbf{Example:} Let:
+    \begin{align*}
+     X = \left(\begin{array}{c} X_{1} \\ X_{2} \end{array}\right) \sim N\left(\left(\begin{array}{c} \mu_{1} \\ \mu_{2} \end{array}\right) , \left(\begin{array}{cc} \sigma^{2}_{1} & \rho\sigma_{1}\sigma_{2} \\ \rho\sigma_{1}\sigma_{2} & \sigma_{2}^{2} \end{array}\right) \right) ,
+    \end{align*}
+    then standard normal theory tells us that:
+    \begin{align*}
+    X_{1} | X_{2}=x_{2} &\sim N\left( \mu_{1} + \rho\sigma_{1}\frac{(x_{2}-\mu_{2})}{\sigma_{2}} , (1-\rho^{2})\sigma_{1}^{2} \right) \\
+    X_{2} | X_{1}=x_{1} &\sim N\left( \mu_{2} + \rho\sigma_{2}\frac{(x_{1}-\mu_{1})}{\sigma_{1}} , (1-\rho^{2})\sigma_{2}^{2} \right) .
+    \end{align*}
+    These results lead to a simple Gibbs sampler (see code on course website). 
+    
+    \item A Markov Chain with transition density $p(x,y)$ is said to be \emph{reversible} if:
+    \begin{align*}
+    \pi(x)p(x,y) = \pi(y)p(y,x) , \qquad \forall\,\, x, y .
+    \end{align*}
+    This is also known as the \emph{detailed balance} condition. For general transition kernels this condition ensures that the MC has stationary distribution $\pi$. 
+
+    \item There are many methods to construct ergodic Markov chains with a specified stationary distrbution, the most famous is the \emph{Metropolis-Hastings algorithm}.       
+    \begin{enumerate}
+    \item Select the starting value $\theta^{(0)}$ and set $t=0$.
+    \item\label{prop_step} Given the current state $\theta^{(t)}$, propose a new value $\theta^{*}$ from a proposal density $p(\theta^{(t)},\cdot)$.
+    \item Accept the proposed value with probability $\alpha$, where:
+    \begin{align*}
+    \alpha = \min \left\{ 1 , \frac{\pi(\theta^{*})p(\theta^{*},\theta^{(t)})}{\pi(\theta^{(t)})p(\theta^{(t)},\theta^{*})} \right\} .
+    \end{align*}
+    If accepted, set $\theta^{(t+1)}=\theta^{*}$, else set $\theta^{(t+1)}=\theta^{(t)}$. 
+    \item Increment $t\mapsto{}t+1$ and return to step~\ref{prop_step}. 
+    \end{enumerate}
+
+	\textbf{Example:} Let $X_{i}\sim{}N(e^{\theta},1)$ with prior $\theta\sim{}N(0,1)$. The posterior distribution is seen to be:
+	\begin{align*}
+	p(\theta|x) \propto \exp\left\{-\frac{1}{2}\left[\theta^{2}+\sum_{i=1}^{n}\left(x_{i}-e^{\theta}\right)^{2}\right]\right\} . 
+	\end{align*} 
+	We want to obtain samples from $p(\theta|x)$, and will use the Metropolis-Hastings to do so. 
+	\begin{enumerate}
+    \item Select the starting value $\theta^{(0)}=\log\left(\min\left\{0.1,\bar{x}\right\}\right)$ and set $t=0$.
+    \item\label{prop_step} Given the current state $\theta^{(t)}$, propose a new value $\theta^{*}$ from $N(\theta^{(t)},v^{2})$ where $v^{2}$ (the proposal variance) is a constant. 
+    \item Sample $U\sim{}\textrm{Unif}(0,1)$. If:
+    \begin{align*}
+    \log(U) &<  \log\pi(\theta^{*}) + \log{}p(\theta^{*},\theta^{(t)}) - \log{}\pi(\theta^{(t)}) - \log{}p(\theta^{(t)},\theta^{*})  \\
+     &< \frac{1}{2}\left((\theta^{(t)})^{2}+\sum_{i=1}^{n}(x_{i}-e^{\theta^{(t)}})^{2}\right) - \frac{1}{2}\left((\theta^{*})^{2}+\sum_{i=1}^{n}(x_{i}-e^{\theta^{*}})^{2}\right) ,
+    \end{align*}
+    then set $\theta^{(t+1)}=\theta^{*}$, else set $\theta^{(t+1)}=\theta^{(t)}$. 
+    \item Increment $t\mapsto{}t+1$ and return to step~\ref{prop_step}. 
+    \end{enumerate}
+    Notes:
+    \begin{itemize}
+    \item We only know $p(\theta|x)$ up to proportionality: does it matter?
+    \item Here the proposal distribution is symmetric: $p(\theta^{(t)},\theta^{*})=p(\theta^{(t)},\theta)$ so the proposal terms cancel! This special case is called the \emph{Metropolis algorithm}. 
+    \item \emph{Always} compute posterior densities on the log-scale!
+    \item  By our theory, the samples $\left\{\theta^{(1)},\theta^{(2)},\ldots\right\}$ will converge to the stationary distribution $p(\theta|y)$. In practice, we usually want to throw away an initial \emph{burnin} period of the samples. For example, if we collect $11,000$ samples, then we might throw away the first $1000$ and keep the next $10,000$. 
+    \item How to select the proposal variance, $v^{2}$? Trial and error! In the normal setting, theory tells us that the optimal acceptance rate for the MH algorithm is between roughly $30\%$ and $60\%$. 
+    \item It is possible to tweak the variance, $v^{2}$ within the MCMC run, but you must not change $v^{2}$ once the burnin period has been completed. If $v$ continues to change the transition kernel is not constant and the convergence results are not guaranteed. This strategy of constantly adapting the transition kernel is called \emph{Adaptive MCMC} and is an area of active research (Moral: be careful, even simple adaptive schemes can be shown to fail!). 
+    \end{itemize}
+    
+    Now we have the posterior samples, we can compute things such as posterior means, posterior intervals etc.  Remaining questions:
+    \begin{itemize}
+    \item The samples from the posterior distribution are dependent: do they form a reliable sample from the posterior distribution?
+    \end{itemize}
+  \end{itemize}
+    
+   \item \textbf{MCMC Diagnostics}
+    All of the following diagnostics are available in the \texttt{coda} package within \texttt{R}. In \textbf{Python}, see the module \texttt{pymc} for convergence diagnostics (not all listed below are available).
+    \begin{itemize}
+    \item \textbf{Effective Sample Size (ESS):} Quantifies the approximate number of independent samples that your dependent samples correspond to. For example, if the ESS for your 10,000 dependent samples is 100, this means that, you are using the equivalent of approximately 100 independent samples to compute your posterior quantities of interest. If possible (and depending on the accuracy required), it is recommend to always strive for an ESS in the thousands. 
+    \item \textbf{Gelman-Rubin $\hat{R}$:} The idea behind the Gelman-Rubin $\hat{R}$ statistic is to run multiple independent MCMC chains starting from different values. Ideally all of the chains will converge to the same stationary distribution and thus look very similar in practice. The $\hat{R}$ statistic quantifies the \lq{}similarity\rq{} of the multiple chains (it is recommended to run at least 3 chains). $\hat{R}$ values much larger than $1.0$ are indicative of a lack of convergence, although values close to 1.0 do not necessarily guarantee convergence! Implemented in \texttt{R} in \texttt{gelman.diag}.
+    \item \textbf{Geweke Diagnostic:} Test that compares properties of different segments of the chain. If the chain has reached stationarity and mixed well, then the segments should be \lq{}similar\rq{}, if not then it can be indicative of a lack of convergence (\texttt{geweke.diag}).
+    \item \textbf{Hiedelberger-Welch Diagnostic:} Half-width test based on the accuracy of the estimate of the mean of the target distribution (\texttt{heidel.diag})
+    \end{itemize}
+
+
+ \item \textbf{Validating MCMC Code for Bayesian Inference:}\\$ $\\
+  While convergence diagnostics are helpful to some extent, they never provide a complete picture of whether the MCMC algorithm has correctly explored the full posterior distribution. For example, it is possible to be stuck in a local mode, and for the convergence diagnostics to look just fine, as illustrated below.\\$ $\\
+  \textbf{Example:} Mixture normal. Sample with MH. 
+  
+  Fortunately, we can use some theory to construct a validation simulation for any Bayesian model. The idea:
+  \begin{itemize}
+  \item For $i=1,2,\ldots,B$:
+  \item Simulate $\theta^{(i)}$ from the prior $p(\theta)$
+  \item Simulate a dataset $y^{(i)}$ from the model $p(y|\theta^{(i)})$
+  \item Obtain posterior percentiles for $\theta^{(i)}$
+  \item For each posterior percentile, record whether the percentile was greater than the true value $\theta^{(i)}$
+  \end{itemize}
+  The theory: For the $p^{th}$ percentile, approximately $p\%$ of the posterior intervals should cover the truth. For example, if we simulate 200 datasets, then approximately 50\% of the posterior medians should be greater than the true value of the parameter for the corresponding dataset. Similarly, approximately 95\% of central 95\% posterior credible intervals should contain the true value (which will be different for each dataset). The methodology presented in Cook, Gelman \& Rubin (2006) is a generalization of this approach. \\ 
+  $ $\\
+  You will be doing this for homework 1. (Ex: Prove the coverage property)
+  
+\end{itemize}
+
+\end{document}

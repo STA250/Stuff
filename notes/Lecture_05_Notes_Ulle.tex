@@ -1,0 +1,349 @@
+
+\documentclass[article]{memoir}
+
+% ----- Packages -----
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm} % Must come after amsmath.
+
+\usepackage{mathtools}
+\usepackage{subdepth} % Fixes subscripts.
+\usepackage{flafter} % Fixes floats.
+\usepackage{graphicx}
+\usepackage{listings}
+
+% ----- Page -----
+\setlrmarginsandblock{1in}{1in}{*}
+\setulmarginsandblock{1in}{1in}{*}
+\checkandfixthelayout
+
+\makepagestyle{lecNotes}
+    \makeevenhead{lecNotes}
+    {\textsl\thetitle}{}
+    {\textsl{\thepage\ of \thelastpage}}
+    \makeoddhead{lecNotes}
+    {\textsl\thetitle}{}
+    {\textsl{\thepage\ of \thelastpage}}
+\pagestyle{lecNotes}
+
+% ----- Floats -----
+\changecaptionwidth
+\captionwidth{0.6\textwidth}
+\setfloatadjustment{table}{\centering}
+\setfloatadjustment{figure}{\centering}
+
+\newsubfloat{table}
+\newsubfloat{figure}
+
+%\setFloatBlockFor{chapter}
+
+% ----- Listings -----
+\lstset{basicstyle = \ttfamily, numberstyle = \tiny, stepnumber = 2}
+
+% ----- Commands -----
+\let\Pr\relax%
+\DeclareMathOperator{\Pr}{\mathbb{P}}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Cor}{Cor}
+\DeclareMathOperator{\eul}{e}
+\DeclareMathOperator{\1}{\mathbf{1}}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\newcommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\ceil}[1]{\lceil#1\rceil}
+\newcommand{\floor}[1]{\lfloor#1\rfloor}
+\newcommand{\pd}[2][]{\frac{\partial#1}{\partial#2}}
+\newcommand{\inD}{\mathop{\rightarrow}\limits^{\mathrm{D}}}
+\newcommand{\inP}{\mathop{\rightarrow}\limits^{\mathrm{P}}}
+\newcommand{\T}{^\intercal}
+\newcommand{\C}{^\mathsf{c}}
+\newcommand{\dist}[1]{\operatorname{#1}}
+\newcommand{\iid}{\overset{iid}{\sim}}
+
+\theoremstyle{definition}
+\newtheorem{defi}{Definition}[chapter]
+
+% ----- Document -----
+\title{STA 250: Lecture Notes}
+
+\begin{document}
+    \begin{center}
+    \textsl{October 14, 2013} \\
+    \textsl{Transcribed by Nick Ulle}
+    \end{center}
+\chapter{Bayesian Inference (continued)}
+One of the sample exercises for the previous lecture was computing the
+Jeffrey's prior for a $\dist{Poisson}(\lambda)$ likelihood. It turns out to
+be $p(\lambda) = \lambda^{-1/2}$, which does not integrate to $1$. Notice
+that
+    \[
+    \int_0^\infty \lambda^{-1/2} \;d\lambda = \infty
+    \]
+    \begin{defi}
+    A prior is said to be \textbf{improper} if it integrates
+    to $\infty$. Otherwise, it is said to be \textbf{proper}.
+    \end{defi}
+With a proper prior, the posterior will also be proper. With an improper
+prior, the posterior may or may not be proper. When using an improper
+prior, we must check that the posterior is proper before using it in further
+calculations. This can be relatively difficult, so we will give preference
+to proper priors.
+
+Suppose $X_i \vert \mu, \sigma^2 \sim \dist{N}(\mu, \sigma^2)$. Then the
+posterior is
+    \begin{align*}
+    p(\mu, \sigma^2 \vert \vec{x})
+    &\propto
+    p(\mu, \sigma^2) \prod_{i=1}^n p(x_i \vert \mu, \sigma^2)
+    \\ &\propto
+    p(\mu, \sigma^2) (\sigma^2)^{-1/2} 
+    \exp \biggl[ -\frac{1}{2\sigma^2} \sum_{i=1}^n (x_i - \mu)^2 \biggr].
+    \end{align*}
+How should we specify a prior on $(\mu, \sigma^2)$? We could assume that
+they are a priori independent, so
+    \[
+    p(\mu, \sigma^2) = p(\mu) p(\sigma^2).
+    \]
+Assuming a priori independence of $\mu$ and $\sigma^2$ does not force a 
+posteriori independence; the data may introduce dependence. On the other
+hand, without any assumptions, we can specify
+    \[
+    p(\mu, \sigma^2) = p(\mu \vert \sigma^2) p(\sigma^2).
+    \]
+It turns out that the conjugate prior is
+    \[
+    \mu \vert \sigma^2
+    \sim
+    \dist{N}\Bigl( \mu_0, \frac{1}{\kappa_0} \sigma^2 \Bigr)
+    \qquad\text{and}\qquad
+    \sigma^2
+    \sim
+    \dist{Inverse-\chi^2}(\nu_0, \sigma_0^2).
+    \]
+    \begin{defi} Given $\nu, \tau^2 > 0$, and $X \sim \dist{\chi^2}(\nu)$, 
+    the random variable
+        \[
+        \frac{\nu \tau^2}{X}
+        \sim
+        \dist{Inverse-\chi^2}(\nu, \tau^2)
+        \]
+    has \textbf{inverse chi-squared} distribution with $\nu$ degrees of
+    freedom and scale $\tau^2$.
+    \end{defi}
+The posterior then turns out to be
+    \[
+    \mu \vert \sigma^2, \vec{x}
+    \sim
+    \dist{N}\Bigl( \mu_n, \frac{1}{\kappa_n} \sigma^2 \Bigr)
+    \qquad\text{and}\qquad
+    \sigma^2 \vert \vec{x}
+    \sim
+    \dist{Inverse-\chi^2}(\nu_n, \sigma_n^2).
+    \]
+where
+    \begin{gather*}
+    \mu_n = \frac{\sigma^2}{\kappa_n}
+    \Bigl( \frac{\kappa_0}{\sigma^2}\mu_0 + \frac{n}{\sigma^2}\bar{x} \Bigr),
+    \qquad
+    \kappa_n = \kappa_0 + n,
+    \qquad
+    \nu_n = \nu_0 + n,
+    \\
+    \sigma_n^2 = \frac{1}{\nu_n}
+    \Bigl( \nu_0\sigma_0^2 + (n - 1)s^2 
+    + \frac{\kappa_0 n}{\kappa_n}(\bar{x} - \mu_0) \Bigr),
+    \qquad
+    s^2 =
+    \frac{1}{n - 1} \sum_{i=1}^n (x_i - \bar{x}).
+    \end{gather*}
+This gives us the posterior $p(\mu, \sigma^2 \vert \vec{x})$. If we are only
+interested in making inferences about $\mu$, we use the marginal posterior
+    \[
+    p(\mu \vert \vec{x})
+    =
+    \int p(\mu, \sigma^2 \vert \vec{x}) \;d\sigma^2.
+    \]
+Unless we are interested in the joint structure between sets of parameters,
+there is no need to use the joint posterior, which may be more difficult to
+work with.
+
+Now consider the multivariate case where 
+$X_i \vert \mu, \Sigma \sim \dist{N}(\mu, \Sigma)$, with 
+$X_i, \mu \in \mathbb{R}^p$ and $\Sigma$ a $p \times p$ positive definite
+matrix. Then the conjugate prior for $\mu, \Sigma$ is
+    \[
+    \mu \vert \Sigma
+    \sim
+    \dist{N}\Bigl( \mu_0, \frac{1}{\kappa_0} \Sigma \Bigr)
+    \qquad\text{and}\qquad
+    \sigma^2
+    \sim
+    \dist{Inverse-Wishart}(\nu_0, \Lambda_0^{-1}).
+    \]
+Details about the resulting posterior will be posted to the course website.
+
+Returning to the univariate setting, how can we compute 
+$p(\mu \vert \vec{x})$? We could use
+    \[
+    p(\mu \vert \vec{x})
+    =
+    \int p(\sigma^2 \vert \vec{x}) 
+    p(\mu \vert \sigma^2, \vec{x}) \;d\sigma^2,
+    \]
+but this may be quite difficult to compute, if it is possible at all. How
+can we do this by sampling? Sample from $p(\sigma \vert \vec{x})$. If we then
+sample from $p(\mu \vert \sigma^2, \vec{x})$, the resulting $(\mu, \sigma^2)$
+is a sample from $p(\mu, \sigma^2 \vert \vec{x})$. So $\mu$ is a sample from
+$p(\mu \vert \vec{x})$. We can use a large sample to approximate
+$p(\mu \vert \vec{x})$. Outside of very simple models, it's easier to sample
+from a posterior than it is to compute the posterior analytically.
+
+\chapter{Monte Carlo Integration}
+Let $X$ be a random variable with pdf.\ $\pi(x)$. Suppose we want to compute
+    \[
+    \theta
+    =
+    \E_\pi(X)
+    =
+    \int x\pi(x) \;dx.
+    \]
+If we can sample $X_1, \ldots, X_n \iid \pi$, then we can use
+$\hat{\theta} = \bar{x}$ to approximate $\theta$. We can show that
+$\bar{X} \to \theta$ as $n \to \infty$.
+
+More generally, to compute $\E_\pi \bigl[ g(X) \bigr]$, use
+    \[
+    \frac{1}{n} \sum_{i=1}^n g(x_i).
+    \]
+This will converge to the true value for most ``nice'' functions $g$.
+For example, we might want to compute $\E(\eul^{Z + \cos Z})$ when
+$Z \sim \dist{N}(0, 1)$, which would be very difficult to do analytically.
+
+The motivation, then, is to sample from a posterior and use Monte Carlo
+integration to compute quantities of interest, such as means, standard
+deviations, and intervals. How can we sample from $p(\theta \vert \vec{x})$?
+
+A toy example: suppose we want to sample from $p(x_1, x_2)$, and can only
+draw from $p(x_1 \vert x_2)$ and $p(x_2 \vert x_1)$. A simple Gibbs sampler
+would do the following:
+    \begin{enumerate}
+    \item
+    Select a starting state $(x_1^{(0)}, x_2^{(0)})$ and set $t = 0$.
+    \item
+    Sample $x_1^{(t+1)}$ from $p(x_1 \vert x_2^{(t)})$.
+    \item
+    Sample $x_2^{(t+1)}$ from $p(x_2 \vert x_1^{(t+1)})$.
+    \item
+    Repeat steps (2) and (3).
+    \end{enumerate}
+It's not obvious that this produces a sample from $p(x_1, x_2)$. This is left
+as an exercise (and may appear in the homework). Based on this, the Gibbs
+sampler can be used to sample from a bivariate normal
+$(X_1, X_2) \sim \dist{N}(\mu, \Sigma)$ using only draws from univariate
+normals. Getting marginal samples from a joint sample is easy.
+
+    \begin{defi}
+    The following algorithm is the \textbf{Gibbs sampler} for sampling from 
+    $p(x_1, \ldots, x_p)$.
+        \begin{enumerate}
+        \item
+        Select a starting state $(x_1^{(0)}, \ldots, x_p^{(0)})$ and set 
+        $t = 0$.
+        \item
+        Sample $x_1^{(t+1)}$ from 
+        $p(x_1 \vert x_2^{(t)}, \ldots, x_p^{(t)})$.
+        \item
+        Sample $x_2^{(t+1)}$ from 
+        $p(x_2 \vert x_1^{(t+1)}, x_3^{(t)}, \ldots, x_p^{(t)})$.
+        \item
+        In general, sample $x_k^{(t+1)}$ from 
+        $p(x_2 \vert x^{(t+1)}_{1:(k-1)}, \,x^{(t)}_{k:p})$.
+        \item
+        Increment $t$ by $1$ and go back to step (2).
+        \end{enumerate}
+    In practice, the Gibbs sampler doesn't converge as quickly if the
+    components $X_1, \ldots, X_p$ are highly correlated.
+    \end{defi}
+
+\chapter{Markov Chains}
+    \begin{defi}
+    A \textbf{Markov chain} is a stochastic process with the property that
+    future states are independent of past states, given the current state.
+    That is, the process $\{X^{(t)}\}$ is a Markov chain when
+        \[
+        \Pr(X^{(t+1)} \vert X^{(t)}, X^{(t-1)}, \ldots, X^{(1)})
+        =
+        \Pr(X^{(t+1)} \vert X^{(t)}).
+        \]
+    \end{defi}
+
+Markov chains are controlled by their transition kernel/density. For a Markov
+chain with a finite state space (a process that takes one of $k$ possible
+states at each time), these are
+    \[
+    p_{ij}
+    =
+    \Pr(X^{(t+1)} = j \vert X^{(t)} = i)
+    \qquad\text{for all } i, j.
+    \]
+For example, we might have
+    \begin{figure}[h!]
+    \end{figure}
+This can be represented by the matrix
+    \[
+    \begin{bmatrix}
+    0.1 & 0.5 & 0.4 \\
+    0 & 0 & 1 \\
+    0.5 & 0.5 & 0 \\
+    \end{bmatrix}.
+    \]
+For a Markov chain with a continuous state space, we use
+    \[
+    p(u, A)
+    =
+    \Pr(X^{(t+1)} \in A \vert X^{(t)} = u)
+    \qquad\text{for all values } u \text{ and sets } A.
+    \]
+
+    \begin{defi}
+    A Markov chain is \textbf{irreducible} if it is possible to reach every
+    state from every other state in a finite number of moves.
+    \end{defi}
+
+    \begin{defi}
+    A Markov chain is \textbf{aperiodic} if for all states, it is possible to
+    return to that state in an aperiodic (irregular) number of moves.
+    \end{defi}
+    
+    \begin{defi}
+    A state of a Markov chain is \textbf{transient} it there is a nonzero
+    probability of never returning. Otherwise, the state is 
+    \textbf{recurrent}.
+    \end{defi}
+
+    \begin{defi}
+    A recurrent state of a Markov chain is \textbf{positive recurrent} if its
+    expected return time is finite.
+    \end{defi}
+
+    \begin{defi}
+    An aperiodic Markov chain where every state is positive recurrent is said
+    to be \textbf{ergodic}.
+    \end{defi}
+
+For an ergodic Markov chain, the long run average of the chain converges to
+a stationary distribution. That is,
+    \[
+    \Pr(X^{(t)} = i) \to \pi_i
+    \qquad\text{for all } i \text{ as } t \to \infty.
+    \]
+\end{document}
+
