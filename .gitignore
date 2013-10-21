@@ -10,3 +10,11 @@ tweetdump.txt
 *.log
 *.out
 *.backup
+ptPre*
+ptPost*
+TwoThou*
+PowersMean*
+MixtureMH.*
+MixturePT.*
+
+
