@@ -1,0 +1,72 @@
+\documentclass[11pt]{article}
+\usepackage{mathtools, setspace, bbm}
+\onehalfspacing
+\begin{document}
+\noindent STA250\\
+Monday 10/21/13\\
+
+\noindent\textbf{\Large Metropolis-within-Gibbs}\\
+
+\noindent Allows you to sample from high-dimensional distributions using a sequence of lower dimensional distributions. Generalizes Gibbs sampler in two ways:
+\begin{enumerate}
+\item If we can't sample directly/exactly then can use MH.
+\item Sample sub-blocks of parameters, not necessarily full conditionals, i.e. $p(\theta_1,\theta_2,\phi|\mathbf{y})$\\
+$\rightarrow$ sample $p(\theta_1,\theta_2|\phi,\mathbf{y})$ exactly\\
+$\rightarrow$ sample $p(\phi|\theta_1,\theta_2,\mathbf{y})$ using MH.
+\end{enumerate}
+\textbf{Idea for hw}\\
+2 strategies:
+\begin{enumerate}
+\item Sample from $p(\boldsymbol{\beta}|\mathbf{y})$ using MH \& a multivariate proposal for $\boldsymbol{\beta}$.
+\item For $j=1,...,p$, sample $\beta_j$ from $p(\beta_j|\beta_{[-j]},\mathbf{y})$ [no closed form $\Rightarrow$ use MH].
+\end{enumerate}
+When to use non-symmetric proposals? $\theta$ has compact support, then proposal can respect the boundaries.\\
+
+\noindent\textbf{Example} $X_i$ $\overset{\text{iid}}{\sim}$ Pois($\lambda$), $i=1,...,n$, prior $\lambda\sim t_{\nu}\mathbbm{1}\{(0,\infty)\}$\\
+Use MH, proposal $\theta^*\sim$ TN$(\theta^{(t)},v^2,[0,\infty))\Rightarrow$ no longer symmetric.\\
+
+\noindent\textbf{Checking your MCMC code}\\
+For one dataset, how to know if we reach convergence?\\
+$\rightarrow$ ``by eye" using traceplots\\
+$\rightarrow$ use effective sample size to gauge roughly ``how well" converged\\
+$\rightarrow$ other diagnostics: Gelman-Rubin (multiple chains), Heidelberger, Geveke(?)
+\newpage
+\noindent We can use simulation studies to check everything is working.\\
+Idea:
+\begin{enumerate}
+\item Simulate $\theta_{(j)}$ from the prior $p(\theta)$
+\item Simulate a dataset $\mathbf{y}_{(j)}$ from the model $p(y|\theta_{(j)})$
+\item Sample from posterior for dataset $\mathbf{y}_{(j)}$
+\item Find 100(1-$\alpha$)\% central credible interval for $\theta$ from dataset $\mathbf{y}_{(j)}$
+\item Record Y/N whether the interval contained $\theta_{(j)}$
+\item Check roughly 100(1-$\alpha$)\% of intervals contained their specific $\theta_{(j)}$
+\end{enumerate}
+Why does this work?
+\begin{align*}
+\int p(\theta)&\int\mathbbm{1}\{\theta\in S^{1-\alpha}(\mathbf{y})\}p(\mathbf{y}|\theta)dyd\theta\\
+&=\int\int\mathbbm{1}\{\theta\in S^{1-\alpha}(\mathbf{y})\}p(\theta)p(\mathbf{y}|\theta)dyd\theta\\
+&=\int\int\mathbbm{1}\{\theta\in S^{1-\alpha}(\mathbf{y})\}p(\theta|\mathbf{y})p(\mathbf{y})d\theta dy\\
+&=\int p(\mathbf{y})\left[\int\mathbbm{1}\{\theta\in S^{1-\alpha}(\mathbf{y})\}p(\theta|\mathbf{y})d\theta\right]dy\\
+&=1-\alpha
+\end{align*}
+Bayes: $\int p(\theta)\int\mathbbm{1}\{\theta\in S^{1-\alpha}(y)\}p(y|\theta)dyd\theta=1-\alpha$\\
+Frequentist: $\int\mathbbm{1}\{\theta\in C^{1-\alpha}(y)\}p(y|\theta)dy=1-\alpha\quad\forall\;\theta$\\
+
+\noindent\textbf{Posterior Predictive Checking}\\
+Validation simulation checks you can sample from the posterior under your model. It doesn't tell you if your model is a good fit to the data.\\
+Idea: Having fit your model to the data, you know roughly what $\theta$ is, so if you simulate from $p(y|\theta)$ the simulated data should look ``similar" to the real data.\\
+Formally: $p(\tilde{\mathbf{y}}|\mathbf{y})=\int p(\tilde{\mathbf{y}},\theta|\mathbf{y})d\theta = \int p(\tilde{\mathbf{y}}|\theta)p(\theta|\mathbf{y})d\theta$\\
+
+\noindent Recipe:
+\begin{itemize}
+\item Sample $\theta^{(t)}$ from the posterior $p(\theta|\mathbf{y})$
+\item For each $\theta^{(t)}$, sample a new dataset from $p(y|\theta^{(t)})$
+\item We now have $M$ predictive datasets \& one real dataset
+\item We can take univariate summary statistic of each dataset \& the real dataset \& compare
+\end{itemize}
+Could use min, mean, median, max.\\
+
+\noindent\textbf{Posterior Predictive p-value}\\
+$2\min\{\mathbbm{P}(T(y^*)>T(\mathbf{y})),\mathbbm{P}(T(y^*)<T(\mathbf{y}))\}$\\
+In practice, $p=2\min($fraction to left, fraction to right). Heuristically, $p$ small $(<.05)$ $\Rightarrow$ model is NOT a good fit to the data.
+\end{document}
