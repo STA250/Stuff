@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250: Lecture 8</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 -- Lecture 08">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250: Lecture 8</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- 
+
+# To compile, from R:
+library(slidify)
+slidify("Lecture_08.Rmd")
+
+-->
+
+<h2>Welcome to STA 250!</h2>
+
+<p>On the menu for today...</p>
+
+<ol class = "build">
+<li><p>Types &quot;big&quot; data</p></li>
+<li><p>Approaches to &quot;big&quot; data</p></li>
+<li><p>Basic things about working with &quot;big&quot; data</p></li>
+<li><p>Example: Big Logistic Regression</p></li>
+<li><p>The Bag of Little Bootstraps</p></li>
+<li><p>Obtaining SE&#39;s for a 6m x 5k logistic regression</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <p><img src="pics/Kaggle_Terms.jpg" style="width: 600px"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <p><img src="pics/Monster_Terms.jpg" style="width: 600px"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Module 2 :: Statistics for &quot;Big&quot; Data</h2>
+  </hgroup>
+  <article>
+    <p>What is &quot;big&quot; data?</p>
+
+<ul class = "build">
+<li>Megabytes?</li>
+<li>Gigabytes?</li>
+<li>Terabytes?</li>
+<li>Petabytes?</li>
+<li><p>Exabytes?</p></li>
+<li><p>It depends what you are trying to do with it!</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>An oversimplifciation of the types of &quot;big&quot; data</h2>
+  </hgroup>
+  <article>
+    <ol class = "build">
+<li><p>Large \(n\) and not large \(p\):</p>
+
+<ul>
+<li>Examples I: Linear regression with 100m observations, 5000 covariates. Classification of 100m objects with 1000 features each.</li>
+<li>Examples II: Website with large numbers of users, recording basic data on each user. Sky surveys in astronomy (e.g., LSST): observing millions of objects with moderate amounts of data per object.</li>
+</ul></li>
+<li><p>Large \(p\) and not large \(n\):</p>
+
+<ul>
+<li>Examples I: Linear regression with 10k observations, 500k covariates. Classification of 10k objects with 500k features each.</li>
+<li>Examples II: Website with moderate number of users, tracking every action of each user. Boutique healthcare provider collecting huge amounts of data on each patient.</li>
+</ul></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>An oversimplifciation of the types of &quot;big&quot; data</h2>
+  </hgroup>
+  <article>
+    <ol start="3">
+  <li>Large p <em>and</em> large p:</li>
+  <ul>
+  <li>Examples I: Linear regression with 100m observations, 50m covariates. Clustering of 10m observations with 1m features each.</li>
+  <li>Examples II: Website with large number of users, recording large number of actions per user (e.g., Google, Facebook, Yahoo etc.). Potentially large healthcare providers (e.g., Kaiser) with large numbers of clients, and large amounts of information per client.</li>
+  </ul>
+  <li>Complex (non-rectangular) "big" data:</li>
+  <ul>
+  <li>Examples: Financial transactions (irregular), images, movies (e.g., brain scans), Wikipedia.</li>
+  </ul>
+</ol> 
+
+<p><br/></p>
+
+<p>Since this module is only 4 lectures, we will deal exclusively with problems of type 1.</p>
+
+<p>The computational skills you will learn are equally applciable to working with the other classes of problems.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Scaling to &quot;Big&quot; Data</h2>
+  </hgroup>
+  <article>
+    <p>Naive approaches designed for traditional amounts of data do not tyically scale to &quot;big&quot; data. How to scale to big data then? Usually some combination of:</p>
+
+<ul class = "build">
+<li><p><em>Assuming that the data has inherently lower-dimensional structure</em></p>
+
+<ul>
+<li>Sparsity</li>
+<li>Conditional independence<br></li>
+</ul></li>
+<li><p><em>Fast algorithms</em></p>
+
+<ul>
+<li>Parallelization</li>
+<li>Typically linear time algorithms or better</li>
+</ul></li>
+<li><p><em>Methodology that avoids the need to fit the &quot;full&quot; data</em></p>
+
+<ul>
+<li>Consensus Monte Carlo</li>
+<li>Bag of Little Bootstraps</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Some Preliminaries</h2>
+  </hgroup>
+  <article>
+    <p>From the <code>R</code> documentation:</p>
+
+<blockquote>
+<p>There are limitations on the types of data that R handles well. Since all data being manipulated
+by R are resident in memory, and several copies of the data can be created during execution of
+a function, R is not well suited to extremely large data sets. Data objects that are more than
+a (few) hundred megabytes in size can cause R to run out of memory, particularly on a 32-bit
+operating system.</p>
+</blockquote>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>What then for &quot;big&quot; data?</h2>
+  </hgroup>
+  <article>
+    <p>We can&#39;t read in data to memory, so what alternatives are there?</p>
+
+<ol class = "build">
+<li><p>File-backed data structures (i.e., data remains stored on disk, not memory)</p>
+
+<ul>
+<li>Examples: <code>bigmemory</code> (and other <code>big*</code> packages). See: <a href="http://www.bigmemory.org/">http://www.bigmemory.org/</a><br></li>
+<li>Pros: Easy to use. Simple to understand, any language can mimic functionality.</li>
+<li>Cons: Requires &quot;nice&quot; data, burden on programmer to scale algorithms (parallelization etc.), doesn&#39;t scale as easily to data that cannot fit on disk.</li>
+</ul></li>
+<li><p>Databases</p>
+
+<ul>
+<li>Relational Databases (e.g., SQL): Rigid structure, relational algebra operations (union, intersection, difference etc.).<br></li>
+<li>NoSQL Databases (e.g., CouchDB, MongoDB): Less structure than a relational database, less functionality, but typically faster data retrieval.</li>
+</ul></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>What then for &quot;big&quot; data?</h2>
+  </hgroup>
+  <article>
+    <ol start="3">
+  <li>Distributed File Systems</li>
+  <ul>
+  <li>Example: Hadoop Distributed File System (HDFS). Data remains on disk, but DFS provides a full ecosystem for scaling to data across multiple machines.</li>
+  <li>Pros: Scales to essentially arbitrarily large amounts of data (just add more machines).</li>
+  <li>Cons: Harder to interact with data. More restrictive progamming paradigm (MapReduce).</li>
+  </ul>
+</ol>
+
+<p>In this module we will work with (1) and (3), as well as learning a little bit about databases.</p>
+
+<p>Lets start with a practical example using method (1).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Example: &quot;Big&quot; Logistic Regression</h2>
+  </hgroup>
+  <article>
+    <p>On Gauss I have created an uncompressed 255Gb file containing data for fitting a &quot;big&quot; logistic regression model (6m observations, 3k covariates).</p>
+
+<p><strong><em>Goal: Find standard errors for the parameter estimates of the logistic regression model.</em></strong></p>
+
+<p>To do this:</p>
+
+<ol>
+<li>Figure out how to work with that much data using <code>bigmemory</code> (or Python equivalent)</li>
+<li>Figure out how to obtain standard errors for parameter estimates in a scalable manner.</li>
+</ol>
+
+<p>(Could just as well ask for CI&#39;s in place of SE&#39;s)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Bigmemory</h2>
+  </hgroup>
+  <article>
+    <p>The basics:</p>
+
+<pre><code># Create a file-backed big.matrix:
+# (Takes ~minutes, and creates large .bin file, and small .desc file)
+goo &lt;- read.big.matrix(infile, type=&quot;double&quot;, header=FALSE,
+                      backingpath=datapath,
+                      backingfile=backingfilename,
+                      descriptorfile=descriptorfilename)
+
+# Attach that big.matrix:
+dat &lt;- attach.big.matrix(dget(descriptorfile),backingpath=datapath)
+</code></pre>
+
+<p>This is actually overkill for what we will need here (and quite inefficient), but in some cases the extra functionality is useful.</p>
+<p>For example, to fit &quot;big regressions&quot; with <code>biglm.big.matrix</code> or <code>bigglm.big.matrix</code>.</p>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Working with the data:</h2>
+  </hgroup>
+  <article>
+    <p>Can still do the basics (they just might take a while!):</p>
+
+<pre><code># First row:
+dat[1,]
+# Number of rows:
+nrow(dat)
+# First two rows, first ten columns:
+dat[1:2,1:10]
+# Random sample of 5 rows:
+dat[sample(1:nrow(dat),5),]
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Code your own &quot;bigmemory&quot; in R/Python</h2>
+  </hgroup>
+  <article>
+    <p>We actually won&#39;t use any of the real functionality of the <code>bigmemory</code> suite
+of packages. All we really need is the ability to read arbitrary lines from
+a file without loading the full file into memory.</p>
+
+<ul>
+<li><code>load</code> the file</li>
+<li>Read line-by-line until the desired line is reached</li>
+<li><p>Extract the data from the line</p>
+
+<pre><code>def read_some_lines(filename,lines):
+    # output lines specified by lines e.g., [1,100,10000]
+</code></pre>
+<pre><code>
+"read_some_lines" = function(filename,lines,max_block=1000,verbose=FALSE){
+    # output lines specified by lines e.g., c(1,100,10000)
+ }
+</code></pre>
+</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>SE Estimates for \(\hat{\beta}\)</h2>
+  </hgroup>
+  <article>
+    <p>Now we have the data in: that is progress. </p>
+
+<p>We are fitting:</p>
+
+<p>\[ Y_{i} | \beta \sim \textrm{Bin}\left(1,\frac{\exp\left\{x_{i}^{T}\beta\right\}}{1+\exp\left\{x_{i}^{T}\beta\right\}}\right) , \quad i=1,\ldots,6000000 . \] </p>
+
+<p>Goal:</p>
+
+<ul>
+<li>Find elementwise CI&#39;s or SE&#39;s for \(\hat{\beta}\).</li>
+</ul>
+
+<p><br/><br/></p>
+
+<p>How might you do this for small datasets?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Recap: The Bootstrap</h2>
+  </hgroup>
+  <article>
+    <p>We talked about the bootstrap during boot camp. </p>
+
+<p>Suppose we have an estimator \(\hat{\theta}=g(X)\) (e.g., the MLE).</p>
+
+<p>The basic Bootstrap algorithm (Efron, 1979) to approximate \(SD(\hat{\theta})\) is:</p>
+
+<ol>
+<li>Let \(\hat{F}\) denote the empirical probability distribution of the data (i.e., placing mass \(1/n\) at each of the \(n\) data points)</li>
+<li>Take a random sample of size \(n\) from \(\hat{F}\) (with replacement).<br/> We call this a &quot;bootstrap dataset&quot;, and denote them as \(X^{*}_{j}\) for \(j=1,\ldots,s\).</li>
+<li>For each of the \(s\) bootstrap datasets, compute the estimate \(\hat{\beta}^{*}_{j}\).</li>
+<li>Use the standard deviation of \(\left\{\hat{\beta}^{*}_{1},\ldots,\hat{\beta}^{*}_{s}\right\}\) to approximate \(SE(\hat{\beta})\).</li>
+</ol>
+
+<p>With independent observations this works well. There are more sophisticated modifications for dependent data (e.g., spatial data, time series data etc.).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>The Paired Bootstrap</h2>
+  </hgroup>
+  <article>
+    <p>For the logistic regression model, we have both \(X's\) and \(y's\). </p>
+
+<p>When we resample points, we resample both \(x_{i}\) and \(y_{i}\). This is sometimes called the <em>paired bootstrap</em>.</p>
+
+<p>There are other alternative bootstrapping procedures (e.g., bootstrapping the residuals) with possibly better/worse performance.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Application: Bootstrap for Logistic Regression</h2>
+  </hgroup>
+  <article>
+    <p>For the logistic regression problem, using \(B=500\):</p>
+
+<ol>
+<li>Let \(\hat{F}\) denote the empirical probability distribution of the data (i.e., placing mass \(1/6000000\) at each of the \(6000000\) data points)</li>
+<li>Take a random sample of size \(6000000\) from \(\hat{F}\) (with replacement). Call this a &quot;bootstrap dataset&quot;, \(X^{*}_{j}\) for \(j=1,\ldots,500\).</li>
+<li>For each of the \(500\) bootstrap datasets, compute the estimate \(\hat{\beta}^{*}_{j}\).</li>
+<li>Use the standard deviation of \(\left\{\hat{\beta}^{*}_{1},\ldots,\hat{\beta}^{*}_{500}\right\}\) to approximate \(SD(\hat{\beta})\).</li>
+</ol>
+
+<p>Any problems here?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>The Bag of Little Bootstraps</h2>
+  </hgroup>
+  <article>
+    <p>Now, lets introduce the &quot;Bag of Little Bootstraps&quot; method (Kleiner et al., 2011).</p>
+
+<p>The basic idea:</p>
+
+<ul class = "build">
+<li>Would like bootstrap datasets to be small enough to fit!</li>
+<li>Just using bootstrap datasets with \(b < n\) won&#39;t work without rescaling</li>
+<li>Instead: sample \(s\) subsets of size \(b < n\) and then resample \(n\) points from those.</li>
+<li>No rescaling necessary!</li>
+<li><strong><em>Key 1:</em></strong> There are only (at most) \(b\) unique data points within each bootstrapped dataset (each occuring possibly many times).</li>
+<li><strong><em>Key 2:</em></strong> We can scale to very large \(n\) if \(b << n\) <strong><em>and</em></strong> the estimation routine works efficiently with data of the form (unique datapoints, number of occurences)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>The Bag of Little Bootstraps</h2>
+  </hgroup>
+  <article>
+    <p>For estimating \(SD(\hat{\theta})\):</p>
+
+<ol>
+<li><p>Let \(\hat{F}\) denote the empirical probability distribution of the data<br/> (i.e., placing mass \(1/n\) at each of the \(n\) data points)</p></li>
+<li><p>Select \(s\) subsets of size \(b\) from the full data (i.e., randomly sample a set of \(b\) indices \(\mathcal{I}_{j}=\left\{i_{1},\ldots,i_{b}\right\}\) from \(\left\{1,2,\ldots,n\right\}\) without replacement, and repeat \(s\) times). </p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>The Bag of Little Bootstraps cont\(\ldots\)</h2>
+  </hgroup>
+  <article>
+    <ol start="3">
+<li>For each of the $s$ subsets ($j=1,\ldots,s$):</li>
+  <ul>
+    <li>Repeat the following steps $r$ times ($k=1,\ldots,r$):</li>
+    <ol type="a">
+      <li>Resample a bootstrap dataset $X^{*}_{j,k}$ of size $n$ from subset $j$.<br/> i.e., sample $(n_{1},\ldots,n_{b})\sim{}\textrm{Multinomial}\left(n,(1/b,\ldots,1/b)\right)$, where $(n_{1},\ldots,n_{b})$ denotes the number of times each data point of the subset occurs in the bootstrapped dataset.</li>
+      <li>Compute and store the estimator $\hat{\theta}_{j,k}$</li>
+    </ol>
+    <li>Compute the bootstrap SE of $\hat{\theta}$ based on the $r$ bootstrap datasets for subset $j$ i.e., compute:</li>
+    $$ \xi^{*}_{j}=\textrm{SD}\left\{\hat{\theta}^{*}_{j,1},\ldots,\hat{\theta}^{*}_{j,r}\right\} . $$  
+  </ul>
+<li>Average the $s$ bootstrap SE's, $\xi^{*}_{1},\ldots,\xi^{*}_{s}$ to obtain an estimate of $SD(\hat{\theta})$ i.e.,</li>
+$$ \hat{SD}(\hat{\theta}) = \frac{1}{s}\sum_{j=1}^{s}\xi^{*}_{j} . $$
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Things to think about</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>How to select \(s\)? (Number of subsets)</li>
+<li>How to select \(b\)? (Size of subsets)</li>
+<li>How to select \(r\)? (Number of bootstrap replicates per subset)</li>
+</ul>
+
+<p>Real key is \(b\). From paper \(b\approx{}n^{0.6}\) or \(b\approx{}n^{0.7}\) works well.</p>
+
+<p>What is the gain then?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>More to think about</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p>Why does the BLB algorithm work?</p></li>
+<li><p>How can use the array job capabilities of Gauss to help speed things up?</p></li>
+<li><p>How might you organize the array job in terms of the subsets and bootstrap replicates?</p></li>
+<li><p>What can you do if each data point occurs multiple times?</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Summary for Today</h2>
+  </hgroup>
+  <article>
+    <p>Today we have seen how to obtain SE estimates for potentially huge datasets using very minimal advanced computing. 
+In fact, it only took two key steps:</p>
+
+<ul>
+<li><p>Avoid reading data in memory using <code>bigmatrix</code></p></li>
+<li><p>Avoid fitting full dataset using the BLB</p></li>
+</ul>
+
+<p>Next week we will look at more general computing tools and paradigms: MapReduce, Hadoop, Hive, and using Amazon ElasticMapReduce.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/weightlifter.jpg" alt="Keep Off" align="middle" style="width: 300px;"/></p>
+
+<p><a href="http://icanhas.cheezburger.com/">http://icanhas.cheezburger.com/</a> <em>Mon: More big data!</em></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
