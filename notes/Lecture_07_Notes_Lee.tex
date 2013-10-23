@@ -1,0 +1,103 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=3cm]{geometry}
+\usepackage{setspace}
+\usepackage{amssymb,amsmath, amsthm}
+\usepackage{graphicx,picinpar,epsf}
+\usepackage{float}
+\usepackage{fancybox}
+
+
+\begin{document}
+
+\title{\textbf{STA 250 Lecture Notes(Oct. 21)}}
+\author{Olivia Lee}
+\date{}
+\maketitle
+\noindent
+\textbf{\Large Metropolis-Within-Gibbs}
+\begin{itemize}
+\item Allows you to sample from a high-dimensional distribution using a sequence of lower dimensional distributions.
+\item Generalizes Gibbs sampler in two ways\begin{enumerate}
+                                             \item If we can't sample directly/exactly, then we can use MH.
+                                             \item Sample sub-blocks of parameters, not necessary full conditionals. \\
+                                             (ie)\,$P(\theta_1,\theta_2,\phi | \overrightarrow{y})$\\
+                                             $\rightarrow \text{sample}  P(\theta_1,\theta_2 | \phi, \overrightarrow{y})$ (exactly)\\
+                                             $\rightarrow \text{sample}  P(\phi | \theta_1,\theta_2  \overrightarrow{y})$ (using MH)\\
+                                             \end{enumerate}
+\end{itemize}
+\textbf{\underline{Idea of Homework:}}\\
+$\,$Two Strategies\begin{enumerate}
+  \item  Sample from $P(\overrightarrow{\beta}|\overrightarrow{y})$ using MH and a multivariate proposal for $\overrightarrow{\beta}$
+  \item For $j=1,...,p$ sample from $P(\beta_j|\beta_{[-j]},\overrightarrow{y})$
+\end{enumerate}
+$\star$ Recommend to do both in homework!\\
+\\
+\textbf{Q:}When to use non-symmetric proposals?\\
+\textbf{A:}When $\theta$ has compact support then proposal can respect the boundaries.\\
+\indent Ex: $X_i\sim Posi(\lambda) i=1,...,n.$ $\,$ Prior $\lambda \sim t_\upsilon I_{\{(0,\infty)\}}$\\
+\indent $\,\quad\,\,$ Use MH, proposal $\theta^{\star}\sim TN(\theta^{(t)},v^2,[0,\infty))$ $\Rightarrow$ No longer symmetric!\\
+\\
+\textbf{\underline{Checking your MCMC code}}\\
+\noindent For one dataset, how to know we reach convergence?\begin{enumerate}
+  \item By eye, using traceplots.
+  \item Use effective sample size to gauge roughly "how well" converged
+  \item Other diagnostics : run multiple Markov Chains then compare if they are the same(Gelmen-Rubin)
+\end{enumerate}
+$\star$ If pass these tests, it doesn't necessary mean convergence. But if fail to pass, no converge.\\
+\\
+\noindent
+Fortunately, we can use \textbf{simulation studies} to check if everything is working!\\
+\\
+\underline{\textbf{Idea:}}\begin{enumerate}
+                   \item Simulation $\theta_{(j)}$ from the prior $P(\theta)$
+                   \item Simulate a dataset $\overrightarrow{y}_{(j)}$ from the model $P(y|\theta_{(j)})$
+                   \item Sample from posterior for dataset $\overrightarrow{y}_{(j)}$
+                   \item Find $100(1-\alpha)\%$ central credible interval for $\theta$
+                   \item Record yes or no that the interval contained $\theta_{(j)}$
+                   \item Check roughly $100(1-\alpha)\%$ of intervals contained their specific $\theta_{(j)}$
+                 \end{enumerate}
+\underline{Why does this work?}
+\begin{align*}
+    &\int P(\theta) \int I_{\{\theta\in S^{1-\alpha}(\overrightarrow{y})\}}P(\overrightarrow{y}|\theta)dyd\theta\\
+    =& \int \int I_{\{\theta\in S^{1-\alpha}(\overrightarrow{y})\}}P(\theta)P(\overrightarrow{y}|\theta)dyd\theta\\
+    =&\int P(y)[\int I_{\{\theta\in S^{1-\alpha}(\overrightarrow{y})\}}P(\overrightarrow{y}|\theta)d\theta]dy\\
+    =&(1-\alpha) \int P(y)dy \\
+    =& 1-\alpha\\
+\end{align*}
+\textbf{Comparison}\\
+\underline{Bayes:} $\qquad \int P(\theta) \int I_{\{\theta\in S^{1-\alpha}(\overrightarrow{y})\}}P(\overrightarrow{y}|\theta)dyd\theta = 1-\alpha$\\
+\underline{Frequentist:} $\quad \int I_{\{\theta\in C^{1-\alpha}(\overrightarrow{y})\}}P(y|\theta)dy = 1-\alpha \quad \forall\theta$ \\
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=4in]{CI.jpeg}
+  \caption{$95\%$ Credoble Interval vs $95\%$ Confidence Interval}
+ \end{figure}
+\noindent
+\textbf{\underline{Posterior Predictive Checking}}\\
+$\bullet$ Validation simulation checks you can sample from the posterior under your model. But it doesn't tell you if your model is a good fit to the data.\\
+\\
+\noindent
+\underline{Idea:}\\
+Having fit your model to the data, you know roughly what $\theta$ is, so if you simulate from $P(y|\theta)$ the simulated data should look "similar" to the real data.\\
+
+\underline{Formally:} $P(\widetilde{y}|\overrightarrow{y})=\int P(\widetilde{y},\theta|\overrightarrow{y}) d\theta =\int P(\widetilde{y}|\theta)P(\theta|\overrightarrow{y})d\theta$\\
+\\
+\underline{Recipe:}\\
+$\bullet$Sample $\theta^{(t)}$ from the posterior $P(\theta|\overrightarrow{y})$\\
+$\bullet$For each$\theta^{(t)}$, sample a new dataset from $P(\overrightarrow{y}|\theta^{(t)})$\\
+$\bullet$We now have is m predictive datasets and 1 real dataset.\\
+$\bullet$We can take univariate summary statistics of each dataset and compare to the real dataset\\
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=4in]{hist.jpeg}
+ \end{figure}
+\indent $\star$ Could use mean, median, min, max.\\
+\indent $\star$ Compare the posterior predictive p-value.\\
+\underline{\textbf{Posterior Predictive P-value:}} \\
+\begin{equation*}
+    p = 2 * min\{P(T(y^*)>T(\overrightarrow{y})),P(T(y^*)<T(\overrightarrow{y}))\}
+\end{equation*}
+Heuristically, if p is small then your model is not a good fit of the data.
+\end{document}
+This is never printed 

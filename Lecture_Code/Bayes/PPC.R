@@ -77,7 +77,7 @@ for (i in 1:m){
 
 head(ppc.datasets)
 
-par(mfrow=c(3,3))
+#par(mfrow=c(3,3))
 xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(newcomb),max(ppc.datasets[1:8,])))
 truehist(y,xlim=xlim,main="Real Data",col="red")
 for (i in 1:8){
