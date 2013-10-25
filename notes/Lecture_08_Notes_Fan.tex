@@ -1,0 +1,228 @@
+
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{bm}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    filecolor=blue,
+    linkcolor=blue,
+    urlcolor=blue
+}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+   backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+   basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+   breaklines=true,                 % sets automatic line breaking
+   captionpos=b,                    % sets the caption-position to bottom
+   commentstyle=\color{mygreen},    % comment style
+   deletekeywords={...},            % if you want to delete keywords from the given language
+   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+   extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+   frame=single,                    % adds a frame around the code
+   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+   keywordstyle=\color{blue},       % keyword style
+   language=Octave,                 % the language of the code
+   morekeywords={*,...},            % if you want to add more keywords to the set
+   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+   numbersep=5pt,                   % how far the line-numbers are from the code
+   numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+   showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+   showstringspaces=false,          % underline spaces within strings only
+   showtabs=false,                  % show tabs within strings adding particular underscores
+   stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+   stringstyle=\color{mymauve},     % string literal style
+   tabsize=2,                       % sets default tabsize to 2 spaces
+   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+ }
+
+\makeatletter
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}%
+\newsavebox{\mybox}\newsavebox{\mysim}
+\newcommand{\distras}[1]{%
+  \savebox{\mybox}{\hbox{\kern3pt$\scriptstyle#1$\kern3pt}}%
+  \savebox{\mysim}{\hbox{$\sim$}}%
+  \mathbin{\overset{#1}{\kern\z@\resizebox{\wd\mybox}{\ht\mysim}{$\sim$}}}%
+}
+\makeatother
+
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{-0.35in}
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9in}
+\setlength{\footskip}{0.5in}
+\renewcommand{\baselinestretch}{1.3}
+
+\begin{document}
+\lstset{language=R}
+
+\title{\bf STA 250 Lecture 8: Big Data}
+\author{Minjie Fan}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction to Big Data}
+\subsection{What is ''big" data?}
+It depends on what you are trying to do with it!
+\begin{itemize}
+  \item Large $n$ and not large $p$ (\textbf{our focus}).
+  \item Large $p$ and not large $n$.
+  \item Large $n$ and large $p$.
+  \item Complex (non-rectangular) ''big" data.
+\end{itemize}
+\subsection{Scaling to ''Big" Data}
+Naive approaches designed for traditional amounts of data do not tyically scale to "big" data. How to scale to big data then? Usually some combination of:
+\begin{itemize}
+  \item Assuming that the data has inherently lower-dimensional structure
+    \begin{itemize}
+      \item Sparsity
+      \item Conditional independence
+    \end{itemize}
+  \item Fast algorithms
+    \begin{itemize}
+      \item Parallelization
+      \item Typically linear time algorithms or better
+    \end{itemize}
+  \item Methodology that avoids the need to fit the ''full" data
+    \begin{itemize}
+      \item Consensus Monte Carlo
+      \item Bag of Little Bootstraps (\textbf{our focus})
+    \end{itemize}
+\end{itemize}
+\subsection{Q \& A}
+\begin{itemize}
+  \item For highly correlated data, we had better treat them jointly, e.g. Gibbs sampler.
+\end{itemize}
+\subsection{Limitation of R}
+There are limitations on the types of data that R handles well. Since all data being manipulated by R are resident in memory, and several copies of the data can be created during execution of a function, R is not well suited to extremely large data sets. Data objects that are more than a (few) hundred megabytes in size can cause R to run out of memory, particularly on a 32-bit operating system.
+\subsection{What then for "big" data?}
+We can't read in data to memory, so what alternatives are there?
+\begin{itemize}
+  \item File-backed data structures (i.e., data remains stored on disk, not memory) (\textbf{our focus})
+      \begin{itemize}
+        \item Examples: bigmemory (and other big* packages). See: \href{http://www.bigmemory.org/}{http://www.bigmemory.org/}
+        \item Pros: Easy to use. Simple to understand, any language can mimic functionality.
+        \item Cons: Requires "nice" data, burden on programmer to scale algorithms (parallelization etc.), doesn't scale as easily to data that cannot fit on disk.
+      \end{itemize}
+  \item Databases (\textbf{just a little bit})
+      \begin{itemize}
+        \item Relational Databases (e.g., SQL): Rigid structure, relational algebra operations (union, intersection, difference etc.).
+        \item NoSQL Databases (e.g., CouchDB, MongoDB): Less structure than a relational database, less functionality, but typically faster data retrieval.
+      \end{itemize}
+  \item Distributed File Systems (\textbf{our focus})
+      \begin{itemize}
+        \item Example: Hadoop Distributed File System (HDFS). Data remains on disk, but DFS provides a full ecosystem for scaling to data across multiple machines.
+        \item Pros: Scales to essentially arbitrarily large amounts of data (just add more machines).
+        \item Cons: Harder to interact with data. More restrictive progamming paradigm (MapReduce).
+      \end{itemize}
+\end{itemize}
+\section{Example: "Big" Logistic Regression}
+On Gauss I have created an uncompressed 255Gb file containing data for fitting a "big" logistic regression model (6m observations, 3k covariates).
+
+\emph{\textbf{Goal: Find standard errors for the parameter estimates of the logistic regression model.}}
+
+To do this:
+\begin{itemize}
+  \item Figure out how to work with that much data using bigmemory (or Python equivalent)
+  \item Figure out how to obtain standard errors for parameter estimates in a scalable manner (\textbf{Algorithm}).
+\end{itemize}
+\subsection{R Package: Bigmemory}
+\textbf{Function 1: read.big.matrix}
+
+\textbf{Description}: write the contents of a big.matrix to a suitably-formatted ASCII file.
+
+
+\textbf{Usage}:
+\begin{lstlisting}[frame=single]  % Start your code-block
+
+goo <- read.big.matrix(infile, type="double", header=FALSE,
+                      backingpath=datapath,
+                      backingfile=backingfilename,
+                      descriptorfile=descriptorfilename)
+
+\end{lstlisting}
+
+
+\textbf{Function 2: attach.big.matrix}
+
+\textbf{Description}: attach the big.matrix
+
+\textbf{Usage}:
+\begin{lstlisting}[frame=single]  % Start your code-block
+
+attach.big.matrix(dget(descriptorfile),backingpath=datapath)
+
+\end{lstlisting}
+See details: \href{http://cran.r-project.org/web/packages/bigmemory/bigmemory.pdf}{http://cran.r-project.org/web/packages/bigmemory/bigmemory.pdf}
+
+\subsection{Working with the data:}
+\begin{itemize}
+  \item We can fit "big regressions" with biglm.big.matrix or bigglm.big.matrix.
+  \item We can still do the basics (they just might take a while!).
+\end{itemize}
+\subsection{Code your own "bigmemory" in R/Python}
+We actually won't use any of the real functionality of the bigmemory suite of packages. All we really need is the ability to read arbitrary lines from a file without loading the full file into memory.
+\begin{itemize}
+  \item load the file
+  \item Read line-by-line until the desired line is reached
+  \item Extract the data from the line
+\end{itemize}
+\subsection{SE Estimates for $\hat{\beta}$}
+We can use the bootstrap talked during boot camp.
+For the logistic regression model, we have both $X$'s and $y$'s.
+When we resample points, we resample both $x_i$ and $y_i$. This is sometimes called the paired bootstrap.
+
+For the logistic regression problem, using $B=500$:
+\begin{enumerate}
+  \item Let $\hat{F}$ denote the empirical probability distribution of the data (i.e., placing mass $1/6000000$ at each of the $6000000$ data points)
+  \item Take a random sample of size $6000000$ from $\hat{F}$ (with replacement). Call this a ''bootstrap dataset", $X_j^*$ for $j=1,\cdots,500$.
+  \item For each of the $500$ bootstrap datasets, compute the estimate $\hat{\beta}_j^*$.
+  \item Use the standard deviation of $\{\hat{\beta}_1^*,\cdots,\hat{\beta}_{500}^*\}$ to approximate $SD(\hat{\beta})$.
+\end{enumerate}
+\subsection{The Bag of Little Bootstraps}
+For estimating $SD(\hat{\theta})$:
+\begin{enumerate}
+  \item Let $\hat{F}$ denote the empirical probability distribution of the data
+(i.e., placing mass $1/n$ at each of the $n$ data points)
+  \item Select $s$ subsets of size $b$ from the full data (i.e., randomly sample a set of $b$ indices $I_j=\{i_1,\cdots,i_b\}$ from $\{1,2,\cdots,n\}$ without replacement, and repeat $s$ times).
+  \item For each of the $s$ subsets ($j=1,\cdots,s$):
+    \begin{itemize}
+      \item Repeat the following steps $r$ times ($k=1,\cdots,r$):
+        \begin{enumerate}
+          \item Resample a bootstrap dataset $X_{j,k}^*$ of size $n$ from subset $j$.
+          \item Compute and store the estimator $\hat{\theta}_{j,k}$
+        \end{enumerate}
+      \item Compute the bootstrap SE of $\hat{\theta}$ based on the $r$ bootstrap datasets for subset $j$ i.e., compute:
+          $$\xi_j^*=SD\{\hat{\theta}_{j,1}^*,\cdots,\hat{\theta}_{j,r}^*\}.$$
+    \end{itemize}
+  \item Average the $s$ bootstrap SE's, $\xi_1^*,\cdots,\xi_s^*$ to obtain an estimate of $SD(\hat{\theta})$ i.e.,
+      $$\widehat{SD}(\hat{\theta})=\frac{1}{s}\sum \limits_{j=1}^s \xi_j^*.$$
+\end{enumerate}
+\begin{itemize}
+  \item How to select $s$? (Number of subsets)
+  \item How to select $b$? (Size of subsets)
+
+  Real key is $b$. From paper $b\approx n^{0.6}$ or $b\approx n^{0.7}$ works well.
+  \item How to select $r$? (Number of bootstrap replicates per subset)
+
+  $r$ should be large enough for each of the $s$ subsets. Typically, $r>s$. For example, if $rs=500$, then $r=50$ and $s=10$.
+\end{itemize}
+The \textbf{gain} is that there are only (at most) $b$ unique data points within each bootstrapped dataset. We have existing approaches to fit this kind of data with the same time cost as if there are $b$ data points.
+\end{document}
