@@ -1,10 +1,13 @@
-Lecture_Code/Twitter/tweetdump.txt
-Lecture_Code/Twitter/my_secret_codes.txt
+*.Rhistory
+tweetdump.txt
+my_secret_codes.txt
 Gemfile.lock
 _site*
 *.DS_Store
+*~
 out.*
 out_*
+*.backup
 *.acn
 *.acr
 *.alg
