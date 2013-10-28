@@ -36,17 +36,15 @@ if (length(args)==0){
 ########################################################################################
 #install.packages("mvtnorm"), use for generating Bivariate Normal rv.
 #install.packages("boot"), use for inverse logit function
-#install.packages("emdbook"), use for multivariate normal density
 #install.packages("MCMCpack"), MCMC package 
 
 library(mvtnorm)
 library(boot)
-library(emdbook)
 library(MCMCpack)
 
 #get the data
-data<-read.csv("blr_data_1098.csv")
-beta<-read.csv("blr_pars_1098.csv")
+data<-read.csv(file=paste("data/blr_data_",sim_num,".csv",sep=""))
+beta<-read.csv(file=paste("data/blr_pars_",sim_num,".csv",sep=""))
 
 #define the parameters used in the posterior
 mu<-c(0,0)
