@@ -71,7 +71,7 @@ for (i in 1:length(coverage_vec)){
 
 plot(x=1-alpha_vec,y=coverage_vec,type="p",xlab="Nominal Coverage",ylab="Actual Coverage",
      main="Nominal vs. Actual Coverage: Jeffreys Prior for Binomial")
-
+abline(a=0,b=1,col='blue')
 "full_coverage_sim" <- function(n_datasets,n,a,b,interval.type,main=NULL,do.plot=TRUE,verbose=TRUE)
 {
   alpha_vec <- seq(0,1,by=0.01)
