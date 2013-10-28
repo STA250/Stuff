@@ -16,5 +16,7 @@ TwoThou*
 PowersMean*
 MixtureMH.*
 MixturePT.*
-
-
+groups-output/
+mini-groups-output/
+groups.txt
+*.swp

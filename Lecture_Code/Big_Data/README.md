@@ -2,7 +2,9 @@
 
 0. Find a machine/cluster running Hadoop. For those running a 64-bit version
 of Linux, you can obtain a local install Hadoop using 
-<http://tutorialforlinux.com/2013/10/25/how-to-install-hadoop-on-ubuntu-13-10-saucy-step-by-step-guide/>. 
+<http://tutorialforlinux.com/2013/10/25/how-to-install-hadoop-on-ubuntu-13-10-saucy-step-by-step-guide> 
+(note: you don't need to use the Oracle Java SDK, the standard Java SDK bundled
+with Ubuntu works just fine too). 
 For those on Mac (Mountain Lion), you can obtain a local install by following:
 <http://blog.tundramonkey.com/2013/02/24/setting-up-hadoop-on-osx-mountain-lion>.
 Else, you can use Amazon and find a machine image with Hadoop preconfigured.
