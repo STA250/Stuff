@@ -1,3 +1,17 @@
+##
+#
+# Logistic regression
+#
+# Y_{i} | \beta \sim \textrm{Bin}\left(n_{i},e^{x_{i}^{T}\beta}/(1+e^{x_{i}^{T}\beta})\right)
+# \beta \sim N\left(\beta_{0},\Sigma_{0}\right)
+#
+##
+
+library(mvtnorm)
+library(coda)
+library(boot)
+library(MCMCpack)
+
 ########################################################################################
 ########################################################################################
 ## Handle batch job arguments:
@@ -38,14 +52,13 @@ if (length(args)==0){
 #install.packages("boot"), use for inverse logit function
 #install.packages("MCMCpack"), MCMC package 
 
-library(mvtnorm)
-library(coda)
-library(boot)
-library(MCMCpack)
 
 #get the data
 data<-read.csv(file=paste("data/blr_data_",sim_num,".csv",sep=""))
 beta<-read.csv(file=paste("data/blr_pars_",sim_num,".csv",sep=""))
+
+#data<-read.csv("blr_data_1098.csv")
+#beta<-read.csv("blr_pars_1098.csv")
 
 #define the parameters used in the posterior
 mu<-c(0,0)
@@ -106,5 +119,5 @@ B.percentile <- apply(B.draws,2,quantile,probs=percents)
 
 #write.table(B.percentile,file = paste("results/blr_res_",sim_num,".csv",sep=""),sep=",",col.names=F, row.names=F)
 
-write.table(B.percentile,file = paste("blr_res_",sim_num,".csv",sep=""),sep=",",col.names=F, row.names=F)
+write.table(B.percentile,file = paste("results/blr_res_",sim_num,".csv",sep=""),sep=",",col.names=F, row.names=F)
 
