@@ -39,6 +39,7 @@ if (length(args)==0){
 #install.packages("MCMCpack"), MCMC package 
 
 library(mvtnorm)
+library(coda)
 library(boot)
 library(MCMCpack)
 
