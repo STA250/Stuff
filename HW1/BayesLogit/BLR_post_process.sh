@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-module load R/3.0.0
+module load R/3.0.2
 
 #SBATCH --job-name=blr_post_process
 #SBATCH --output=dump/blr_post_process.out
