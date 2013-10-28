@@ -2,7 +2,7 @@
 ##
 #
 # Logistic regression
-# 
+#
 # Y_{i} | \beta \sim \textrm{Bin}\left(n_{i},e^{x_{i}^{T}\beta}/(1+e^{x_{i}^{T}\beta})\right)
 # \beta \sim N\left(\beta_{0},\Sigma_{0}\right)
 #
@@ -35,7 +35,7 @@ if (nargs==0):
 	np.random.seed(1330931)
 else:
 	# Decide on the job number, usually start at 1000:
-	sim_num = sim_start + int(sys.argv[1])
+	sim_num = sim_start + int(sys.argv[2])
 	# Set a different random seed for every job number!!!
 	np.random.seed(762*sim_num + 1330931)
 
@@ -67,4 +67,4 @@ Sigma_0_inv = np.diag(np.ones(p))
 # Write results to a (99 x p) csv file...
 
 # Go celebrate.
- 
+
