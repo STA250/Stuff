@@ -1,0 +1,118 @@
+\documentclass[11pt]{article}
+\title{\textbf{STA 250 Lecture 8 note}}
+\date{}
+\author{
+        Chia-Pei Chen
+}
+
+\usepackage{amssymb,amsmath, amsthm,mathrsfs}
+\usepackage{graphicx,picinpar,epsf,epstopdf}
+\usepackage{float}
+\usepackage[margin=3cm]{geometry}
+\usepackage{hyperref}
+\usepackage{lipsum,framed,fancybox}
+\usepackage[protrusion=true,expansion=true]{microtype}	
+
+\begin{document}
+\maketitle
+\noindent\rule{16cm}{0.4pt}
+
+\vspace{0.5cm}
+\noindent \textbf{\large{I. Types of Big Data}}\vspace{0.15cm}
+
+\begin{itemize}
+  \item Large n and not large p
+    \begin{itemize}
+      \item We focus on this. Example: Linear regression with 100m observations and 500 covariates.
+    \end{itemize}
+  \item Large p and not large n
+  \item Large p and large n
+  \item Complex (non-rectangular) data.
+   \begin{itemize}
+      \item Example: Brain images.
+    \end{itemize}
+
+\end{itemize}
+
+\vspace{0.5cm}
+\noindent \textbf{\large{II. Scale to Big Data}}\vspace{0.15cm}
+
+\begin{itemize}
+  \item Assume lower dimension: sparsity, conditional independence. (If correlated, prefer to do joint distribution)
+  \item Fast algorithm: parallelize, linear time
+  \item Avoid to fit full data: consensus Monte Carlo, bag of little boostraps. (Focus on bag of little boostraps)
+  \item Complex (non-rectangular) data.
+  [ \textbf{Note}: hundred megabytes in size can cause R shutdown.]
+
+\end{itemize}
+
+\vspace{0.5cm}
+\noindent \textbf{\large{III. Alternative Methods for Big Data}}\vspace{0.15cm}
+
+\begin{itemize}
+  \item[(i)] File-backed data structure: avoid reading data in the memory and store on disk. Ex: bigmemory: easy to use.
+  \item[(ii)] Databases:
+   \begin{itemize}
+      \item Relational database (SQL): Rigid and relational structure
+      \item NoSQL database (CouchDB):Less structure and functionality
+    \end{itemize}
+
+  \item[(iii)] Distributed file system
+   \begin{itemize}
+      \item ex: Hadoop distributed file system (HDFS): across multiple machines
+      \item Pros:duplicate data, stronger compute power and speed up
+      \item Cons:hard to interact with data
+    \end{itemize}
+  We focus on (i) and (iii).
+\end{itemize}
+
+\vspace{0.5cm}
+\noindent \textbf{\large{IV. Example of Big logistic regression}}\vspace{0.15cm}
+
+Goal:Find stand errors for parameter estimates and how to work with big data by "bigmemory"
+\begin{itemize}
+  \item[(i)] Use bigmemory concept: read some arbitrary lines instead of full file
+  \item[(ii)] Find CI's or SE's for  $\hat{\beta}$: We can use bootstrap
+  For the logistic regression problem, using $B=500$:
+    \begin{enumerate}
+        \item Let $\hat{F}$ denote the true probability distribution of the data (i.e., placing mass $1/6000000$ at each of the $6000000$ data points)
+        \item Take a random sample of size $6000000$ from $\hat{F}$ (with replacement). Call this a ''bootstrap dataset", $X_j^*$ for $j=1,\cdots,500$.
+        \item For each of the $500$ bootstrap datasets, compute the estimate $\hat{\beta}_j^*$.
+        \item Use the standard deviation of $\{\hat{\beta}_1^*,\cdots,\hat{\beta}_{500}^*\}$ to approximate $SD(\hat{\beta})$.
+    \end{enumerate}
+
+  Traditional Bootstrap (resample with replacement again and again) takes longer time. We can consider using the following algorithm.
+
+  \item[(iii)] The Bag of Little Bootstraps
+
+  Sample $s$ subsets of size $b<n$ and the resample $n$ points from those.\\
+  For estimating SD($\widehat{\beta}$):
+   \begin{itemize}
+      \item [(1)] Let $\widehat{F}$ denote the empirical probability distribution of the data (i.e., placing mass $1/n$ at each of the $n$ data points)
+      \item [(2)]Select $s$ subsets of size $b$ from the full data (i.e. randomly sample a set of $b$ indices $\mathcal\{I\}_j=\{i_1,...,i_b\}$ from $\{1,2,...,n\}$ without replacement, and repeat $s$ times)
+      \item [(3)] For each of the $s$ subsets ($j=1,...,s$):
+       Repeat the following steps $r$ times ($k=1,...,r$):
+            \begin{itemize}
+                \item Resample a bootstrap dataset $X_{j,k}^*$ of size $n$ from subset $j$. (i.e., sample $(n_1,…,n_b)\sim Multinomial(n,(1/b,…,1/b))$, where $(n_1,…,n_b)$ denotes the number of times each data point of the subset occurs in the bootstrapped dataset.)
+                \item Compute and store the estimator $\widehat{\theta}_{j,k}$
+                \item Compute the bootstrap SE of $\widehat{\theta}$ based on the $r$ bootstrap data sets for subset $j$ i.e., compute: $$\xi_j^*=SD\{\widehat{\theta^*}_{j,1},...,\widehat{\theta^*}_{j,1}\}$$
+            \end{itemize}
+       \item [(4)] Average the $s$ bootstrap SE's, $\xi_1^*,\cdots,\xi_s^*$ to obtain an estimate of $SD(\hat{\theta})$ i.e.,
+           $$\widehat{SD}(\hat{\theta})=\frac{1}{s}\sum \limits_{j=1}^s \xi_j^*.$$
+
+       \item [(5)]More to think about:
+          \begin{itemize}
+            \item How to select $s$? (Number of subsets)
+            \item How to select $b$? (Subset sample size)
+            \item How to select $r$? It is better that $r$ (Number of bootstrap replicates per subset)to be large enough for each of the $s$ subsets ($r>s$). For example, if 500 subjects, then $r=50$ and $s=10$ or $s=5$.
+                 Real key is $b$. From paper $b\approx n^{0.6}$ or $b\approx n^{0.7}$ works well.
+            \item Reducing the unique data points in each data set can help speed things up.
+            \item How to utilize the array job capability of Gauss for BLB?
+         \end{itemize}
+         
+    \end{itemize}
+    
+\end{itemize}
+
+
+\end{document} 
