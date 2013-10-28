@@ -26,7 +26,7 @@
 ##
 ###############################################################################
 
-module load R/3.0.0
+module load R
 
 # Name of the job - You'll probably want to customize this.
 #SBATCH --job-name=blr_fit_data
