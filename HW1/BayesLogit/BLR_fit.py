@@ -47,7 +47,7 @@ if (nargs==0):
 	np.random.seed(1330931)
 else:
 	# Decide on the job number, usually start at 1000:
-	sim_num = sim_start + int(sys.argv[1])
+	sim_num = sim_start + int(sys.argv[2])
 	# Set a different random seed for every job number!!!
 	np.random.seed(762*sim_num + 1330931)
 
@@ -72,7 +72,7 @@ def log_density(m,y,x,beta,beta_0,Sigma_0_inv):
 #        print(y[i])
 #        print(beta)
 #        print(m[i])
-        s=s+y[i]*(x[i]*beta)-m[i]*math.log(1+exp(x[i]*beta))
+        s=s+y[i]*(x[i]*beta)-m[i]*math.log(1+math.exp(x[i]*beta))
 #    print beta.shape
 #    print beta_0.T.shape
 #    print Sigma_0_inv.shape
@@ -87,7 +87,7 @@ def metropolis_hasting(trial,beta_init,v,m,y,x,beta_0,Sigma_0_inv):
     beta_curr=beta_init
     beta_track=[0,beta_init]
     for t in range(trial):    
-        beta_prosal=np.random.multivariate_normal([0,0], v, 1).T
+        beta_prosal=np.random.multivariate_normal([beta_curr[0][0],beta_curr[1][0]], v, 1).T
         log_alpha=log_density(m,y,x,beta_prosal,beta_0,Sigma_0_inv)-log_density(m,y,x,beta_curr,beta_0,Sigma_0_inv)[0][0]
         log_u=math.log(np.random.uniform(low=0.0, high=1.0, size=1))
 #        print log_alpha
@@ -105,27 +105,27 @@ def metropolis_hasting(trial,beta_init,v,m,y,x,beta_0,Sigma_0_inv):
     beta_track[0]=acpt_rate
     return beta_track
     
-def confidence_interval(data, confidence=0.95):
-    a = 1.0*np.array(data)
-    n = len(a)
-    m, se = np.mean(a), sp.stats.stderr(a)
-    h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
-    return m, m-h, m+h
+#def confidence_interval(data, confidence=0.95):
+#    a = 1.0*np.array(data)
+#    n = len(a)
+#    m, se = np.mean(a), sp.stats.stderr(a)
+#    h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
+#    return m, m-h, m+h
 
-def bayes_logreg(m,y,x,beta_0,Sigma_0_inv,niter=10000,burnin=1000,print_every=1000,retune=100,verbose=True):
+def bayes_logreg(m,y,x,beta_0,Sigma_0_inv,niter=4000,burnin=1000,print_every=1000,retune=100,verbose=True):
      
     v=np.diag([1,1])
     beta_init=beta_0
     acpt_rate=0
     
 # tuning the covariace
-    while acpt_rate<0.4 or acpt_rate>0.6:
+    while acpt_rate<0.3 or acpt_rate>0.7:
         acpt_rate=metropolis_hasting(retune,beta_init,v,m,y,x,beta_0,Sigma_0_inv)[0]  
  #       print acpt_rate                  
-        if acpt_rate<0.4:
-            v=v/exp(1)
-        elif acpt_rate>0.6:
-            v=v*exp(1) 
+        if acpt_rate<0.3:
+            v=v/math.exp(1)
+        elif acpt_rate>0.7:
+            v=v*math.exp(1) 
 #        print("v is",v)
         
     print("The covariance after tuning is",v,",","with an acceptance rate of",acpt_rate)
@@ -164,21 +164,21 @@ def bayes_logreg(m,y,x,beta_0,Sigma_0_inv,niter=10000,burnin=1000,print_every=10
          
     
 
-for i in range(200):
-    df = pd.read_csv('./data/blr_data_1'+str(i+1).zfill(3)+'.csv')
-    #df = pd.read_csv('blr_data_1001.csv')
-    y,m,x= np.matrix(df.y).T,np.matrix(df.n).T,np.matrix([df.X1,df.X2]).T
-    beta_0=np.matrix([0,0]).T
-    Sigma_0_inv=np.matrix(np.diag([1,1]))
-    beta1,beta2=bayes_logreg(m,y,x,beta_0,Sigma_0_inv,niter=10000,burnin=1000,print_every=1000,retune=100,verbose=True)
+
+df = pd.read_csv('./data/blr_data_'+str(sim_num+1).zfill(3)+'.csv')
+#df = pd.read_csv('blr_data_1001.csv')
+y,m,x= np.matrix(df.y).T,np.matrix(df.n).T,np.matrix([df.X1,df.X2]).T
+beta_0=np.array([[0,0]]).T
+Sigma_0_inv=np.matrix(np.diag([1,1]))
+beta1,beta2=bayes_logreg(m,y,x,beta_0,Sigma_0_inv,niter=4000,burnin=1000,print_every=1000,retune=100,verbose=True)
 #    print beta1
 #    print beta2    
-    with open("./results/out_1" + str(i+1).zfill(3)+".csv", 'w') as out:# output file
-        writer = csv.writer(out, dialect='excel')
-        for row in range(100):        
+with open("./results/blr_res_" + str(sim_num+1).zfill(3)+".csv", 'w') as out:# output file
+    writer = csv.writer(out, dialect='excel')
+    for row in range(99):        
   #              print np.percentile(beta1,row),np.percentile(beta2,row),"\n" 
-                writer.writerow((round(np.percentile(beta1,row),7),round(np.percentile(beta2,row),7)))
-    out.closed
+            writer.writerow((round(np.percentile(beta1,row),7),round(np.percentile(beta2,row),7)))
+out.closed
 
 
 # Read data corresponding to appropriate sim_num:
