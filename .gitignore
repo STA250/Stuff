@@ -16,6 +16,7 @@ TwoThou*
 PowersMean*
 MixtureMH.*
 MixturePT.*
+test-output/
 groups-output/
 mini-groups-output/
 groups.txt
