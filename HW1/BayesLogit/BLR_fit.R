@@ -57,8 +57,6 @@ if (length(args)==0){
 data<-read.csv(file=paste("data/blr_data_",sim_num,".csv",sep=""))
 beta<-read.csv(file=paste("data/blr_pars_",sim_num,".csv",sep=""))
 
-#data<-read.csv("blr_data_1098.csv")
-#beta<-read.csv("blr_pars_1098.csv")
 
 #define the parameters used in the posterior
 mu<-c(0,0)
@@ -67,7 +65,7 @@ x<-cbind(data$X1,data$X2)
 y<-matrix(data$y)
 mi<-matrix(data$n)
 n=100
-n.accept <- 0  # Track tha acceptance rate:
+n.accept <- 0  # Track the acceptance rate:
 n.accept.burn<-0
 niter<-10000
 burnin<-1000
@@ -114,10 +112,12 @@ cat("ESS:\n") ; print(ess)
 
 B.draws<-mcmc(B.draws)
 
+#compute quantiles
 percents <- c(1:99)/100
 B.percentile <- apply(B.draws,2,quantile,probs=percents)
 
-#write.table(B.percentile,file = paste("results/blr_res_",sim_num,".csv",sep=""),sep=",",col.names=F, row.names=F)
+write.table(B.percentile,file = paste("results/blr_res_",sim_num,".csv",sep=""),sep=",",col.names=F, row.names=F)
 
 write.table(B.percentile,file = paste("results/blr_res_",sim_num,".csv",sep=""),sep=",",col.names=F, row.names=F)
+
 
