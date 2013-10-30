@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250 Lecture 10</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 Lecture 10">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250 Lecture 10</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- 
+
+# To compile, from R:
+library(slidify)
+slidify("Lecture_10.Rmd")
+
+-->
+
+<h2>Welcome to STA 250!</h2>
+
+<p>Today is <code>Big Data</code> lecture 3. On the menu for today...</p>
+
+<ol class = "build">
+<li><p>Cloud Computing on Amazon</p></li>
+<li><p>ElasticMapReduce</p></li>
+<li><p>Working with AWS</p></li>
+<li><p>Introduction to Hive</p></li>
+<li><p>Hive Examples</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Hadoop + MapReduce on Amazon</h2>
+  </hgroup>
+  <article>
+    <p>Today we will take a look at how to use Hadoop via 
+Amazon Web Services (AWS) using ElasticMapReduce (EMR).</p>
+
+<p>As mentioned in lecture 01, Amazon have kindly given us
+an educational grant to cover the computing costs for 
+the class. </p>
+
+<p><a href="http://aws.amazon.com/what-is-cloud-computing">
+<img src="http://awsmedia.s3.amazonaws.com/AWS_logo_poweredby_black_127px.png" alt="Powered by AWS Cloud Computing">
+</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Launching a Hadoop Cluster on Amazon</h2>
+  </hgroup>
+  <article>
+    <p>MapReduce and Hadoop functionality on Amazon is provided through
+the Elastic MapReduce service. </p>
+
+<p>This allows you to launch configured Hadoop clusters with varying 
+numbers of nodes, compute power, software etc.</p>
+
+<p>These clusters can also be launched with Hive and Pig pre-configured
+and ready to use.</p>
+
+<p>Lets see how to launch an interactive session and then login.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Amazon Sessions</h2>
+  </hgroup>
+  <article>
+    <p>EMR jobs come in two types:</p>
+
+<ol class = "build">
+<li>Interactive: The machine is created and launched (and any customized configurations or additional software is setup). 
+The user must then login and run his/her scripts. </li>
+</ol>
+
+<p><strong><em>Crucial note: THE JOB COSTS MONEY AS SOON AS IT STARTS RUNNING. WHEN YOU HAVE FINISHED RUNNING YOUR SCRIPTS, 
+YOU MUST TERMINATE THE JOB via:</em></strong><br/> 
+<a href="https://console.aws.amazon.com/elasticmapreduce/">https://console.aws.amazon.com/elasticmapreduce/</a></p>
+
+<ol>
+<li>Non-Interactive: Similar to Gauss batch jobs, all scripts are supplied to Amazon and the machine is setup, scripts setup, output
+written to the desired destination, and then the job is automatically terminated upon completion. </li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Storing Data on AWS</h2>
+  </hgroup>
+  <article>
+    <p>Data on AWS is designed to be stored in Amazon&#39;s S3 system (<a href="http://aws.amazon.com/s3">http://aws.amazon.com/s3</a>).</p>
+
+<p>S3 stores data inside what are known as <em>buckets</em>. </p>
+
+<p>For homework 2 you will need to retrieve data from the course bucket, and bring that 
+data into Hadoop. For example, to bring in the <code>mini_groups.txt</code> data used for 
+example 2 last lecture into the <code>data</code> directory on your HDFS:</p>
+
+<pre><code>hadoop distcp s3://sta250bucket/mini_groups.txt data/
+</code></pre>
+
+<p>Note: You must already have created the <code>data</code> directory for this command to work.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Uploading Data to S3</h2>
+  </hgroup>
+  <article>
+    <p>To upload data to S3, do so via the S3 console:</p>
+
+<p><a href="https://console.aws.amazon.com/s3/">https://console.aws.amazon.com/s3/</a></p>
+
+<p>The console is fairly self-explanatory.</p>
+
+<p><strong><em>NOTE: Storing data on AWS costs money, so once you are done. Delete the data!</em></strong></p>
+
+<p>For homework 1 you will just be using Prof. Baines&#39; data, so no need to upload any data.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Moving Files to EMR (Interactive Jobs)</h2>
+  </hgroup>
+  <article>
+    <p>For non-iteractive EMR jobs, you will need to get your scripts
+to the machine. Fortunately, this is (almost) the same procedure you 
+already have been using for Gauss: <code>scp</code>.</p>
+
+<p>Only one extra wrinkle: you will need to provide your private keyfile
+when issuing the <code>scp</code> command.</p>
+
+<p>For example:</p>
+
+<pre><code>scp -i mykey.pem *.py hadoop@ec2-54-202-210-38.us-west-2.compute.amazonaws.com:~/
+</code></pre>
+
+<p>Q: What does this command do?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Hadoop Streaming on AWS</h2>
+  </hgroup>
+  <article>
+    <p>To run a Hadoop Streaming job on AWS you need to launch your cluster, 
+get the data into your HDFS, get your scripts to HDFS and then launch 
+the MapReduce job in the same manner as described in Lecture 09.</p>
+
+<p>To check the status of your job you can either:</p>
+
+<ul class = "build">
+<li><p>Open another ssh session and run <code>lynx http://localhost:9100/</code></p></li>
+<li><p>Setup FoxyProxy to view the status from Firefox. See:<br/>
+<a href="http://docs.aws.amazon.com/ElasticMapReduce/latest/DeveloperGuide/emr-connect-master-node-foxy-proxy.html">http://docs.aws.amazon.com/ElasticMapReduce/latest/DeveloperGuide/emr-connect-master-node-foxy-proxy.html</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Hadoop Streaming on EMR Overview</h2>
+  </hgroup>
+  <article>
+    <p>The basic steps (Note: other workflows are possible, this isn&#39;t necessarily the best way to do things!):</p>
+
+<ol class = "build">
+<li>Launch the EMR cluster from the AWS website</li>
+<li>Set up your data directory in the HDFS</li>
+<li>Transfer your data into the HDFS</li>
+<li>Copy your scripts to the cluster using <code>scp</code></li>
+<li>Run the MapReduce job</li>
+<li>Debug, check status using <code>lynx</code> (and cross your fingers...)</li>
+<li>Transfer the results out of the HDFS</li>
+<li>Copy the results to your local machine via <code>scp</code></li>
+<li><strong><em>Terminate your job via the AWS console!!!</em></strong></li>
+<li>Celebrate. </li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Hive</h2>
+  </hgroup>
+  <article>
+    <p>Hive provides higher-level functionality for working with Hadoop.</p>
+
+<p>Good places to start:</p>
+
+<ul>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/Home">https://cwiki.apache.org/confluence/display/Hive/Home</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/Tutorial">https://cwiki.apache.org/confluence/display/Hive/Tutorial</a></li>
+</ul>
+
+<p>From the wiki:</p>
+
+<p>Hive defines a simple SQL-like query language, called QL, that enables users familiar with SQL to query the data. At the same time, this language also allows programmers who are familiar with the MapReduce framework to be able to plug in their custom mappers and reducers to perform more sophisticated analysis that may not be supported by the built-in capabilities of the language. QL can also be extended with custom scalar functions (UDF&#39;s), aggregations (UDAF&#39;s), and table functions (UDTF&#39;s).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Understanding Hive</h2>
+  </hgroup>
+  <article>
+    <p>Since Hive imposes structure on the data to be analyzed (unlike vanilla Hadoop), there are two main things to grasp:</p>
+
+<ul>
+<li><p>The Data Definition Language (DDL): For creating databases, tables from the data<br/>
+<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL">https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL</a></p></li>
+<li><p>The Data Manipulation Language (DML): For modifying tables (either via <code>LOAD</code>-ing in data, or <code>INSERT</code>-ing it via queries)<br/>
+<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DML">https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DML</a></p></li>
+<li><p>The hive Language: For querying tables to find what you are interested in.<br/>
+<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select">https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select</a>    </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Data Structure in Hive</h2>
+  </hgroup>
+  <article>
+    <p>From the Wiki:</p>
+
+<ul class = "build">
+<li><p><strong><em>Databases:</em></strong> Namespaces that separate tables and other data units from naming confliction.</p></li>
+<li><p><strong><em>Tables:</em></strong> Homogeneous units of data which have the same schema. </p></li>
+<li><p><strong><em>Partitions:</em></strong> Each Table can have one or more partition Keys which determines how the data is stored. Partitions - apart from being storage units - also allow the user to efficiently identify the rows that satisfy a certain criteria. For example, a <code>date_partition</code> of type <code>STRING</code> and <code>country_partition</code> of type <code>STRING</code>. Each unique value of the partition keys defines a partition of the Table. For example all <code>US</code> data from <code>2009-12-23</code> is a partition of the page_views table. Therefore, if you run analysis on only the <code>US</code> data for <code>2009-12-23</code>, you can run that query only on the relevant partition of the table thereby speeding up the analysis significantly. </p></li>
+<li><p><strong><em>Buckets (or Clusters):</em></strong> Data in each partition may in turn be divided into Buckets based on the value of a hash function of some column of the Table. </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Primitive Data Types in Hive</h2>
+  </hgroup>
+  <article>
+    <!-- Just as in SQL, each column of a table must be of a specific type. Primitive types in Hive are:-->
+
+<ul class = "build">
+<li>Integers
+
+<ul>
+<li><code>TINYINT</code> - 1 byte integer</li>
+<li><code>SMALLINT</code> - 2 byte integer</li>
+<li><code>INT</code> - 4 byte integer</li>
+<li><code>BIGINT</code> - 8 byte integer</li>
+</ul></li>
+<li>Boolean type
+
+<ul>
+<li><code>BOOLEAN</code> - TRUE/FALSE</li>
+</ul></li>
+<li>Floating point numbers
+
+<ul>
+<li><code>FLOAT</code> - single precision</li>
+<li><code>DOUBLE</code> - Double precision</li>
+</ul></li>
+<li>String type
+
+<ul>
+<li><code>STRING</code> - sequence of characters in a specified character set</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>More Data Types in Hive</h2>
+  </hgroup>
+  <article>
+    <p>In addition to the primitive data types we can also construct complex ones via:</p>
+
+<ul class = "build">
+<li><p><strong><em>Structs:</em></strong> the elements within the type can be accessed using the <code>DOT (.)</code> notation. For example, for a column <code>c</code> of type <code>STRUCT {a INT; b INT}</code> the <code>a</code> field is accessed by the expression <code>c.a</code></p></li>
+<li><p><strong><em>Maps (key-value tuples):</em></strong> The elements are accessed using <code>[&#39;element name&#39;]</code> notation. For example in a map <code>M</code> comprising of a mapping from <code>&#39;group&#39; -&gt; gid</code> the <code>gid</code> value can be accessed using <code>M[&#39;group&#39;]</code></p></li>
+<li><p><strong><em>Arrays (indexable lists):</em></strong> The elements in the array have to be in the same type. Elements can be accessed using the <code>[n]</code> notation where <code>n</code> is an index (zero-based) into the array. For example for an array <code>A</code> having the elements <code>[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]</code>, <code>A[1]</code> retruns <code>b</code>.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Creating (Empty) Tables</h2>
+  </hgroup>
+  <article>
+    <p>To create an (empty) table with a known schema is fairly easy. For example:</p>
+
+<pre><code>CREATE TABLE mytable (
+ firstname STRING,
+ lastname STRING,
+ statphd BOOLEAN,
+ hwscore INT
+ );
+</code></pre>
+
+<p>Then:</p>
+
+<pre><code>SHOW TABLES;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Putting Data in to Tables</h2>
+  </hgroup>
+  <article>
+    <p>To fill a table with data, there are two options:</p>
+
+<ul class = "build">
+<li><p><code>INSERT</code> data from another table</p></li>
+<li><p><code>LOAD</code> data from a file</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Public Datasets on Amazon</h2>
+  </hgroup>
+  <article>
+    <ul class = "build">
+<li>Google n-grams: Details at <a href="http://aws.amazon.com/datasets/8172056142375670">http://aws.amazon.com/datasets/8172056142375670</a><br/></li>
+<li>Amazon S3: <code>DIR=s3://datasets.elasticmapreduce/ngrams/books/</code></li>
+<li>American-English 1-grams (3.0Gb): <code>$DIR/20090715/eng-us-all/1gram/data</code></li>
+<li>American-English 4-grams (135.0Gb): <code>$DIR/20090715/eng-us-all/4gram/data</code></li>
+<li><p>English 4-grams (293.5Gb): <code>$DIR/20090715/eng/4gram/data</code><br/>
+<strong>IMPORTANT NOTE: These datasets are hosted in the us-east-1 region. If you process these from other regions you will be charged data transfer fees.</strong></p></li>
+<li><p>Sloan Digital Sky Survey: Details at: <a href="http://aws.amazon.com/datasets/Astronomy/2797">http://aws.amazon.com/datasets/Astronomy/2797</a><br/></p></li>
+<li><p>Daily Global Weather Measurements: Details at: <a href="http://aws.amazon.com/datasets/Climate/2759">http://aws.amazon.com/datasets/Climate/2759</a><br/></p></li>
+<li><p>1000 Genomes Project: Details at: <a href="http://aws.amazon.com/datasets/Biology/4383">http://aws.amazon.com/datasets/Biology/4383</a><br/>
+Amazon S3: <a href="http://s3.amazonaws.com/1000genomes">http://s3.amazonaws.com/1000genomes</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Hive on EMR</h2>
+  </hgroup>
+  <article>
+    <p>Lets play around with the Google ngrams data on EMR.</p>
+
+<p>Quick note: The Google n-grams datasets are stored in the Sequence File Format (compressed). 
+This is a commonly used file format for Hadoop. See: <a href="http://wiki.apache.org/hadoop/SequenceFile">http://wiki.apache.org/hadoop/SequenceFile</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/massage.gif" alt="Keep Off" align="middle" style="width: 400px;"/></p>
+
+<p><br/><a href="http://www.buzzfeed.com/copyranter/the-best-cat-gif-post-in-the-history-of-cat-gifs">Source</a>. Mon: Big Data Wrap-up.*</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
