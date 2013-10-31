@@ -1,0 +1,167 @@
+\documentclass[12pt]{article}
+\usepackage{enumerate}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage{relsize}
+\usepackage[pdftex]{graphicx}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\pagestyle{empty}
+\renewcommand{\familydefault}{\sfdefault}
+\makeatletter
+\def\verbatim@font{\ttfamily\normalsize}
+\makeatother
+
+\def\indented#1{\list{}{}\item[]}
+\let\indented=\endlist
+
+\newcounter{questionCounter}
+\newcounter{partCounter}[questionCounter]
+\newenvironment{question}[2][\arabic{questionCounter}]{%
+    \setcounter{partCounter}{0}%
+    \vspace{.25in} \hrule \vspace{0.5em}%
+        \noindent{\bf #2}%
+    \vspace{0.8em} \hrule \vspace{.10in}%
+    \addtocounter{questionCounter}{1}%
+}{}
+\renewenvironment{part}[1][\alph{partCounter}]{%
+    \addtocounter{partCounter}{1}%
+    \vspace{.10in}%
+    \begin{indented}%
+       {\bf (#1)} %
+}{\end{indented}}
+
+
+\newcommand{\discussion}{Notes for Lecture 10: Big Data III}
+\newcommand{\thedate}{Weds, Oct. 24}
+\newcommand{\thecourse}{Amazon Cloud Services and Hive}
+\newcommand{\prof}{STA 250: Prof. Paul Baines}
+\newcommand{\name}{Written by Justin Wang}
+
+\begin{document}
+\begin{center}
+{\LARGE \discussion} \\
+{\large \thecourse} \\
+{\small \prof} \\
+{\small \name} \\ 
+\end{center}
+\vspace{6 mm}
+
+{\bf Part I: Amazon Cloud Services} \\
+
+{\bf Introduction:} Large tech companies such as Google and Amazon have a massive number of machines and servers. So many, in fact, that many researchers these days choose to rent time on these machines for large computations, rather than use their own machines. This is beneficial to them as it saves them a lot of hassle in having to maintain machines, and costs less in the long run. \\
+
+We were fortunate enough to receive an educational grant from Amazon to use time on their machines. The login details to use their servers will be given in an email by Thursday evening. \\
+
+{\bf How to Set up A Cluster on Amazon:} \\
+
+1. Login at \emph{console.aws.amazon.com/console/home}. \\
+2. Click on {\bf Elastic Map Reduce}. \\
+3. Click {\bf Create a New Job Flow} to open a new window. This will set up a cluster machine for you to do your Hadoop computations on. \\
+4. {\bf Job Name page}: Give a name to the Job Flow. Stay with the default for Hadoop and AMI version (don't change anything). For Job Type, select Hive. \\
+5. {\bf Nodes page}: Select {\bf Interactive Session}. \emph{Note}: Core Instances are like data nodes, and Instance Count specifies the number of nodes. \\
+6: {\bf Key page}: For {\bf Amazon EC2 key pair}, you need to set up your key (instructions will be given in Homework 2). Then select your key from the drop down menu. You don't need to change anything else; just continue. \\
+7. {\bf Summary page:} Review the summary page, and then Create Job Flow. \\
+8. You will be taken back to the list of jobs. Wait until the {\bf Master Public DNS Name} appears. This might take a little while to appear. It doesn't refresh by itself, so you need to refresh the page to check if it finished. \\\\
+
+{\bf Using the Amazon Cluster:} \\
+
+1. Go to your Gauss directory. Then type: 
+\begin{verbatim}
+ssh -i [YourPrivateKey.pem] hadoop@[Your Master Public DNS Name] 
+\end{verbatim}
+\vspace{4 mm}
+2. You are now using Hadoop on the Amazon Cluster. Make a directory and then list the directory (should be empty for now): 
+\begin{verbatim}
+hadoop fs -mkdir test
+hadoop fs -ls
+\end{verbatim}
+\vspace{4 mm}
+3. To transfer distributed data from Hadoop (Amazon) to your local directory (Gauss), type: \\
+\begin{verbatim}
+hadoop distcp [source directory] [destination directory]
+\end{verbatim}
+\vspace{4 mm}
+4. To copy files from laptop to hadoop:
+\begin{verbatim}
+scp -i [filename] hadoop@[Your Master Public DNS Name]
+\end{verbatim}
+\vspace{10 mm}
+{\bf Part II: Hive} \\
+
+{\bf Introduction:} On Hive, we want to create a table representing our dataset. The fields of the table we create (which consist of primitive types) will be the columns of the table. To create this table, we will learn a few basic SQL commands. \\
+
+{\bf Ways to Fill a Table:} There are two ways to fill a table in Hive. \\
+
+(1) Upload a file containing a table. \\
+(2) Copy the contents from another table in Hive. \\
+
+{\bf Note:} You cannot directly input data into a table in Hive. Also, in order to be able to do (2), you have to do (1) first. \\
+
+{\bf Note:} A common file format used in Hadoop is the {\bf Sequence File Format}. It is a compressed format containing keys and values. 
+\newpage
+
+{\bf Example with N Grams data:} \\
+
+1. Log in to Amazon Cluster (see Step 1 from {\bf Using the Amazon Cluster} above). \\
+
+2. Launch Hive with a simple one word command: \emph{hive}. \\
+
+3. To avoid great pain in your Hive session, type the following two commands: 
+\begin{verbatim}
+set hive.base.inputformat=org.apache.hadoop.hive.ql.io.HiveInputFormat; 
+set mapred.min.split.size=134217728
+\end{verbatim}
+\vspace{4 mm}
+
+4. To get the N grams data, call a SQL command of the following form: \\
+\begin{verbatim}
+CREATE TABLE [name of dataset] 
+{
+      [data type] [column1 name]
+      [date type] [column2 name]
+		               ....
+      [data type] [columnN name] 
+}
+\end{verbatim}
+\vspace{4 mm}
+
+6. To list the names of your columns, type: 
+\begin{verbatim}
+DESCRIBE [name of dataset]; 
+\end{verbatim}
+\vspace{4 mm}
+
+7. To get the number of rows (observations), type: 
+\begin{verbatim}
+SELECT COUNT(*) FROM [name of dataset]
+\end{verbatim}
+\vspace{4 mm}
+
+8. To show all tables you have created thus far: 
+\begin{verbatim}
+SHOW TABLES;
+\end{verbatim}
+\vspace{4 mm}
+
+9. Using CREATE TABLE once more, create a normalized table called \emph{normalized}. It will start out as an empty table. 
+\newpage
+
+10. To copy the contents to the normalized table:
+\begin{verbatim}
+INSERT OVERWRITE TABLE normalized
+SELECT
+(list of column names from other table)
+FROM
+(name of the other table)
+WHERE
+(additional specifications)
+\end{verbatim}
+\vspace{4 mm}
+
+{\bf Note:} Step 10 will take a while to run. The Map and Reduce it runs are Hive's, so you dont need to worry about it. \\
+
+{\bf Another note:} Hive is slow! Even basic tasks will take a long time. \\
+\end{document}
