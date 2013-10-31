@@ -1,4 +1,4 @@
-#
+#I'm new
 #
 # Logistic regression
 # 
@@ -6,7 +6,7 @@
 # \beta \sim N\left(\beta_{0},\Sigma_{0}\right)
 #
 ##
-
+cat('juicy with dream')
 library(mvtnorm)
 library(coda)
 
@@ -44,68 +44,56 @@ if (length(args)==0){
 
 # Simulation datasets numbered 1001-1200
 bayes.logreg=function(datas,beta.0,sd,niter=10000,burnin=1000,print.every=1000,retune=100,verbose=TRUE,paranum=2){
+	#paranum=length(datas[1, ])-2;
 	#m is the whole trial and n is the time of win, x is paras
 	cat('mission start','\n','your sd is ',sd,'\n');	
-	paranum<-length(datas[1, ])-2;
-	accept<-rep(0,paranum);  
+	#accept<-rep(0,paranum);
+	paranum<-length(datas[1, ])-2;  
 	sd0<-sd
 	accept1<-rep(0,paranum); 
 	tnum=niter+burnin;
 	ori=beta.0; 
 	ray=matrix(0,nrow=tnum,ncol=paranum); #
-	walk<-matrix(0,nrow=tnum,ncol=paranum)
-	for (i in 1:length(ori)){
-		walk[1:retune,i]<-rnorm(retune,0,sd[i])
-	}   
+	#walk<-matrix(0,nrow=tnum,ncol=paranum)
+	burn.tmp<-0; 
       #cat(nrow(walk)); cat(ncol(walk));#
-	uni=matrix(runif(tnum*paranum,0,1),nrow=tnum,ncol=paranum); #
+	uni=runif(tnum,0,1) #
 	ray[1, ]=ori;
-	burnin.tmp<-rep(0,paranum);
+	burnin.tmp<-0;
 	for (j in 1:tnum){
-		for (k in 1:paranum){
-			star=ray[j,k]+walk[j,k];
-			rays=ray[j, ]; 
-			rays[k]=star;
-			juicy<-calc(ray[j, ],rays,datas); #cat(j);cat('here');cat(k);cat('here');#
-			#juicy<-juicy+log(dnorm(star,ori[k],sd[k])/dnorm(ray[j,k],ori[k],sd[k]))
-			evil<-log(dnvnorm(star,beta.0[k],sd0[k]))-log(dnorm(ray[j,k],beta.0[k],sd0[k]))
-			#cat(evil,'|')
-			#cat(juicy,'|')
-			juicy<-juicy+evil
-			if(juicy>log(uni[j,k])){ray[j,k]=star; accept[k]<-accept[k]+1; burnin.tmp[k]<-burnin.tmp[k]+1; if(j>burnin){accept1[k]<-accept1[k]+1}};
-          #cat('step');cat(j);cat(',');cat(k);cat(',finished');
+		now<-ray[j, ];
+		star<-rmvnorm(1,now,diag(sd));
+		juicy<-calc(now,star,datas);
+		evil1<-log(dmvnorm(star,ori,diag(sd0)));
+		evil2<-log(dmvnorm(now,ori,diag(sd0)));
+		juicy<-juicy+evil1-evil2;
+		if(juicy>log(uni[j])){
+			ray[j, ]<-star; 
+			burnin.tmp<-burnin.tmp+1;
 		}
-		if(j<tnum){ray[j+1, ]<-ray[j, ]}
 		if(j<burnin+1 && j%%retune==0){
-			bratio=burnin.tmp/retune;
-			for (i in 1:length(bratio)){
-				if(bratio[i]<0.1){sd[i]=sd[i]/4}	
-				if(bratio[i]>=0.1 && bratio[i]<0.15){sd[i]=sd[i]/3.3}	
-				if(bratio[i]>=0.15 && bratio[i]<0.2){sd[i]=sd[i]/2.8}	
-				if(bratio[i]>=0.2 && bratio[i]<0.25){sd[i]=sd[i]/2}	
-				if(bratio[i]>=0.25 && bratio[i]<0.27){sd[i]=sd[i]/1.5}	
-				if(bratio[i]>=0.27 && bratio[i]<0.3){sd[i]=sd[i]/1.2}	
-				if(bratio[i]>=0.55 && bratio[i]<0.6){sd[i]=sd[i]*1.1}	
-				if(bratio[i]>=0.6 && bratio[i]<0.7){sd[i]=sd[i]*1.2}	
-				if(bratio[i]>=0.7 && bratio[i]<0.75){sd[i]=sd[i]*1.5}	
-				if(bratio[i]>=0.75 && bratio[i]<0.8){sd[i]=sd[i]*1.8}	
-				if(bratio[i]>=0.8 && bratio[i]<0.85){sd[i]=sd[i]*2.5}	
-				if(bratio[i]>=0.85 && bratio[i]<0.9){sd[i]=sd[i]*3.5}	
-				if(bratio[i]>=0.9){sd[i]=sd[i]*4}
-			}
-			for (i in 1:length(ori)){
-				walk[j+1:j+retune,i]<-rnorm(retune,0,sd[i])
-			}		   
-			cat('sd tuned at ',j,'  ',sd,'\n','the accept ratio is ',bratio,'\n')
-			burnin.tmp<-rep(0,paranum);
-		}	
-		if(j==burnin){
-			for (i in 1:length(ori)){
-				walk[(j+1+retune):tnum,i]<-rnorm((niter-retune),0,sd[i])
-			}
+			tmpratio<-burnin.tmp/retune;
+			if(tmpratio>=0 && tmpratio<=0.1){sd<-sd/3};
+			if(tmpratio>0.1 && tmpratio<=0.2){sd<-sd/2.5};
+			if(tmpratio>.2 && tmpratio<=0.25){sd<-sd/2.2};
+			if(tmpratio>0.25 && tmpratio<=0.28){sd<-sd/2};
+			if(tmpratio>0.28 && tmpratio<=0.3){sd<-sd/1.7};
+			if(tmpratio>0.3 && tmpratio<=0.35){sd<-sd/1.5};
+			if(tmpratio>0.35 && tmpratio<=0.4){sd<-sd/1.3};
+			if(tmpratio>0.4 && tmpratio<=0.45){sd<-sd/1.1};
+			#if(tmpratio>0.45 && tmpratio<=0.5){sd<-sd/1.1};
+			#if(tmpratio>0.56 && tmpratio<=0.6){sd<-sd*1.15};
+			if(tmpratio>0.6 && tmpratio<=0.65){sd<-sd*1.25};
+			if(tmpratio>0.65 && tmpratio<=0.68){sd<-sd*1.4};
+			if(tmpratio>0.68 && tmpratio<=0.75){sd<-sd*1.9};
+			if(tmpratio>0.75 && tmpratio<=0.8){sd<-sd*2.7};
+			if(tmpratio>0.8 && tmpratio<=0.9){sd<-sd*3.4};
+			if(tmpratio>0.9 && tmpratio<=1){sd<-sd*4};
+			cat('sd retuned till ',j,'\n',sd,' with ratio as ',tmpratio,'\n');
+			burnin.tmp<-0;
 		}
 		if(j%%1000==0){cat('the process till '); cat(j); cat(' is finished'); cat('\n')}
-        #cat('\n');
+		if(j<tnum){ray[j+1, ]<-ray[j, ]}
 	}
 #	ratio<-accept/tnum; ratio1<-accept1/realrun; 
       #cat(accept); cat(' of '); cat(tnum); cat(' is accepted '); cat('\n');
@@ -118,7 +106,13 @@ calc=function(now,star,datas,datat=1){
 	if(datat==1){      
 		pnow=sum(apply(datas,1,function(x){m<-x[1]; n<-x[2]; da<-x[3:length(x)]; g<-exp(sum(now*da)); p<-(g/(1+g)); return(log(choose(n,m)*(p^m)*((1-p)^(n-m))))}));
 		pstar=sum(apply(datas,1,function(x){m<-x[1]; n<-x[2]; da<-x[3:length(x)]; g<-exp(sum(star*da)); p<-(g/(1+g)); return(log(choose(n,m)*(p^m)*((1-p)^(n-m))))}));
-        #cat (pnow);cat(pstar);
+		#pnow=apply(datas,1,function(x){da<-x[3:length(x)];g<-exp(sum(now*da));p<-(g/(1+g));return(p)});
+		#pstar=apply(datas,1,function(x){da<-x[3:length(x)]; g<-exp(sum(star*da));p<-(g/(1+g));return(p)});
+		#pnew=log(pstar)-log(pnow);
+		#pnew1=log(1-pstar)-log(1-pnow);
+		#dan<-cbind(datas[ ,1:2],pnew,pnew1);
+		#juicy<-sum(apply(dan,1,function(x){m<-x[2];n<-x[1];return(m*x[3]+(m-n)*x[4])}));
+    #cat (pnow);cat(pstar);
 		return (pstar-pnow);
 	}
 }
@@ -132,21 +126,29 @@ niter <- 10000
 #################################################
 
 # Read data corresponding to appropriate sim_num:
-filename<-paste0('data/blr_data_',sim_num,'.csv');
-datas<-read.csv(filename,header=TRUE);
+#filename<-paste0('data/blr_data_',sim_num,'.csv');
+filename<-'cans.txt'
+#datas<-read.csv(filename,header=TRUE);
+datas<-read.table(filename,header=FALSE);
+datas[3:12]<-scale(datas[ ,3:12])/10000
 # Fit the Bayesian model:
-out<-bayes.logreg(datas,rep(0,10),rep(1000,10),niter=1000000,burnin=10000,retune=400);
-write.table(out,file='only.txt',sep=',',quote=FALSE,row.names=FALSE,col.names=FALSE);
+out<-bayes.logreg(datas,rep(0,10),rep(1000,10),niter=70000,burnin=12000,retune=400)
+plot(out[ ,1]);
+plot(out[ ,2]);
+plot(out[ ,3]);
+plot(out[ ,4]);
 # Extract posterior quantiles...
 #p1<-out[ ,1]
 #p2<-out[ ,2]
 #q1<-quantile(p1,seq(.01,.99,.01))
 #q2<-quantile(p2,seq(.01,.99,.01))
-outfile<-paste0('results/blr_res_',sim_num,'.csv')
+mean<-apply(out,2,mean); cat(mean,'\n');
+#outfile<-paste0('results/blr_res_',sim_num,'.csv')
+outfile<-'juicylove.txt'; 
 #write.table(data.frame("p1"=q1,"p2"=q2),file=outfile,sep=",",quote=FALSE,row.names=FALSE,col.names=FALSE)
-cat('\n',mean(out[ ,1]),'\n',mean(out[ ,2]))
+write.table(out,file=outfile,sep=",",quote=FALSE,row.names=FALSE,col.names=FALSE)
+#cat('\n',mean(out[ ,1]),'\n',mean(out[ ,2]))
 # Write results to a (99 x p) csv file...
-
 # Go celebrate.
  
 cat("done. :)\n")

@@ -46,7 +46,7 @@ if (length(args)==0){
 bayes.logreg=function(datas,beta.0,sd,niter=10000,burnin=1000,print.every=1000,retune=100,verbose=TRUE,paranum=2){
 	#m is the whole trial and n is the time of win, x is paras
 	cat('mission start','\n','your sd is ',sd,'\n');	
-	paranum<-length(datas[1, ])-2;
+	paranum<-length(datas[1, ])-2; cat(paranum);
 	accept<-rep(0,paranum);  
 	sd0<-sd
 	accept1<-rep(0,paranum); 
@@ -68,7 +68,7 @@ bayes.logreg=function(datas,beta.0,sd,niter=10000,burnin=1000,print.every=1000,r
 			rays[k]=star;
 			juicy<-calc(ray[j, ],rays,datas); #cat(j);cat('here');cat(k);cat('here');#
 			#juicy<-juicy+log(dnorm(star,ori[k],sd[k])/dnorm(ray[j,k],ori[k],sd[k]))
-			evil<-log(dnvnorm(star,beta.0[k],sd0[k]))-log(dnorm(ray[j,k],beta.0[k],sd0[k]))
+			evil<-log(dnorm(star,beta.0[k],sd0[k]))-log(dnorm(ray[j,k],beta.0[k],sd0[k]))
 			#cat(evil,'|')
 			#cat(juicy,'|')
 			juicy<-juicy+evil
@@ -132,19 +132,20 @@ niter <- 10000
 #################################################
 
 # Read data corresponding to appropriate sim_num:
-filename<-paste0('data/blr_data_',sim_num,'.csv');
-datas<-read.csv(filename,header=TRUE);
+#datas<-read.csv('data/blr_data_1094.csv',header=TRUE)
+datas<-read.table('cans.txt',header=FALSE);
+datas[ ,3:12]<-scale(datas[ ,3:12])/10000;
 # Fit the Bayesian model:
-out<-bayes.logreg(datas,rep(0,10),rep(1000,10),niter=1000000,burnin=10000,retune=400);
+out<-bayes.logreg(datas,rep(0,10),rep(300,10),niter=200000,burnin=20000,retune=400);
 write.table(out,file='only.txt',sep=',',quote=FALSE,row.names=FALSE,col.names=FALSE);
 # Extract posterior quantiles...
 #p1<-out[ ,1]
 #p2<-out[ ,2]
 #q1<-quantile(p1,seq(.01,.99,.01))
 #q2<-quantile(p2,seq(.01,.99,.01))
-outfile<-paste0('results/blr_res_',sim_num,'.csv')
+#outfile<-paste0('results/blr_res_',sim_num,'.csv')
 #write.table(data.frame("p1"=q1,"p2"=q2),file=outfile,sep=",",quote=FALSE,row.names=FALSE,col.names=FALSE)
-cat('\n',mean(out[ ,1]),'\n',mean(out[ ,2]))
+#cat('\n',mean(out[ ,1]),'\n',mean(out[ ,2]))
 # Write results to a (99 x p) csv file...
 
 # Go celebrate.
