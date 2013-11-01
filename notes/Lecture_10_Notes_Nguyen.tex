@@ -1,0 +1,102 @@
+\documentclass{article}
+
+\usepackage{url}
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{graphicx} %subfigure
+\usepackage{caption} % subfigure
+\usepackage{subcaption}  %subfigure
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[margin=.8in]{geometry}
+\usepackage{indentfirst}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{0mm}
+\usepackage{multirow}
+\usepackage{placeins}
+
+\title{STA 2250}
+\author{Longphi Nguyen\\ \\}
+%\setcounter{secnumdepth}{0}
+
+\begin{document}
+%\maketitle
+\section{Initial notes}
+
+It is recommended to do Hadoop stream jobs using Python rather than \textbf{R}, especially since the Amazon Web Service (AWS) machines have an old version of \textbf{R}. It is also recommended to slightly modify Python code from the previous lecture for Lab 2, rather than trying to write it yourself in \textbf{R}. Thirdly, the Amazon machines have Hive and Pig preconfigured; unsure about Mahout.
+
+\section{The Amazon Web Service (AWS)}
+To upload data, do the following. Prerequisite: need a public/private key for AWS (instructions provided in Lab 2).
+
+\begin{enumerate}
+\item Go to $https://console.aws.amazon.com/console/$ and log in.
+\item Click on Elastic Map Reduce, then Create New Job Flow. This will show several options for setting up your ``cluster'' for Hadoop. What options to use are provided in Lab 2. You will be asked for a ``Amazon EC2 Key Pair'' in one of the menus; this is your private key obtained as a prerequisite.
+\item When complete (i.e. the cluster is starting), it will take a little while for everything to set up. Refresh the page until you see a value in the ``Master DNS Name'' field (abbreviated as MDN).
+\item Now, use the MDN the ssh onto AWS. \textbf{ssh -i }[private key file extension .pem]\textbf{ hadoop@}[MDN], where the values in [ ] are to be replaced accordingly.
+\item Once successful, make a directory. \textbf{hadoop fs -mkdir }[mydirectory]
+\item Transfer your data files from your data bucket on https://aws.amazon.com/s3 to the new directory. Note: you won't need to create a data bucket, Lab 2 provides the data bucket already. \textbf{hadoop distcp s3://}[data bucket name] [mydirectory]
+\item !!! \textbf{Terminate your job when finished through https://console.aws.amazon.com/console/} !!! It costs money to keep it open, even if you have no jobs running.
+\end{enumerate}
+
+Notes: When your hadoop code is first run, it won't work, unless you're some mad pro. To check on your job's status, open a new terminal and ssh into hadoop@[...] again. Run \textbf{lynx http://localhost:9100/} to show a JobTracker link; this link can be opened in a browser to show your job's status. An overview of these steps can also be seen in Lecture 10 slides, page 10.
+
+\section{Hive}
+
+Tutorials: $https://cwiki.apache.org/confluence/display/Hive/Tutorial$
+Hive can be run on hadoop@[...] by using $hive$ on the command line.
+
+When storing data for Hive (which are stored in structures like dataframes). The columns can have the following types of data:
+
+\begin{itemize}
+\item \textbf{TINYINT, SMALLINT, INT, BIGINT} are 1, 2, 4, 8 byte ints respectively
+\item \textbf{BOOLEAN} are TRUE/FALSE
+\item \textbf{FLOAT, DOUBLE} are single and double precision values respectively
+\item \textbf{STRING} are characters
+\item \textbf{STRUCTS} have form like STRUCT\{a INT; b INT\}, where a and b are variables for the struct
+\item \textbf{ARRAYS} are indexed by ARRAY[0], ..., ARRAY[n-1]
+\end{itemize}
+
+\subsection{Tables}
+
+Hive code is similar to SQL. To create a table with the data loaded from the S3 website:
+
+\textbf{CREATE TABLE }[name]\textbf{(}
+
+[variable$_1$] [variable type], ..., [variable$_k$] [variable type]
+
+\textbf{);}
+
+\textbf{ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'}
+
+\textbf{STORED AS SEQUENCEFILE}
+
+\textbf{LOCATION 'S3://}[data bucket name]\textbf{'}
+
+To see what variables are in a table, use \textbf{Describe }[table name].
+
+\subsection{Select a column}
+
+The following selects the column for a variable, with an optional condition (e.g. var$_1$>100) only selects the rows if the condition is satisfied.
+
+\textbf{SELECT }[variable] \textbf{from }[table] \textbf{WHERE }[conditions]
+
+\subsection{Inserting into a table}
+
+You can't specifically add to a table; you will need to create another table with whatever added, or load the data from a site like before.
+
+\textbf{INSERT OVERWRITE TABLE }[table name]
+
+\textbf{SELECT} [var$_1$], ..., [var$_p$]
+
+\textbf{FROM} [table name source]
+
+\textbf{WHERE} [optional conditions]
+
+\subsection{Additional commands}
+
+\textbf{Describe} [table name] - shows the variables and types of the columns for the table.
+
+\textbf{SHOW TABLES} - shows all defined tables.
+\end{document}
+
