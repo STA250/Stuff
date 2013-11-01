@@ -1,0 +1,285 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013) by STA250</title>
+    <link rel="stylesheet" href="stylesheets/hwstyles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/STA250/Stuff">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <a href="http://sta250.github.io/Stuff"><h1>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013)</h1></a>
+          <p>Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/STA250">STA250</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+<style TYPE="text/css">
+code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
+</style>
+
+<h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Homework Policy</h1>
+
+<p><em>For all questions you must show your work. This enables us to understand your thought process, give partial credit and prevent crude cheating. Please see the code of the conduct in the Syllabus for rules about collaborating on homeworks.</em></p>
+<p><em>For questions requiring computing, if you use <code>R</code>, <code>python</code> or any programming environment then you must turn in a printout of your output with your solutions.<br />In addition, a copy of your code must be uploaded to the appropriate <code>HW</code> directory of your forked GitHub repo within 24 hours of the homework due date.</em></p>
+<p><br/></p>
+
+<h2>Homework 02</h2>
+<h2>Due: In Class, Mon November 11th</h2>
+<h4>Assigned: Thursday Oct 31st</h4>
+<h4>Bayesian Inference Module</h4>
+<p>(<a href="plain/Homework_02_plain.html">Click here for printable version</a>)</p>
+<p>
+In this homework you will implement the &quot;Bag of Little Bootstraps&quot; for a large dataset 
+using the array job capabilities of Gauss, develop a MapReduce algorithm and run it via
+Hadoop Streaming on Amazon Elastic MapReduce, and, finally, perform some basic data 
+manipulation using Hive (again on Elastic MapReduce). These exercises are largely 
+tasters to introduce you to the data technologies, if you want to dig deeper into genuine
+statistical problems then the final projects will provide an opportunity to do so.
+</p>
+<ol start="0">
+    <li>Sync your fork of the course GitHub repo to include the latest updates using the instructions provided <a href="sync_fork.html">here</a>.</li>
+    <br/><br/>
+    
+    <li>In this question, you will implement the "Bag of Little Bootstraps" (BLB) procedure of Kleiner et al. (2012) on a simulated linear regression dataset.</li>
+    <ul>
+    <li>First, log in to <code>gauss</code> and type:</li>
+    <pre><code>
+    ls /home/pdbaines/data/blb_lin_reg*
+    </code></pre>
+    You should see a listing of files of the form:
+    <pre><code>
+-rw-rw-r--  1 pdbaines pdbaines 7.5G Sep 12 19:12 blb_lin_reg_data.bin
+-rw-rw-r--  1 pdbaines pdbaines  479 Sep 12 19:00 blb_lin_reg_data.desc
+-rw-rw-r--  1 pdbaines pdbaines  15G Sep 12 18:34 blb_lin_reg_data.txt
+-rw-rw-r--  1 pdbaines pdbaines  78M Sep 12 16:02 blb_lin_reg_medm.bin
+-rw-rw-r--  1 pdbaines pdbaines  476 Sep 12 16:02 blb_lin_reg_medm.desc
+-rw-rw-r--  1 pdbaines pdbaines 146M Sep 12 15:52 blb_lin_reg_medm.txt
+-rw-rw-r--  1 pdbaines pdbaines 3.2M Sep 13 13:16 blb_lin_reg_mini.bin
+-rw-rw-r--  1 pdbaines pdbaines  473 Sep 13 13:16 blb_lin_reg_mini.desc
+-rw-rw-r--  1 pdbaines pdbaines 6.0M Sep 16 17:53 blb_lin_reg_mini.txt
+    </code></pre>
+    <em>NOTE: Since the data for this question is somewhat large, you will **not** be downloading or copying the data. All files must be read directly from these locations e.g., <code>open("/home/pdbaines/data/blb_lin_reg_data.txt","rb")</code>.</em>
+    <p>For this question you will be analyzing the data contained in <code>blb_lin_reg_data.*</code>. There are up to three files that may be of use:</p>
+    <ul>
+      <li> <code>blb_lin_reg_data.txt</code>: Dataset containing 1,000,000 observations. Each row corresponds to an observation, each column to a variable. The first 1,000 columns correspond to covariates <code>(X1,X2,...,X1000)</code>, and the final column corresponds to the response variable <code>y</code>. The data are comma-separated, and the uncompressed file is approximately 15Gb.</li>
+      <li> <code>blb_lin_reg_data.bin</code>: Binary file produced by the <code>bigmemory</code> package in <code>R</code>, containing the same data as <code>blb_lin_reg_data.txt</code> but in compressed and pre-processed format.</li>
+      <li> <code>blb_lin_reg_data.desc</code>: File describing the properties needed by the <code>bigmemory</code> package in <code>R</code> to read in the dataset.</li>
+    </ul>
+    <p>If you wish to examine <code>blb_lin_reg_data.txt</code> you must you the <code>less</code> text reader i.e. <code>less /home/pdbaines/data/blb_lin_reg_data.txt</code>. Using editors such as <code>vi</code> or <code>nano</code> is not advisable when working with such large files.</p>
+    <p>In tackling this assignment, you may wish to download and use <code>blb_lin_reg_mini.[txt,bin,desc]</code>. These files contain mini versions of the full dataset with <code>d=40</code> covariates and <code>n=10,000</code> observations that can be used to rapidly test, develop and debug your code (they can also be used on your laptop instead of <code>gauss</code>).</p>
+    <br/><br/>
+    <p>The model we will be fitting to the data is just the simple linear regression model:</p>
+    \[ y_i = x_{i,1} \beta_{1} + x_{i,2} \beta_{2} + ... + x_{i,1000} \beta_{1000} + \epsilon_i , \qquad \epsilon_i \sim N(0,\sigma^2) , \]
+    <p>with the \(\epsilon_i\)'s independent. Note that the model does <em>not</em> include an intercept term. Denote the maximum likelihood estimator of \(\beta=(\beta_1,\ldots,\beta_{1000})\) by \(\hat\beta\).<br/><br/>
+    <em>The goal of this question is to find the (marginal / elementwise) standard error of</em> \(\hat\beta\) i.e., \(SE(\hat\beta_1),\ldots,SE(\hat\beta_{1000})\).</p> 
+
+    <p>To do this, you will be using the batch processing pipeline on <code>gauss</code> to implement a BLB procedure to estimate the SE's of the 1,000 regression coefficients. Use the following specifications:</p>
+    <ul>
+      <li>s = 5</li>
+      <li>r = 50</li>
+      <li>gamma = 0.7</li>
+    </ul>
+    <p>To access the data using <code>R</code> it is strongly recommended to use the <code>attach.big.matrix</code> function in conjunction with the <code>.desc</code> file. To access the data in <code>python</code>, simply use <code>open</code> in conjuction with the <code>csv</code> module.</p>
+    <p>The following subparts will guide you through this process of obtaining the BLB SE estimates.</p>
+    </ul>
+
+    <ol type="a">
+
+    <!-- ##### (a) ##### -->
+    <li>First, create a file called <code>BLB_lin_reg_job.R</code>, <code>blb_lin_reg_job.py</code> or similar (depending on whether you intend to use <code>R</code> or <code>python</code> or some other programming language).
+
+    You must write code that reads in the data and samples \(b\approx n^{\gamma}\) rows (without replacement) from the full dataset. In <code>R</code> you can use <code>sample</code> to select the row numbers, in <code>python</code> you can use <code>np.random.choice</code> (only available in <code>numpy</code> v1.7.1+). Once the rows are selected, the subsample must be extracted from the full dataset. For selecting rows in Python you may utilize the function in <code>read_some_lines.py</code>.</li>
+
+    <!-- ##### (b) ##### -->
+    <li>From the extracted subset, you must now draw a bootstrap sample of size n. This is done by sampling from a \(Multinomial\left(n,\frac{1}{b}1_{b}\right)\). In <code>R</code> you can use <code>rmultinom</code>, in <code>python</code> you can use <code>np.random.multinomial</code>. The entries of the randomly sampled multinomial tell you how many times each of the b data points is replicated in the bootstrap dataset.</li>
+
+    <!-- ##### (c) ##### -->
+    <li>Fit the linear model to the bootstrap dataset. In <code>R</code> you can use the <code>weights</code> argument to <code>lm</code> to specify the number of times each data point occurs, unfortunately <code>python</code> offers no such capability at present. Fortunately, you can use Prof. Baines' code on GitHub (in <code>Stuff/HW2/BLB/wls.py</code>) to fit a weighted least squares regression to the data.</li>
+
+    <!-- ##### (d) ##### -->
+    <li>By this point, if you run <code>BLB_lin_reg_job.[R,py]</code> your code should subsample a dataset of size b from the full dataset, then bootstrap resample to size n and fit a weighted linear regression. Lastly, you just need to modify the code to do this <code>rs</code> times as a batch job.
+
+    There are <code>s*r=250</code> bootstrap datasets that must be analyzed (<code>r=50</code> bootstrap samples from each of <code>s=5</code> distinct subsets). This could be organized as a batch job on <code>gauss</code> in a number of ways, the most obvious being:
+    <ul>
+      <li><code>s</code> jobs, each performing <code>r</code> linear regressions, or,</li>
+      <li><code>r</code> jobs, each performing <code>s</code> linear regressions, or,</li>
+      <li><code>rs</code> jobs, each performing 1 linear regression.</li>
+    </ul>
+    In this assignment we will use the third option (<code>rs</code> jobs, each running a single linear regression). The supplied file <code>BLB_lin_reg_run.sh</code> provides the configuration to run a batch job on Gauss with <code>rs</code> separate sub-jobs.
+    <ul>
+      <li>The jobs are numbered <code>1,2,...,250</code>.</li>
+      <li>Your R/python code must extract the job number from the command-line</li>
+      <li>Given the job number, you must figure out the values of <code>s_index</code> (in <code>1,2,...,5</code>) and <code>r_index</code> (in <code>1,2,...,50</code>)</li>
+      <li>Each job with the same value of <code>s_index</code> must subsample identical rows</li>
+      <li>Each job with the same value of <code>s_index</code> must bootstrap resample a different dataset</li>
+      <li>The coefficients from each linear regression should be written to a file with name <code>outfile</code>, where (R):</li>
+      <pre><code>
+      outfile = paste0("output/","coef_",sprintf("%02d",s_index),"_",sprintf("%02d",r_index),".txt")
+      </code></pre>
+      or (Python),
+      <pre><code>
+      outfile = "output/coef_%02d_%02d.txt" % (s_index,r_index)
+      </code></pre>
+    </ul>
+    When your script is prepared and fully tested, submit the batch job by executing:
+    <pre><code>
+    sarray ./BLB_lin_reg_run_[R,py].sh
+    </code></pre>
+    Please note that you may need to modify <code>BLB_lin_reg_run_[R,py].sh</code> to reflect the appropriate filenames/paths for your environment. Always remember to check the resulting <code>*.[err,out]</code> files (written to the dump directory) to figure out if/why things went wrong. Results will be written to the <code>output</code> directory. (Note: Each job should comfortably take less than ten minutes, or else your code is highly inefficent... :)</li>
+
+    <!-- ##### (e) ##### -->
+    <li> By this point, you should have <code>rs=250</code> different output files:
+    <pre><code>
+  $ ls output/ -alh
+  -rw-rw---- 1 pdbaines pdbaines  19K Sep 12 22:18 coef_01_01.txt
+  ...
+  -rw-rw---- 1 pdbaines pdbaines  19K Sep 12 22:18 coef_05_49.txt
+  -rw-rw---- 1 pdbaines pdbaines  19K Sep 12 22:18 coef_05_50.txt
+    </code></pre>
+    Next, edit and run the supplied script <code>BLB_lin_reg_process.R</code>. This can be run via:
+    <pre><code>
+    sbatch BLB_lin_reg_process.sh
+    </code></pre>
+    Depending on how you stored the output files, you may need to edit the script very slightly, but in most cases no modification will be needed. This will read each of the files and produce BLB SE estimates. These will be placed in the <code>final</code> directory.</li>
+
+    <!-- ##### (f) ##### -->
+    <li>Produce an index plot of the obtained SE's i.e., a scatterplot with the index on the x-axis (1,2,...,d) and the value of the SE's on the y-axis.</li>
+
+    <!-- ##### (g) ##### -->
+    <li>What to turn in:<br/>
+    <ul>
+      <li>Your code file <code>BLB_lin_reg_job.[R,py,*]</code></li>
+      <li>Your index plot of the SE values you obtained in part (f)</li>
+      <li>Brief discussion of the algorithm and how well it worked for this example (the SE's should be \(\approx{}0.01\) for this example).</li> 
+    </ul>
+    </li>
+    </ol>
+
+    <br/><br/>
+    <li>In this question you will implement a MapReduce algorithm using the Hadoop Streaming API on Amazon Elastic MapReduce (EMR). 
+    First, follow the instructions to <a href="AWS.html">get started using EMR</a>.</li>
+    <ul>
+      <li>The goal of your MapReduce algorithm is to produce a bivariate histogram of a large sample of data. 
+      Your input is a large set of files containing tab-separated pairs of values, corresponding to the (x,y) samples.
+      There are a total of 180,000,000 observations across the 100 input files (each approximately 60MB).
+      Your MapReduce output must be a set of frequencies for bivariate bins of width 0.1 by 0.1. 
+      For example, for bin \((5.5 < x \leq 5.6, 10.4 < y \leq 10.5)\), your algorithm
+      must return the number of data points in the bin. It is recommended that the output
+      from your reducer be in csv format as follows:
+      <pre><code>
+      x_lo,x_hi,y_lo,y_hi,count
+      </code></pre>
+      where \(x_{lo},x_{hi},y_{lo},y_{hi}\) are the bin boundaries, and count is the number of observations falling
+      within the bin. 
+      </li>
+      <li>For testing purposes you are 
+      encouraged to play with the mini version of the data contained in the GitHub repo (mini_out.txt). 
+      The file <code>mini_out.txt</code> can be tested with your mapper and reducer in a non-Hadoop environment by
+      running:
+      <pre><code>
+      cat out_mini.txt | ./mapper.py | sort -k1,1 | ./reducer.py
+      </code></pre>
+      Do not run your Hadoop job until this works correctly!</li>
+      <li>When launching your Hadoop cluster, follow the instructions in class (i.e., an Interactive Hive configuration), and
+      select "Large" for the master, and 5 "Large" compute nodes.</li>
+      <li>Once logged in, to see what files you have, type <code>ls</code>. To access the HDFS, use <code>hadoop fs</code> as done in class (lecture 09). First off, you need to create a directory on the HDFS:<br/>
+      <pre><code>
+      hadoop fs -mkdir data
+      </code></pre>
+      </li>
+      <li>Next, it is time to get the data onto the HDFS. This can be done by typing:
+      <pre><code>
+      hadoop distcp s3://sta250bucket/bsamples data/
+      </code></pre>
+      Remember to check this was successful by running <code>hadoop fs -ls data/</code>. 
+      </li>
+      <li>To launch your MapReduce job, use the script <code>hadoop_hw.sh</code>.</li>
+      <li>Job status can be checked by opening another ssh session and using <code>lynx</code>.</li>
+      <li>Once successful, copy the results directory to the local filesystem on your AWS machine, and then scp to your laptop with:
+      <pre><code>
+      scp -i yourkeypair.pem -r hadoop@(amazon_dns):~/binned-output ./
+      </code></pre>
+      </li>
+      <li>To concatenate the results files back together, use <code>cat</code> (Linux or Mac; For Windows users, do this on the Amazon cluster before scp-ing back to your laptop/desktop).</li>
+      <li>Produce a 2D-histogram of the results. If your output is in the correct format then you may use the (ugly) code in the
+      GitHub repo to so this. See: <code>PlotRes.R</code>.</li>
+    </ul>
+    <ul>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    </ul>
+    <p>What to turn in: 
+    <ol type="i">
+  	  <li>The 2D histogram or density estimate produced from your MapReduce results.</li>
+      <li>A description of your MapReduce algorithm. This should address the following questions:<br/><br/>
+        <ul>
+            <li>What was your Map function?</li>
+            <li>What was your Reduce function?</li>
+            <li>What were the important implementation choices?</li>
+            <li>How well/quickly did your program run?</li>
+            <li>Any comments/improvements you could make?</li>
+        </ul>
+      </li>
+    </ol>
+      <ul>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    </ul>
+    <br/><br/>
+    
+
+    <li><p>Next up, time to use try out some basic data manipulation with Hive via Amazon EMR.</p>
+    <ol type="a">
+    <li>Coming soon...</li>
+    </ol>
+    </li>
+    <ul>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    <li><em>Do not forget to terminate the session when you are done!!!</em></li>
+    </ul>
+</ol>
+
+<br/>
+
+<h3>(: Happy Coding! :)</h3>
+
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
+
