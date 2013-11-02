@@ -26,7 +26,7 @@
 ##
 ###############################################################################
 
-module load R/3.0.0
+module load R/3.0.2
 
 # Name of the job - You'll probably want to customize this.
 #SBATCH --job-name=blr_fit_data
@@ -39,7 +39,8 @@ module load R/3.0.0
 
 # Execute each of the jobs with a different index (the R script will then process
 # this to do something different for each index):
-srun R --no-save --vanilla --args ${SLURM_ARRAYID} < BLR_fit.R
+srun R --no-save --vanilla --args ${SLURM_ARRAYID} < juicyy.R
+
 
 
 
