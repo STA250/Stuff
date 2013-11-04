@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250 Lecture 11</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 Lecture 11">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250 Lecture 11</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- 
+
+# To compile, from R:
+library(slidify)
+slidify("Lecture_10.Rmd")
+
+-->
+
+<h2>Welcome to STA 250!</h2>
+
+<p>Today is <code>Big Data</code> lecture 4. First code-swaps due today.<br/></p>
+
+<p>On the menu for today...</p>
+
+<ol class = "build">
+<li><p>Intro to Python </p></li>
+<li><p>Hive Wrap-up</p></li>
+<li><p>Bayes + Big Data</p></li>
+<li><p>Big Data Wrap-up</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Python</h2>
+  </hgroup>
+  <article>
+    <p>Since Homework 2 recommends the use of Python for your MapReduce scripts
+(although as discussed in last lecture, other languages can be used too),
+lets talk about the basics of Python.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Python Basics</h2>
+  </hgroup>
+  <article>
+    <p>There are two major versions of Python available: Python 2 and Python 3.</p>
+
+<p>Unlike with R releases, there are actually substantial differences between 
+versions, and it is common to run into code that works on one version 
+but not another.</p>
+
+<ul class = "build">
+<li><p>Python 2 versions most used at the time of writing are 2.6 and 2.7.</p></li>
+<li><p>Python 3 versions most used at the time of writing are 3.2 and 3.3.</p></li>
+<li><p>It doesn&#39;t particularly matter which version you use, just try to use the 
+same version across different machines (e.g., laptop, Gauss, Amazon).</p></li>
+<li><p>Obviously, writing Python 3 compatbile code will give your work a longer
+shelf-life.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Python Overview</h2>
+  </hgroup>
+  <article>
+    <p>From <a href="http://www.python.org/about/">http://www.python.org/about/</a></p>
+
+<ul>
+<li>very clear, readable syntax</li>
+<li>strong introspection capabilities</li>
+<li>intuitive object orientation</li>
+<li>natural expression of procedural code</li>
+<li>full modularity, supporting hierarchical packages</li>
+<li>exception-based error handling</li>
+<li>very high level dynamic data types</li>
+<li>extensive standard libraries and third party modules for virtually every task</li>
+<li>extensions and modules easily written in C, C++ (or Java for Jython, or .NET languages for IronPython)</li>
+<li>embeddable within applications as a scripting interface</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Python for Data Analysis</h2>
+  </hgroup>
+  <article>
+    <p>Python is maturing as a feasible language for data analysis. It is not
+currently as poweful as R, given R&#39;s huge collection of packages 
+implementing essentially every statistical procedure ever invented. </p>
+
+<p>Nevertheless, Python plays well with Big Data (better than R, although
+R can still be used) and its beauty, elegance and power for file 
+handling and text processing far outstrips R. For other data types of
+data analysis, I&#39;d typically stick to R (ignoring other considerations
+such as collaborators, community usage etc).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Running Python</h2>
+  </hgroup>
+  <article>
+    <p>Python can be run in an interactive manner (as with R), or to execute
+scripts.</p>
+
+<p>e.g., </p>
+
+<pre><code>pdbaines@gauss:~$ python
+Python 2.7.3 (default, Sep 26 2013, 20:03:06) 
+[GCC 4.6.3] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; 
+</code></pre>
+
+<p>or:</p>
+
+<pre><code>python myscript.py           # run script
+python myscript.py arg1 arg2 # with command line arguments
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <pre><code>&gt;&gt;&gt; foo = 6
+&gt;&gt;&gt; bar = 8.5
+&gt;&gt;&gt; type(foo)
+&lt;type &#39;int&#39;&gt;
+&gt;&gt;&gt; type(bar)
+&lt;type &#39;float&#39;&gt;
+&gt;&gt;&gt; foo + bar
+14.5
+&gt;&gt;&gt; baz + &quot; class&quot;
+&#39;hello class&#39;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p><code>if</code> statements are delimited by <code>if (condition):</code> and then indented blocks of code. 
+Once the indentation block terminates, the <code>if</code> statement is considered closed.</p>
+
+<pre><code>&gt;&gt;&gt; if (i&gt;0):
+...     print(&quot;i is bigger than zero&quot;)
+... else:
+...     print(&quot;i is not bigger than zero&quot;)
+... 
+i is not bigger than zero
+
+&gt;&gt;&gt; i = 1
+&gt;&gt;&gt; if i == True:
+...     print(&quot;Yes&quot;)
+...     print(&quot;i is indeed True&quot;)
+...
+Yes
+i is indeed True
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p><code>for</code> loops iterate over elements of a sequence. e.g., </p>
+
+<pre><code>&gt;&gt;&gt; stuff = [&#39;hello&#39;, 789, True, False]
+&gt;&gt;&gt; for i in stuff:
+...     print(&quot;i is: &quot; + str(i))
+... 
+i is: hello
+i is: 789
+i is: True
+i is: False
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p>To iterate over numbers (e.g., <code>for (i in 1:n){...}</code>) use <code>range(0,n)</code>.</p>
+
+<pre><code>&gt;&gt;&gt; for i in range(0,5):
+...     print(i)
+... 
+0
+1
+2
+3
+4
+</code></pre>
+
+<p>Note: no 5. <code>range(0,n)</code> is not inclusive of the last value! </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p>Additional functionality is provided by Python modules (key ones: <code>numpy</code>, <code>scipy</code>, <code>matplotlib</code>).</p>
+
+<pre><code>import numpy as np
+# access functions within numpy using np.*() 
+&gt;&gt;&gt; foo = np.array([1,2,3,4,5])
+&gt;&gt;&gt; foo
+array([1, 2, 3, 4, 5])
+&gt;&gt;&gt; foo[0] # zero indexing
+1
+&gt;&gt;&gt; foo[0:3] # slicing: to index is not inclusive!
+array([1, 2, 3])
+&gt;&gt;&gt; foo[0:1]
+array([1])
+&gt;&gt;&gt; foo[1:]
+array([2, 3, 4, 5])
+&gt;&gt;&gt; foo[:1]
+array([1])
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p>Be careful with slicing!</p>
+
+<pre><code>&gt;&gt;&gt; foo = np.array([1,2,3,4,5])
+&gt;&gt;&gt; bar = foo[2:]
+&gt;&gt;&gt; bar
+array([3, 4, 5])
+&gt;&gt;&gt; foo[3] = 100
+&gt;&gt;&gt; foo
+array([  1,   2,   3, 100,   5])
+&gt;&gt;&gt; bar
+array([  3, 100,   5])
+</code></pre>
+
+<p>Variables such as <code>foo</code> and <code>bar</code> can be thought of as tags that point
+to memory locations. Actual copies can be made if needed. </p>
+
+<p>See: <a href="http://www.precheur.org/python/copy_list">http://www.precheur.org/python/copy_list</a> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p>To copy a slice (more than one way to do this):</p>
+
+<pre><code>&gt;&gt;&gt; foo = np.array([1,2,3,4,5])
+&gt;&gt;&gt; bar
+array([ 3, 10,  5])
+&gt;&gt;&gt; bar = foo[2:].copy()
+&gt;&gt;&gt; foo[3] = 10
+&gt;&gt;&gt; foo
+array([ 1,  2,  3, 10,  5])
+&gt;&gt;&gt; bar
+array([3, 4, 5])
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Python basics</h2>
+  </hgroup>
+  <article>
+    <p>To convert between <code>strings</code>, <code>ints</code> and <code>floats</code>:</p>
+
+<pre><code>&gt;&gt;&gt; foo = &quot;5.6&quot;
+&gt;&gt;&gt; float(foo)
+5.6
+&gt;&gt;&gt; str(6.5)
+&#39;6.5&#39;
+</code></pre>
+
+<p>Rounding, flooring etc:</p>
+
+<pre><code>&gt;&gt;&gt; import math
+&gt;&gt;&gt; math.floor(5.6)
+5.0
+&gt;&gt;&gt; round(10.566,2)
+10.57
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Hive</h2>
+  </hgroup>
+  <article>
+    <p>For the homework you won&#39;t need to do too much with Hive. Just two things:</p>
+
+<ul>
+<li>Load in the data</li>
+<li>Aggregate values across groups (specifically, compute within-group means and variances)</li>
+</ul>
+
+<p>Since this is fairly limited, I will not give you any pointers as to how to do it
+(unlike most other HW questions where you get more of a template). Googling and
+digging around to find out how to do things is an important skill. :)</p>
+
+<p>Hint: </p>
+
+<pre><code>GROUP BY
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Bayes + Big Data</h2>
+  </hgroup>
+  <article>
+    <p>We have done two modules so far: Bayes and Big Data. Lets put them
+together and talk about Bayesian Approaches to Big Data.</p>
+
+<p>Specifically, lets discuss the <strong>Consensus Monte Carlo</strong> approach
+presented by Steve Scott (Google) at the Stat Dept seminar
+last month.</p>
+
+<p>To the board!</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Big Data Wrap-up</h2>
+  </hgroup>
+  <article>
+    <p>Take-home message from Big Data Module:</p>
+
+<ul class = "build">
+<li>Big Data requires computational skills and methodological wizardry</li>
+<li>We have seen two major methodological approaches to Big Data: the Bag of Little Bootstraps and Consensus Monte Carlo</li>
+<li>Key computational skills for Big Data are the ability to work with data either (i) not storable in memory, and/or, (ii) stored across multiple machines.</li>
+<li>The MapReduce paradigm provides a powerful scalable framework for computing with Big Data</li>
+<li>Hadoop provides a platform for distributed computing with MapReduce</li>
+<li>Higher-level interfaces to Hadoop such as Hive can aid the time-to-productivity (albeit with a loss of computational efficiency)</li>
+<li>Cloud computing provides easy access to on-demand scalable computing infrastructure</li>
+<li>Hopefully you now have the skills to actually do something with Big Data! :)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/treat.gif" alt="Keep Off" align="middle" style="width: 500px;"/></p>
+
+<p><br/><a href="http://www.thebarkpost.com/50-dog-gif/">Source</a>. Wed: Optimization + EM.*</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
