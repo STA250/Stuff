@@ -168,7 +168,12 @@ statistical problems then the final projects will provide an opportunity to do s
       <pre><code>
       cat out_mini.txt | ./mapper.py | sort -k1,1 | ./reducer.py
       </code></pre>
-      Do not run your Hadoop job until this works correctly!</li>
+      Do not run your Hadoop job until this works correctly! Note that you may need to change the 
+      permissions on your mapper and reducer scripts using:
+      <pre><code>
+      chmod u+x *.py
+      </code></pre>
+      </li>
       <li>When launching your Hadoop cluster, follow the instructions in class (i.e., an Interactive Hive configuration), and
       select &quot;Large&quot; for the master, and 5 &quot;Medium&quot; compute nodes.</li>
       <li>Once logged in, to see what files you have, type <code>ls</code>. To access the HDFS, use <code>hadoop fs</code> as done in class (lecture 09). First off, you need to create a directory on the HDFS:<br/>
@@ -221,9 +226,15 @@ statistical problems then the final projects will provide an opportunity to do s
     <br/><br/>
     
 
-    <li><p>Next up, time to use try out some basic data manipulation with Hive via Amazon EMR.</p>
+    <li><p>Next up, time to use try out some basic data manipulation with Hive via Amazon EMR.
+    Your goal in this question is to load in the <code>groups.txt</code> data stored in the course
+    S3 bucket at <code>s3://sta250bucket/groups.txt</code>. For testing puroposes it is recommended
+    that you use <code>s3://sta250bucket/mini_groups.txt</code>.</p>
     <ol type="a">
-    <li>Coming soon...</li>
+    <li>Fire up a Hadoop+Hive cluster as in Q2, and figure out how to get the data loaded into Hive.</li>
+    <li>Compute the within-group means for the 1000 groups.</li>
+    <li>Compute the within-group variances for the 1000 groups.</li>
+    <li>Make a scatterplot of the within-group means (x-axis) vs. the within-group variances (y-axis).</li>
     </ol>
     </li>
     <ul>
