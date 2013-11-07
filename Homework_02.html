@@ -137,7 +137,7 @@ statistical problems then the final projects will provide an opportunity to do s
       <li>Your R/python code must extract the job number from the command-line</li>
       <li>Given the job number, you must figure out the values of <code>s_index</code> (in <code>1,2,...,5</code>) and <code>r_index</code> (in <code>1,2,...,50</code>)</li>
       <li>Each job with the same value of <code>s_index</code> must subsample identical rows</li>
-      <li>Each job with the same value of <code>s_index</code> must bootstrap resample a different dataset</li>
+      <li>Each job with the same value of <code>r_index</code> must bootstrap resample a different dataset</li>
       <li>The coefficients from each linear regression should be written to a file with name <code>outfile</code>, where (R):</li>
       <pre><code>
       outfile = paste0("output/","coef_",sprintf("%02d",s_index),"_",sprintf("%02d",r_index),".txt")
