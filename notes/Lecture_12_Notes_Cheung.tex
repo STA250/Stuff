@@ -1,0 +1,197 @@
+           \documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{kpfonts}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\begin{document}
+
+\title{\bf STA 250 Lecture 12}
+\author{Rex Cheung}
+\date{November 7, 2013}
+\maketitle
+
+\begin{center}
+\underline{EM Module:}
+\end{center}
+To fit any non-standard statistical model, we need to use numerical techniques (i.e. Metropolis-Hastings, Gibbs, etc...).\\
+For Bayes, we use MCMC methods.\\
+For Maximum Likelihood, we often need to maximize a non-standard function.\\
+This module is all about maximizing "difficult" likelihoods (or posteriors).\\
+
+First, we will start with some common optimization algorithms:
+\begin{itemize}
+\item Bisection
+\item Newton-Raphson
+\item Scoring
+\end{itemize}
+
+\noindent \underline{Note:} We will actually look at root finding algorithms, i.e. finding $x$ such that $g(x) = 0$. To maximize $f$ (assuming $f$ is continuous), we can solve $g(x) = f'(x) = 0$.
+
+\section{Bisection}
+This is used for one-dimensional continuous functions.\\
+Let $g:\mathbb{R} \rightarrow \mathbb{R}$ be a continuous function on $[a,b]$, we want to find $x_*$ such that $g(x_*) = 0$.\\
+
+\noindent \underline{The algorithm:}
+\begin{enumerate}
+\item Find $l$ and $u$ such that $g(l)g(u) < 0$ (by IVT, $\exists$ a root between $l$ and $u$) .
+\item Set $c = \frac{l+u}{2}$, compute $g(c)$.
+\item If $|g(c)| < \epsilon$ for some small $\epsilon>0$, stop.
+\item Otherwise, if $g(l)g(c) < 0$, set $u = c$, else set $l = c$.
+\item Repeat step 2-4.
+\end{enumerate}
+
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Pros & Cons \\
+\hline
+Easy to code + understand & There could be multiple roots\\
+Only requires continuity, not differentiability & Limits to 1D only\\
+Linear convergence & Doesn't use information about fn. beyond side\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Newton-Raphson}
+An iterative algorithm to solve for $g(x) = 0$.\\
+\underline{Idea:} Update $x_t$ to $x_{t+1}$, where $x_{t+1} = x_t + \eta_t$.\\
+Suppose $g:\mathbb{R} \rightarrow \mathbb{R}$, how do we choose $\eta_t$?
+\[
+g(x_{t+1}) = g(x_t + \eta_t) \approx g(x_t) + \eta_tg'(x_t) + O(\eta_t^2)
+\]
+So we can get $g(x_t) + \eta_tg'(x_t) = 0 \Rightarrow \eta_t = \frac{-g(x_t)}{g'(x_t)}$.
+
+\noindent \underline{Algorithm:}
+\begin{itemize}
+\item Pick $x_0$, set $t = 0$.
+\item Update $x_{t+1} = x_t - \frac{g(x_t)}{g'(x_t)}$.
+\item If $|g(x_{t+1})| < \epsilon$, stop. Else increment $t\rightarrow t+1$.
+\item Repeat.
+\end{itemize}
+
+\noindent If $g:\mathbb{R}^m \rightarrow \mathbb{R}^m$, then the update is 
+\[
+\overrightarrow{x_{t+1}} = \overrightarrow{x_t} - [\bigtriangledown g(\overrightarrow{x_t})]^{-1}g(\overrightarrow{x_t})
+\]
+To maximize $l(\theta)$, we want to solve $l'(\theta) = 0$, i.e. 
+\[
+\theta_{t+1} = \theta_t - [l''(\theta_t)]^{-1}l'(\theta_t)
+\]
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Pros & Cons \\
+\hline
+Typically fast (quadratic convergence) & Sensitive to choice of $x_0$\\
+Works in multiple dimensions & Could exists multiple roots\\
+Only need one (or two) derivatives & Need derivatives\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Scoring}
+This algorithm is a small modification of the Newton-Raphson algorithm  that's specifically for maximizing likelihoods.
+\begin{eqnarray}
+\textit{NR}: \theta_{t+1} &=& \theta_t - [l''(\theta_t)]^{-1}l'(\theta_t) \nonumber\\
+\textit{Scoring}: \theta_{t+1} &=& \theta_t + I^{-1}(\theta_t)l'(\theta_t) \nonumber
+\end{eqnarray}
+where $I(\theta) = E[-l''(\theta)]$ (the expected Fisher Information). We may prefer scoring if the expected information is easier to compute than $l''(.)$ (i.e. in exponential families). Scoring converges linearly.
+
+\section{Rate of convergence of a sequence}
+Let $x_1, x_2,...$ be a sequence that converges to some value $x_*$, then we say that the sequence converges with \underline{quadratic rate} if 
+\[
+\lim_{t\rightarrow\infty} \frac{|x_{t+1}-x_*|}{|x_t-x_*|^2} = c, \quad 0 < c < \infty
+\]
+The sequence converges with \underline{linear rate} if
+\[
+\lim_{t\rightarrow\infty} \frac{|x_{t+1}-x_*|}{|x_t-x_*|} = c, \quad 0 < c < 1
+\]
+If $c = 1$, it is called super-linear rate of convergence.
+
+\section{The EM Algorithm}
+For many problems the likelihood itself can be difficult to compute, for example (GLMM):
+\begin{eqnarray}
+\eta_{ij} &=& x_{ij}^T\beta + z_{ij}^T\gamma_i \nonumber \\
+y_{ij}|\beta, \gamma_i &\sim& Bin(n_{ij},g^{-1}(\eta_{ij})) \nonumber \\
+\gamma_i &\sim&i.i.d. N(0,\Sigma) \nonumber
+\end{eqnarray}
+\begin{itemize}
+\item Data: \{$y_{ij}$\}
+\item Parameters: \{$\beta, \Sigma$ \}
+\item Latent Variables: \{$\gamma_i$\}
+\end{itemize}
+Suppose we want to find the MLE $\{\beta, \Sigma \}$, we have 
+\begin{eqnarray}
+P(\overrightarrow{y}|\beta, \Sigma) &=& \int P(\overrightarrow{y}, \{\gamma\}|\beta, \Sigma) d\gamma \nonumber \\
+&=& \int \prod_{i,j} \binom{n_{ij}}{y_{ij}}[g^{-1}(\eta_{ij})]^{y_{ij}}[1-g^{-1}]^{n_{ij}-y_{ij}} \nonumber \\
+&& \times \prod_i (2\pi)^{p/2}|\Sigma|^{-1/2}exp\{-\frac{1}{2}\gamma_i^T \Sigma^{-1} \gamma_i\}d\gamma \nonumber\\
+&=& \textit{NOTHING NICE!} \nonumber
+\end{eqnarray}
+Here our likelihood includes integrals that are difficult to compute. It's hard to use NR, or even bisection. However, if we use the EM Algorithm, it turns out we can avoid directly computing the integral!\\
+
+\noindent Suppose we have a model with parameter $\theta$, observed data $y_{obs}$, and "missing data" $y_{mis}$, to maximize 
+\[
+P(y_{obs}|\theta) = \int P(y_{obs}, y_{mis} |\theta)dy_{mis}
+\]
+we can use the EM Algorithm. Define: 
+\begin{eqnarray}
+Q(\theta | \theta^{(t)}) &=& E[log P(Y_{obs},Y_{mis}|\theta)|Y_{obs},\theta^{(t)}] \nonumber \\
+&=& \int [log P(Y_{obs},Y_{mis}|\theta)]P(Y_{mis}|Y_{obs},\theta^{(t)})dY_{mis} \nonumber
+\end{eqnarray}
+\newpage
+\underline{Algorithm:}
+\begin{enumerate}
+\item Select $\theta^{(0)}$, set $t=0$.
+\item Set $\theta^{(t+1)} = argmax_{\theta} Q(\theta | \theta^{(t)})$.
+\item If $\frac{|\theta^{(t+1)}-\theta^{(t)}|}{|\theta^{(t)}|} < \epsilon$, stop.
+\item Increment $t \rightarrow t+1$. Repeat 2-4 until converge.
+\end{enumerate}
+
+\subsection{Example:}
+\underline{Setting:} 
+\begin{eqnarray}
+y_{obs} | y_{mis} &\sim& N(y_{mis},1) \nonumber \\
+y_{mis} &\sim& N(\theta, V) \nonumber
+\end{eqnarray}
+\underline{Goal:} Maximize $P(y_{obs}|\theta)$, where
+\begin{eqnarray}
+P(y_{obs}|\theta) &=& \int P(y_{obs},y_{mis}|\theta) dy_{mis} \nonumber \\
+&=& \int P(y_{obs}|y_{mis})P(y_{mis}|\theta)dy_{mis} \nonumber
+\end{eqnarray}
+So
+\begin{eqnarray}\label{eqn:1}
+Q(\theta|\theta^{(t)}) &=& E[log\{P(y_{obs}|y_{mis},\theta)P(y_{mis}|\theta)\}|y_{obs},\theta^{(t)}] \nonumber \\
+&=& E[-\frac{1}{2}(y_{obs}-y_{mis})^2-\frac{1}{2}log(2\pi)-\frac{1}{2V}(y_{mis} - \theta)^2 - \frac{1}{2}log(V) - \frac{1}{2\pi} | y_{obs},\theta^{(t)}] \nonumber \\
+&\Rightarrow& E[-\frac{1}{2V}(y_{mis} - \theta)^2 | y_{obs},\theta^{(t)}]
+\end{eqnarray}
+In (\ref{eqn:1}), we ignore the terms that don't involve $\theta$. To compute this, we need to know $P(y_{mis}|y_{obs},\theta^{(t)})$. From Bayes, we know $P(y_{mis}|y_{obs},\theta^{(t)}) \propto P(y_{mis},y_{obs}|\theta^{(t)})$
+\begin{eqnarray}
+\Rightarrow y_{mis}|y_{obs}, \theta^{(t)} &\sim& N(\frac{\frac{\theta^{(t)}}{V}+\frac{y_{obs}}{1}}{\frac{1}{V}+\frac{1}{1}},\frac{1}{\frac{1}{V}+\frac{1}{1}}) \nonumber \\
+&\sim & N(\frac{\theta^{(t)} + Vy_{obs}}{V+1},\frac{V}{V+1}) \nonumber
+\end{eqnarray}
+Therefore, 
+\begin{eqnarray}
+(\ref{eqn:1}) &=& -\frac{1}{2V}E[y_{mis}^2+\theta^2 -2y_{mis}\theta|y_{obs},\theta^{(t)}] \nonumber \\
+&=& -\frac{1}{2V}(\theta^2 - 2\theta E[y_{mis}|y_{obs},\theta^{(t)}]) \nonumber \\
+&=& -\frac{1}{2V}(\theta^2 - 2\theta(\frac{\theta^{(t)}+Vy_{obs}}{V+1})) \nonumber
+\end{eqnarray}
+All together, $Q(\theta|\theta^{(t)}) = -\frac{1}{2V}(\theta^2 - 2\theta(\frac{\theta^{(t)}+Vy_{obs}}{V+1}))$ + constant. Maximizing $Q(\theta|\theta^{(t)})$, we have 
+\[
+\frac{\partial Q}{\partial \theta} = -\frac{1}{2V}(2\theta - 2(\frac{\theta^{(t)}+Vy_{obs}}{V+1}))
+\]
+$\Rightarrow$ maximized at $\frac{\theta^{(t)}+Vy_{obs}}{V+1}$.\\
+Algorithm/Update: $\theta^{(t+1)} = (\frac{1}{V+1})\theta^{(t)} + (\frac{V}{V+1})y_{obs}$.\\
+Remarks:
+\begin{itemize}
+\item If $V$ is big, then the solution converges faster because $\theta^{(t+1)}$ is closer to data.
+\item If $V$ is small, then the solution converges slower because it's closer to $\theta^{(t)}$, so need to more steps.
+\end{itemize}
+As $t \rightarrow \infty$, $\theta^{(t+1)} \rightarrow y_{obs}$. Also, it is of linear rate convergence: $c = \frac{1}{V+1}$.
+\end{document}
