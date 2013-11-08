@@ -1,4 +1,4 @@
-ucdsta250.pem
+*.pem
 test-output/
 groups-output/
 mini-groups-output/
