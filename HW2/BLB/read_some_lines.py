@@ -1,6 +1,6 @@
 import csv
 import sys
-
+import numpy as np
 ## 
 #    filename: name of csv file
 #     indices: array of row numbers to select
@@ -10,13 +10,14 @@ import sys
 #     verbose: True/False, level of verbosity
 ##
 
-def read_some_lines_csv(filename,indices,nr,nc,print_every=1000,verbose=False):
+def read_some_lines(filename,indices,nr,nc,print_every=1000,verbose=False):
 	# Storage:
 	subset = np.empty(nr*nc)
 	subset.shape = (nr,nc)
 	# Read file and extract selected rows:
 	row_num = 0
 	sampled_so_far = 0
+	n=0
 	# utility stuff:
 	next_ix = indices[0]
 	# append value to avoid oob:

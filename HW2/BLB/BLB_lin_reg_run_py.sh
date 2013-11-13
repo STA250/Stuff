@@ -18,5 +18,5 @@ module load numpy
 # Execute each of the jobs with a different index
 # (the python script will then process
 # this to do something different for each index):
-srun python BLB_lin_reg_job.py -i ${SLURM_ARRAYID}
+srun python blb_lin_reg_job.py -i ${SLURM_ARRAYID}
 
