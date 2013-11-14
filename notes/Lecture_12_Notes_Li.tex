@@ -1,0 +1,220 @@
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{esint}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxlist}[1]
+{\begin{list}{}
+{\settowidth{\labelwidth}{#1}
+ \setlength{\leftmargin}{\labelwidth}
+ \addtolength{\leftmargin}{\labelsep}
+ \renewcommand{\makelabel}[1]{##1\hfil}}}
+{\end{list}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{Lecture note 12 }
+
+
+\author{by Qian Li}
+
+
+\date{Nov. 7th, 2013}
+
+\maketitle
+
+\part{Why we use EM Module}
+
+To fit any non-standard statistical model, we need to use numerical
+techniques.
+
+For Bayes $\Rightarrow$use MCMC methods. 
+
+For Maximum Likelihood $\Rightarrow$need to maximize a non-standard
+function. 
+
+This module is all about maximizing \textquotedblright{}difficult\textquotedblright{}
+likelihoods (or posteriors).
+
+Before we going to that, just do some common optimization algorithms:
+
+\textbullet{} Bisection \textbullet{} Newton-Raphson \textbullet{}
+Scoring
+
+
+\part{Bisection}
+
+Note: We will actually look at root finding algorithms, i.e. finding
+x such that g(x) = 0. To maximize f (f is continuous), we can solve
+g(x) = f \textasciiacute{}(x) = 0.
+
+For one-dimensional functions( continuous)
+
+Let g : $\boldsymbol{R}$$\rightarrow$ $\mathbf{\boldsymbol{R}}$
+be a continuous function on {[}a, b{]}, we want to fi{}nd $x_{*}$s.t.
+g( $x_{*}$$ $) = 0. 
+
+Idea:
+\begin{enumerate}
+\item Find l \& u s.t. g(l)g(u) < 0 ( one is positive, the other is negative)
+. 
+\item Set c =( l+u ) / 2 , compute g(c). 
+\item If g(c) = 0, done. If |g(c)| <$\varepsilon$ for some small one ,
+done.
+\item O/W, ex. g(c) = t, reset l and u.
+\item O/W, if g(l)g(c) < 0, set u = c, else set l = c. 
+\item Repeat
+\end{enumerate}
+
+\subsection*{Pro and con: }
+\begin{enumerate}
+\item Pro: Easy to code + understand ; continuity; not diff{}erentiability
+\item Con: could be multiple roots ; only 1D; Doesn\textquoteright{}t use
+information about function beyond sign.
+\end{enumerate}
+
+\part{Newton-Raphson}
+
+An iterative algorithm to solve for g(x) = 0.
+
+Idea :
+
+Update $x_{t}$ to $x_{t+1}$ where $x_{t+1}$ = $x_{t}$ +$\eta_{t}$
+
+How to select $\eta_{t}$?
+
+$g(x_{t+1})=g(x_{t}+\eta_{t})\thickapprox g(x_{t})+\eta_{t}^{'}g(x_{t})+\theta(\eta_{t}^{2})$
+
+If we get $g(x_{t+1})+\eta_{t}g^{'}(x_{t})=0\Rightarrow\eta_{t}=-\frac{g(x_{t})}{g^{'}(x_{t})}$
+
+Algorithm:
+\begin{enumerate}
+\item Pick $x_{0}$,set t = 0
+\item Update, $x_{t+1}=x_{t}-$$\frac{g(x_{t})}{g^{'}(x_{t})}$
+\item If $|g(x_{t+1})|<\varepsilon$, stop, else increment t to t+1
+\item Repeat. 
+\end{enumerate}
+
+\subsection*{Pro and con:}
+\begin{enumerate}
+\item Pro: Typically fast (quadratic convergence) ; Works in multiple dimensions.
+\item Con: Sensitive to choice of $x_{0}$ (if start at wrong place); Could
+exists multiple roots ;Need derivatives; only need one derivative
+(or two); depend on root finding.
+\end{enumerate}
+
+\part{Scoring}
+
+This is a small modication of the Newton-Raphson method, specically
+for maximizing likelihoods.
+
+Newton-Raphson method $\theta_{t+1}=\theta_{t}-[l^{''}(\theta_{t})]^{-1}l^{'}(\theta_{t})$
+
+Scoring $\theta_{t+1}=\theta_{t}+I^{-1}(\theta_{t})l^{'}(\theta_{t})$
+
+where $I(\theta)=E(-l^{''}(\theta))\Leftarrow expected$ fisher information. 
+
+We may prefer scoring is the expected information is easier to conjute
+than $l^{''}$ (e.g. in exponential families).
+
+Scoring coverges linearly.
+
+
+\part{EM Algorithm}
+\begin{itemize}
+\item For many problems, the likelihood itself can be dicult to compute.
+eg: \end{itemize}
+\begin{description}
+\item [{$\eta_{ij}=x_{ij}^{T}\beta+z_{ij}^{T}\gamma_{i}$}]~
+\item [{$y_{ij}|\beta,\gamma_{i}\sim Bin(n_{ij},g^{-1}(\eta_{ij}))$}]~
+\item [{$\gamma_{i}\sim i.i.d.N(0,\Sigma)$}] where Data:$\{y_{ij}\}$
+; Parameters:\{$\beta,\Sigma$\} ; Latent variable: $\{r_{i}\}$
+\end{description}
+Then we have :
+\begin{lyxlist}{00.00.0000}
+\item [{$P(\overrightarrow{y}|\beta,\Sigma)=\int P(\overrightarrow{y},\{\gamma\}|\beta,\Sigma)d_{\gamma}$}]~
+\item [{$=\int\underset{i,j}{\prod}(\begin{array}{c}
+n_{ij}\\
+y_{ij}
+\end{array})[g^{-1}(\eta_{ij})^{y_{ij}}[1-g^{-1}]^{n_{ij}-y_{ij}}]*\underset{i}{\prod}(2\pi)^{p/2}|\Sigma|^{-1/2}exp\{-\frac{1}{2}\gamma_{i}^{T}\Sigma^{-1}\gamma_{i}\}d_{r}$}]~
+\end{lyxlist}
+Our likelihood involves integrals that are dicult to compute. Hard
+to use Bisection or Newton-Raphson. Using EM, we can avoid directly
+computing the integrals. Suppose we have a model with parameter $\theta$,
+observed data $y_{obs}$, and missing data $y_{mis}$ to maximize:
+\begin{lyxlist}{00.00.0000}
+\item [{$P(y_{obs}|\theta)=\int P(y_{obs},y_{mis}|\theta)dy_{mis}$}]~
+\end{lyxlist}
+we can use the EM algorithm:
+
+$Q(\theta|\theta^{t})$
+\begin{lyxlist}{00.00.0000}
+\item [{$=E[logP(Y_{obs},Y_{mis}|\theta)|Y_{obs},\theta^{t}]$}]~
+\item [{$=\int[logP(Y_{obs},Y_{mis}|\theta)]P(Y_{mis}|Y_{obs},\theta^{t})d_{Y_{mis}}$}]~
+\item [{Algorithm:}]~\end{lyxlist}
+\begin{enumerate}
+\item Select $\theta^{0}$, set $ $t=0.
+\item Set $\theta^{t+1}=argmaxQ(\theta|\theta^{t})$
+\item Check convergence. If $\frac{|\theta^{t+1}-\theta^{t}|}{|\theta^{t}|}<\varepsilon$,
+stop
+\item Else, increment t to t + 1, repeat step 2-4 until converge.
+\end{enumerate}
+
+\part{Example}
+
+Setting:
+
+$y_{obs}|y_{mis}\sim N(y_{mis})$ ; $y_{mis}\sim N(\theta,V)$
+\begin{lyxlist}{00.00.0000}
+\item [{Goal:maximize}] $P(y_{obs}|\theta)=\int P(y_{obs},y_{mis}|\theta)dy_{mis}=\int P(y_{obs}|y_{mis})P(Y_{mis}|\theta)dy_{mis}$
+
+\begin{lyxlist}{00.00.0000}
+\item [{$Q(\theta|\theta^{t})=E[log\{P(y_{obs}|y_{mis},\theta)P(y_{mis}|\theta)\}|y_{obs},\theta^{t}]$}]~
+\item [{$=E[-\frac{1}{2}(y_{obs}-y_{mis})^{2}-\frac{1}{2}log(2\pi)-\frac{1}{2V}(y_{mis}-\theta)^{2}-\frac{1}{2}log(V)-\frac{1}{2\pi}|y_{obs},\theta^{t}]$}]~
+\item [{$ $$=E[-\frac{1}{2V}(y_{mis}-\theta)^{2}|y_{obs},\theta^{t}${]}}]~
+\end{lyxlist}
+
+we have ignored any term not involving .To compute this expectation,
+we need to know P($y_{mis}|y_{obs},\theta^{t}$)
+
+
+P($y_{mis}|y_{obs},\theta^{t}$)$ $\ensuremath{\propto}P($y_{mis},y_{obs}|\theta^{t}$)
+
+
+$\Longrightarrow y_{mis}|y_{obs},\theta^{t}\sim N\left(\frac{\frac{\theta^{t}}{V}+\frac{y_{obs}}{1}}{\frac{1}{V}+\frac{1}{1}},\frac{1}{\frac{1}{V}+\frac{1}{1}}\right)\sim N(\frac{\theta^{t}+Vy_{obs}}{V+1},\frac{V}{V+1})$
+
+
+$Q(\theta|\theta^{t})$ 
+
+
+$=E[-\frac{1}{2V}(y_{mis}-\theta)^{2}|y_{obs},\theta^{t}${]}
+
+
+$=-\frac{1}{2V}E[y_{mis}^{2}+\theta^{2}-2y_{mis}\theta|y_{obs},\theta^{t}]$
+
+
+$=-\frac{1}{2V}(\theta^{2}-2\theta E[y_{mis}|y_{obs},\theta^{t}])$
+
+
+$=-\frac{1}{2V}(\theta^{2}-2\theta\frac{\theta^{t}+Vy_{obs}}{V+1})+constant$
+
+
+$\frac{}{}$$\frac{\text{\ensuremath{\partial}}Q}{\text{\ensuremath{\partial}}\theta}=-\frac{1}{2V}(2\theta-2(\frac{\theta^{t}+Vy_{obs}}{V+1}))\Rightarrow$maximized
+at $\frac{\theta^{t}+Vy_{obs}}{V+1}$
+
+\end{lyxlist}
+Algorithm: $\theta^{t+1}=(\frac{1}{V+1}\theta^{t}+(\frac{V}{V+1})y_{obs})$
+
+As $t\Rightarrow INF,\theta^{t+1}\Rightarrow y_{obs}$ 
+
+Linear rate convergence : ($\frac{1}{V+1}$), lower rate is better.
+\end{document}

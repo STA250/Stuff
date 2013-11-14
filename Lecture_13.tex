@@ -1,0 +1,136 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amsthm, amssymb, graphicx, psfrag, dcolumn, bm, accents, textcomp, hyperref, url}
+\usepackage{graphicx,psfrag,textcomp,amsmath,amsthm,amssymb,fancyhdr,fancybox}
+\usepackage{setspace,url,color,wasysym,pstricks,multirow,rotating}
+
+\setlength{ \topmargin}{-.5in} \setlength{ \oddsidemargin} {-.4in}
+\setlength{ \evensidemargin} {-.4in}
+\setlength{ \textwidth} {6.5in}
+\setlength{ \textheight} {9.0 in}
+
+\usepackage{ifthen}
+\newboolean{solutions}
+\setboolean{solutions}{false}
+
+\newcommand{\sols}[2]{\ifthenelse{\boolean{solutions}}{\small\emph{#1}\normalsize}{#2}}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{positioning}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+%% 
+%% Custom colors...
+%%
+%\newrgbcolor{lightblue}{0. 0. 0.80}
+%\newrgbcolor{white}{1. 1. 1.}
+%\newrgbcolor{whiteblue}{.80 .80 1.}
+%\newrgbcolor{crimson}{0.6 0.00 0.20}
+%\newrgbcolor{lightcrimson}{0.6 0. 0.1}
+%\newrgbcolor{whitecrimson}{1. 0.8 0.8}
+%\newrgbcolor{indigo}{0.33 0. 0.49}
+
+%\renewcommand{\labelenumi}{(r\oman{enumi})}
+%\renewcommand{\labelenumii}{(\alph{enumii})}
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\theenumii}{\alph{enumii}}
+\renewcommand{\labelenumi}{\bf \theenumi.}
+\renewcommand{\labelenumii}{\bf (\theenumii)}
+
+\def\Pr{\mathbb{P}}
+
+\newenvironment{questions}{\begin{enumerate}}{\end{enumerate}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\hwknumber{1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\textbf{Probit Regression using the EM Algorithm}
+
+\begin{flushright}
+ STA 250 Fall 2013, Prof. Baines (11/10/13)
+\end{flushright}
+
+We want to fit the following model:
+\begin{align}\label{odm}
+ Y_{i} | \beta \sim \textrm{Bin}\left(1,g^{-1}(x_{i}^{T}\beta)\right) , \qquad i=1,\ldots,n,
+\end{align}
+where $g^{-1}(u)=\Phi(u)$. Note that $g^{-1}(u)=\exp(u)/(1+\exp(u))$ corresponds to logistic regression.
+The more general setting with Binomial counts (rather than Bernoulli) can be derived similarly.
+We first note that a complete data model can be formed as:
+\begin{align}
+\label{cdm}
+ Y_{i} | Z_{i}, \beta, \sim \mathcal{I}_{\left\{Z_{i}>0\right\}} \qquad Z_{i} | \beta &\sim N(x_{i}^{T}\beta,1) ,
+\end{align}
+where $\mathcal{I}_{A}$ is the indicator function for the event $A$ i.e., $\mathcal{I}_{A}=1$ if the event $A$ occurs, $=0$ o/w. Note that this model preserves the observed data likelihood i.e.,
+\begin{align*}
+\Pr\left(Y_{i}=1|\beta\right) &= \int{}\Pr(Y_{i}=1,Z_{i}|\beta)dZ_{i} = \Pr(Z_{i}>0|\beta) = \Pr(Z_{i}-x_{i}^{T}\beta > -x_{i}^{T}\beta) = 1-\Phi(-x_{i}^{T}\beta) = \Phi(x_{i}^{T}\beta) .
+\end{align*}
+
+\section*{Probit EM}
+Note that here we have the following correspondence:
+\begin{itemize}
+\item $Y_{obs}:$ $\left\{y=(y_{1},\ldots,y_{n})^{T}\right\}$
+\item $Y_{mis}:$ $\left\{Z=(Z_{1},\ldots,Z_{n})^{T}\right\}$
+\item $\theta$: $\beta$
+\end{itemize}
+The Q-function is therefore:
+\begin{align}\label{prQ}
+Q(\beta|\beta^{(t)}) &= \mathbb{E}\left[-\frac{1}{2}\sum_{i=1}^{n}\left(z_{i}-x_{i}^{T}\beta\right)^{2}|y,\beta^{(t)}\right] + \textrm{ const } , \\
+&= -\frac{1}{2}\mathbb{E}\left[\left(Z-X\beta\right)^{T}\left(Z-X\beta\right) | y,\beta^{(t)} \right] + \textrm{ const } ,
+\end{align}
+where we drop all terms not involving $\theta$ (since they do not impact the maximization). To compute this, we need to first derive the 
+conditional distribution required for the expectation: $Z_{i}|y_{i},\beta^{(t)}$. Here it is striaghtforward to see that:
+\begin{align}
+\label{zd1}
+ Z_{i} | y_{i}=0,\beta^{(t)} &\sim TN\left(x_{i}^{T}\beta^{(t)},1;(\infty,0]\right) \\
+ \label{zd2}
+ Z_{i} | y_{i}=1,\beta^{(t)} &\sim TN\left(x_{i}^{T}\beta^{(t)},1;[0,\infty)\right) .
+\end{align}
+To maximize $Q$ in~\eqref{prQ} we note that:
+\begin{align*}
+ \frac{dQ}{d\beta} &= \mathbb{E}\left[Z|y,\beta^{(t)}\right]^{T}X - X^{T}X\beta .
+\end{align*}
+Denoting:
+\begin{align*}
+ Z^{(t+1)} &= \mathbb{E}\left[Z|y,\beta^{(t)}\right] ,
+\end{align*}
+we see that:
+\begin{align}\label{mstep}
+ \beta^{(t+1)} &= (X^{T}X)^{-1}X^{T}Z^{(t+1)} ,
+\end{align}
+i.e., the least squares estimate when regression $Z^{(t+1)}$ on $X$. All that remains is to actually 
+compute $\mathbb{E}\left[Z|y,\beta^{(t)}\right]$ where $Z_{i}|y,\beta^{(t)}$ has the distribution
+given in~\eqref{zd1} and~\eqref{zd2}. For a truncated normal distribution we can derive the
+expected value using simple properties of the moment generating function (left as an exercise).
+Let $U\sim{}TN(\mu,\sigma^{2};(-\infty,b))$, $V\sim{}TN(\mu,\sigma^{2};(a,\infty))$ and $W\sim{}TN(\mu,\sigma^{2};(a,b))$ then: 
+\begin{align*}
+\mathbb{E}\left[U\right] &= \mu -  \sigma\frac{\phi(\frac{b-\mu}{\sigma})}{\Phi(\frac{b-\mu}{\sigma})} ,  \\
+\mathbb{E}\left[V\right] &= \mu +  \sigma\frac{\phi(\frac{a-\mu}{\sigma})}{1 - \Phi(\frac{a-\mu}{\sigma})} ,  \\
+\mathbb{E}\left[W\right] &= \mu +  \sigma\frac{\phi(\frac{a-\mu}{\sigma})-\phi(\frac{b-\mu}{\sigma})}{\Phi(\frac{b-\mu}{\sigma})-\Phi(\frac{a-\mu}{\sigma})} .
+\end{align*}
+For the probit regression setting we then obtain that:
+\begin{align}
+\label{estep}
+Z_{i}^{(t+1)} = \left\{ 
+\begin{array}{cl}
+ x_{i}^{T}\beta^{(t)} - \frac{\phi(x_{i}^{T}\beta^{(t)})}{\Phi(-x_{i}^{T}\beta^{(t)})} & \textrm{ if } y_{i}=0 \\
+ x_{i}^{T}\beta^{(t)} + \frac{\phi(x_{i}^{T}\beta^{(t)})}{1-\Phi\left(-x_{i}^{T}\beta^{(t)}\right)} & \textrm{ if } y_{i}=1 
+\end{array}
+\right. .
+\end{align}
+Therefore, using a relative error stopping rule with tolerance $\epsilon>0$, the EM algorithm can be summarized as follows:
+\begin{enumerate}
+\item Select starting value $\beta{(0)}$ and set $t=0$. 
+\item\label{estep_alg} \textbf{E-Step:} Compute $Z^{(t+1)}$ using~\eqref{estep}.
+\item \textbf{M-Step:} Compute $\beta^{(t+1)}$ using~\eqref{mstep}.
+\item If $\frac{\|\beta^{(t+1)}-\beta^{(t)}\|}{\|\beta^{(t)}\|} < \epsilon$ then declare $\hat{\beta}=\beta^{(t+1)}$,
+else increment $t\mapsto{}t+1$ and return to step~\ref{estep_alg}.
+\end{enumerate}
+Obviously other stopping rules can be used in place of the relative error criteria shown above. The EM algorithm above is
+implemented in the course GitHub repo.
+
+\end{document}
