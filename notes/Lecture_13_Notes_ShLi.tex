@@ -1,0 +1,175 @@
+\documentclass[a4paper]{article}
+\usepackage{subfig}
+\usepackage{amsmath} 
+\usepackage{amsthm}
+\usepackage{epsfig}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[OT2,T1]{fontenc}
+\DeclareSymbolFont{cyrletters}{OT2}{wncyr}{m}{n}
+\DeclareMathSymbol{\Sha}{\mathalpha}{cyrletters}{"58}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=1.5cm}
+
+\author{Shuyang Li}
+\title{Lecture note 13  for STA 250}
+\date{November 13, 2013}
+
+\begin{document}
+\maketitle
+Recap: We saw that EM can be used to maximize certain forms of complicated likelihood. The algorithm is as follows:\\
+\begin{eqnarray}
+\theta &=& arg\max_\theta  Q(\theta | \theta^{(t)})\\
+Q(\theta | \theta^{(t)}) &=& E[\log\left[ {P(y_{obs}, y_{mis}\vert \theta)}\right]\vert y_{obs}, \theta^{(t)}]
+\end{eqnarray}
+Note: EM maximizes ${P(y_{obs}\vert \theta)}$ by using $P(y_{obs},y_{mis}\vert \theta)$, which satisfies:\\
+\begin{equation}
+\int P(y_{obs}, y_{mis}\vert \theta)dy_{mis} = P(y_{obs}\vert \theta) 
+\end{equation}
+Two key points: \\
+\begin{itemize}
+\item $y_{mis}$ doesn't have to correspond to "real" missing data;\\
+\item choice of $y_{mis}$ is not unique.\\
+\end{itemize}
+One example is as follows:
+\begin{equation}
+Model: y_{obs}\vert \theta \sim  N(\theta, V+1) \\
+\end{equation}
+The goal is to find MLE for $\theta$(the answer is $y_{obs})$. There is no missing data in this example. Consider a "complete" model:\\
+\begin{eqnarray}
+y_{obs}\vert y_{mis} \sim N(y_{mis}, 1) \\
+y_{mis} \sim N(\theta, V)
+\end{eqnarray}
+First we need to check whether $\int P(y_{obs}, y_{mis}\vert \theta)dy_{mis} = P(y_{obs}\vert \theta)$. We can show (standard result) that this model fulfils this equation. Here $y_{mis}$ is not "real" missing data. The way to check this equation is to do the expansion as follows: 
+\begin{equation}
+\int P(y_{obs}, y_{mis}\vert \theta)dy_{mis} = \int P(y_{obs} \vert y_{mis})P(y_{mis} \vert \theta) dy_{mis}
+\end{equation}
+The model stated here is noted as Model(1). We can also use a different "complete" data model as follows:\\
+\begin{eqnarray}
+y_{obs}\vert \tilde{y_{mis}}, \theta \sim  N(\tilde{y_{mis}}+ \theta, V) \\
+\tilde{y_{mis}} \sim N(0,1)\\
+\end{eqnarray}
+we can demonstrate $\int P(y_{obs}, \tilde{y_{mis}}\vert \theta)d\tilde{y_{mis}} = P(y_{obs}\vert \theta)$. We denote this model as Model(2).\\
+The EM algorithm for Model(1) is:\\
+\begin{equation}
+\theta^{t+1} = \frac{1}{V+1}\theta^{t} + \frac{V}{V+1} y_{obs}
+\end{equation}
+The EM algorithm for Model(2) is:\\
+\begin{equation}
+\theta^{t+1} = \frac{V}{V+1}\theta^{t} + \frac{1}{V+1} y_{obs}
+\end{equation}
+Hence we have two EMs corresponding to two complete data model, both of which give the same MLE. But which is better?\\
+\centerline{\it {Model 1 has linear convergence rate $\frac{1}{V+1}$}} \\
+\centerline{\it {Model 2 has linear convergence rate $\frac{V}{V+1}$}}\\
+For the convergene rate, the lower, the better. Hence we choose the one with lower convergence rate as the optimimum model. Model 1 is known as a sufficient augmentation scheme  as $y_{mis}$ is a sufficient statistics for $\theta$ in the "complete" data model. Model 2 is known as an ancillary augmentation scheme as $\tilde{y_{mis}}$ doesn't depend on $\theta$.\\
+It turns out that the EM algorithm has an important property: \emph {Monotone convergence}:
+\begin{equation}
+l(\theta ^{t+1}) \ge  l(\theta ^{t}) \\
+\end{equation} 
+Where\\
+\begin{equation}
+l(\theta) = \log {P(y_{obs}\vert \theta)} \nonumber
+\end{equation} 
+This property makes EM very stable and popular. NR, bisection, scoring don't have this property. Below is the proof of this property.\\
+Note $P(y_{obs}, y_{mis} \vert \theta) = P(y_{obs} \vert \theta)P(y_{mis} \vert y_{obs}, \theta)$.
+Let $l(\theta) = \log{P(y_{obs}\vert \theta)} $, we can get:\\
+\begin{equation}
+ l(\theta) = \log{P(y_{obs}, y_{mis}\vert \theta)}-\log{P(y_{mis} \vert y_{obs}, \theta)}.
+\end{equation}
+Integrate both sides with respect to $P(y_{mis} \vert y_{obs}, \theta ^{t})$. 
+Left side $= \int[\log {P(y_{obs} | \theta )}] P(y_{mis}\vert y_{obs}, {\theta}^{t})dy_{mis}$. As $\log {P(y_{obs} | \theta )}$ is note related to $y_{mis}$, 
+\begin{equation} 
+ \int[\log {P(y_{obs} | \theta )}] P(y_{mis}\vert y_{obs}, {\theta}^{t})dy_{mis} = \log{P(y_{obs}\vert \theta)} = l(\theta)) 
+\end{equation}
+For the right side of equation (14), after integration, the first iterm in the right side is $Q(\theta | \theta^{t})$. Denote the second item after integration as $H(\theta | \theta ^{t})$, where:
+\begin{equation} 
+H(\theta \vert \theta ^{t}) = - \int \log{P(y_{mis} \vert y_{obs}, \theta)} P(y_{mis} \vert y_{obs}, \theta ^{t})dy_{mis}
+\end{equation}
+So 
+\begin{equation} 
+l(\theta ^{t+1}) - l(\theta^{t}) = \left [Q(\theta^{t+1} \vert \theta^{t}) -Q(\theta^{t} \vert \theta^{t} \right] + \left [H(\theta^{t+1} \vert \theta ^{t}) - H(\theta^{t} \vert \theta ^{t})\right ] 
+\end{equation}
+In equation (17), on the right hand side, $\Delta Q = \left [Q(\theta^{t+1} \vert \theta^{t}) -Q(\theta^{t} \vert \theta^{t} \right]  $ is always $\ge 0$ because in the M step, we are maximizing $Q$ . So we only need to show $\Delta H =\left [H(\theta^{t+1} \vert \theta ^{t}) - H(\theta^{t} \vert \theta ^{t})\right ] \ge 0$.\\
+Here 
+\begin{equation} 
+\Delta H =\int \log\left (\frac{p(y_{mis} \vert y_{obs}, \theta^{t})}{p(y_{mis} \vert y_{obs}, \theta^{t+1})}\right)P(y_{mis} \vert y_{obs}, \theta ^{t})dy_{mis}
+\end{equation}
+We know equation (18) is the KL divergence $ = \text{KL} \left[P(y_{mis} \vert y_{obs}, \theta^{t} || P(y_{mis} \vert y_{obs}, \theta^{t+1}))\right]$. By properties of KL divergence, we know $\Delta H \ge 0$. $\Delta H  = 0$ if and only if $P(y_{mis} | y_{obs}, \theta ^{t}) =P(y_{mis} | y_{obs}, \theta ^{t+1})$.\\ Therefore\\
+\begin{equation} 
+l(\theta ^{t+1}) - l(\theta ^{t}) \ge 0
+\end{equation}
+Aside: We can use EM to find posterior models, not just MLE's. \\
+To maximize $\log (\theta \vert y_{obs})$, Let \\
+\begin{eqnarray}
+Q(\theta \vert \theta^{t})_{MAP} &=& E\left [ P(\theta, y_{mis}\vert y_{obs}) \vert y_{obs}, \theta ^{t}\right ]\\
+&=& \int \log\left [P(\theta, y_{mis} \vert y_{obs})\right ] P(y_{mis} \vert y_{obs}, \theta^{t})dy_{mis}
+\end{eqnarray}
+
+\underline{Example: } \\
+Probit Regression:
+\begin{equation} 
+y_{i} \vert x_i, \beta \sim Bin(1, g({x_{i}}^T\beta))
+\end{equation}
+For logistic regression, \\
+\begin{equation} 
+g(\mu) = \frac{e^{\mu}}{1 + e^{\mu}}
+\end{equation}
+For probit regression,\\
+\begin{equation} 
+g(\mu) = \Phi (\mu) 
+\end{equation}
+ Here $\Phi$  is the CDF of N(0,1).\\
+ We form a complete data model: 
+ \begin{equation} 
+ y_i \vert z_i, \beta  = I_{ z_i \ge 0 }
+\end{equation} 
+ \begin{equation} 
+z_i \vert \beta \sim N({x_i}^T\beta, 1)
+\end{equation} 
+This model could be connnected to the patient's response to some drugs in real application. \\
+Here the complete data is $\{(y_i, z_i), i= 1, ..., n\}$, the parameter is $\beta$, the observed data is
+$\{y_i, i= 1, ..., n\}$, the missing data is $\{ z_i, i= 1, ..., n\}$. \\
+First we need to check $\int P(y_i, z_i\vert \beta) dz_i = P(y_i)$. We need Prof Baines to provide information for this demonstration. \\
+Let's derive the EM algorithm for this model:\\
+ \begin{equation} 
+Q(\beta \vert \beta^{t}) = E\left[\log P(y, z\vert \beta)\vert y, \beta^t\right]
+\end{equation} 
+To take the expectations, we need to know the distribution of $z_i | y_i, \beta^t$.
+  \begin{equation} 
+  z_i \vert y_i = 0, \beta^{t} \sim TN({x_i}^T\beta^{t}, 1, [-\infty, 0])
+\end{equation} 
+  \begin{equation} 
+  z_i \vert y_i = 1, \beta^{t} \sim  TN({x_i}^T\beta^{t}, 1, [0, \infty ])
+\end{equation} 
+  \begin{equation} 
+Q(\beta \vert \beta^t) = -E\left[\frac{1}{2}\sum_{i=1}^{n}(z_i - {x_i}^T\beta)^2\vert y_i, \beta^t\right]
+\end{equation} 
+Maximize $Q(\beta \vert \beta^t)$. \\
+Let 
+\[ {z_i}^{t+1} = \left\{ 
+  \begin{array}{l l}
+    {x_i}^T\beta^{t} + \frac{\Phi\left({x_i}^T\beta^t\right)}{1 -\Phi\left(-{x_i}^T\beta^t\right) }  & \quad\text{if $y_i = 1$}\\
+     {x_i}^T\beta^{t} - \frac{\Phi\left({x_i}^T\beta^t\right)}{\Phi\left(-{x_i}^T\beta^t\right) }  & \quad \text{if $y_i = 0$}\\
+  \end{array} \right.\] 
+The maximizer of $Q(\beta \vert \beta^t) $ with respect to $\beta$ is seen to be the LS estimator of $\beta$ when regressing $z^{t+1}$ on $x$. \\
+  \begin{equation} 
+\beta^{t+1} = (x^Tx^{-1})x^Tz^{t+1}
+\end{equation}
+where \\
+ \begin{equation} 
+ z^{t+1} = ({z_1}^{t+1},{z_2}^{t+1},\dotsc,{z_n}^{t+1})^T
+\end{equation}
+\begin{itemize}
+\item E-step $\rightarrow$ to compute $z^{t+1}$
+\item M-step $\rightarrow$ to compute $\beta^{t+1} = (x^Tx^{-1})x^Tz^{t+1}$
+\end{itemize}
+
+
+
+
+
+
+
+
+
+\end{document}
