@@ -46,7 +46,7 @@ Please complete the <a href="https://docs.google.com/forms/d/1yTSAotsVWZ2eVV98zD
 * Course CRN: 53615
 * Units: 4.0
 * Office Hours: 
-	* Mon: 3:10-4:00pm (MSB 4105)
+	* Mon: 6:00-7:00pm (MSB 4105)
 	* Fri: 12:00-1:00pm (MSB 4105)
 * Pre-requisites (official): Course 131A; Course 232A is recommended but not required.
 * Pre-requisites (unofficial): Comfort with the foundations of statistical inference. The ability to program in a statistical software environment such as R, Python, Matlab (or similar). 
