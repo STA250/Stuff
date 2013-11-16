@@ -1,0 +1,142 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{bm}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+
+
+\title{Lecture 11}
+\author{Pei-Chen Chen}
+\date{Nov 4, 2013}							% Activate to display a given date or no date
+\begin{document}
+\maketitle
+\section{\underline{Homework Related}}
+\begin{itemize}
+\item HW2 Due on Nov 13 (Wednesday)
+\item Use Python for the problem on MapReduce in HW2 
+\end{itemize}
+\section{\underline{Python}}
+\begin{itemize}
+\item Python Version: Python 2: 2.6 and 2.7 (version on Gauss) \\
+Python 3: 3.2 and 3.3 \\
+\item It does not matter which version you choose but recommend to use the same version across machines. (Prof. Baines will use Python 2 in class.)
+\item Recommend Software: PyCharm
+\item Python examples 
+\end{itemize}
+\begin{enumerate}
+\item[1.] Combine two strings \\
+foo = 10.0\\
+bar = "hello" \\
+print bar \\
+baz = "class" \\
+foo2 = bar +baz \\
+\# foo2 puts 2 strings together \\
+\item[2.] Conditional Statement\\
+if (i $>$ 0):\\
+\indent[tab] print( "i is... \\
+\indent[tab]	...\\
+\indent[tab]	...\\
+\#the code has to be tab indented\\
+\#Don't recommend to copy and paste in Python because it may change the indentation. 
+\item[3.] For loop\\
+\textbf{for i in 1:n:} is equal to  \textbf{for i in range(0, n):}\\
+\item[4.]
+foo = 1,2,3,4,5 \\
+foo = list(foo)\\
+print foo \qquad(1,2,3,4,5)\\ 
+print type(foo) \qquad $<$ type 'list' $>$ \\  
+print foo[0:3] \qquad (1, 2, 3)\\	
+print foo[1:]  \qquad(2, 3, 4, 5) \\
+print foo[:1]  \qquad (1,)\\
+bar=foo[2:]\\
+print bar \qquad [3, 4, 5]\\
+foo[3]=100\\
+print foo \qquad [1, 2, 3, 100, 5]\\
+\item[5.] Convert between string, int and float\\
+print "float('6.5')" +str(float('6.5'))  \qquad  $\rightarrow$float('6.5')6.5\\
+print "int('6.5')" + str(int('6.5')) \qquad $\rightarrow$ shows error (can't print ) \\
+print "int(float('6.5')" + str(int(float('6.5'))) \qquad  $\rightarrow$ int(float('6.5')6\\  
+\end{enumerate}
+\section{\underline{Bayes + Big Data}}
+\begin{itemize}
+\item Bayes Recap:\\
+$X_1, ... , X_n \stackrel{i.i.d}{\sim} N(\mu, \sigma^2)$, where $\sigma^2$ known and $\mu \sim N(\mu_0, \sigma_0^2)$\\
+\[
+\mu| \vec{X} \sim N(\frac{\frac{\mu_0}{\sigma_0^2}+\frac{\sum x_i}{\sigma^2}}{\frac{1}{\sigma_0^2}+\frac{n}{\sigma^2}}, \frac{1}{\frac{1}{{\sigma_0^2}}+{\frac{n}{\sigma^2}}})
+\]
+General: Likelihood $p(\vec{x}|\theta)$ ; \qquad  Prior $p(\theta)$
+$\rightarrow$ Posterior: $p(\theta|\vec{x}) \propto p(\theta)p(\vec{x}|\theta)$\\
+If $p(\theta|\vec{x})$ has no closed form, then use MCMC. 
+\item For big data, when the $ \vec{x} $ in  $p(\vec{x}|\theta)$ is massive, applying MCMC directly to the full dataset is not computably feasible. \\
+\item Idea: "Chuck" the full data set into a series of smaller datasets, sample for the posterior of each smaller dataset and "combine" results. (Treat each one as a separate model and pull together to estimate the posterior distributions.) \\
+\item $p(\theta|\vec{x}) \propto p(\theta)p(\vec{x}|\theta) \rightarrow$ divide the $\vec{x}$ from $p(\vec{x}|\theta)$ to different dataset. \\
+Assume X's are conditionally independent given $\theta$. \\
+\[
+\prod_{j=1}^{s} \{p(\theta)^{1/s}p(\vec{x}_j|\theta)\} 
+\]
+(If things are conditionally independent.)\\
+\item But it is still not the same as if we sample from the full data. Thus...\\
+Distribute:\\
+$\vec{X_n}$ (full data) to \\
+\[
+\vec{X_1} \qquad \vec{X_2} \qquad ... \qquad \vec{X_s}  \qquad  \textbf{(data)}
+\]
+\[
+\pi(\theta)^{q_1} \pi(\theta)^{q_2} \quad... \quad \pi(\theta)^{q_s} \qquad \textbf{(prior)}
+\]
+(Note: ${q_1}... {q_s} $ don't have to have the same amount.) \\
+\\
+Where $\sum_{j=1}^{q} q_j=1, q_j >$ 0, for all j , $\cup_{j} \vec{X_j} = \vec{X}, \cap_{j} \vec{X_j} = \emptyset$\\
+\item Treat each $\vec{X_j}$ and $  \pi(\theta)^{q_j} $ as a full model and run MCMC. \\
+Aside, 
+\[
+\mu \sim N(\mu_0, \sigma_0^2)
+\]
+\[
+p(\mu)^{q_j} ,
+p(\mu) \propto exp {\{{-\frac{1}{2\sigma_0^2}{ (\mu-\mu_0)^2}\} }}^{q_j}  \]
+\item Note: In the google talk, if $\theta^{(t)}$ is discrete we can't do weight average. We have to do the density and average over the density. \\
+\item For weights, it turns out that a good choice is:\\
+\[w_j = Var^{-1} (\theta|\vec{X_j}) \]
+\item EX: $X_{ij}, ..., X{ijk_j} \stackrel{i.i.d}{\sim} N(\mu, \sigma^2), \qquad \mu \sim N(\mu_0, \sigma_0^2) $\\
+Chunk to $ \vec{X_j} = \{ X_{ij_1}, X_{ij_2}, ..., X_{ijk_j} \} $where$  \{ i_{j1}, ..., i_{jk_j} \} $are indices $\leftarrow $responding to the subject. \\
+\[
+Model j : X_{ij}, ..., X_{ijk_j}  \stackrel{i.i.d}{\sim} N(\mu, \sigma^2), \qquad \mu \sim N(\mu_0, \frac{\sigma_0^2}{q_j})
+\]
+\[
+\mu|\vec{X_j} \sim N(\frac{\frac{{q_j}{\mu_0}}{\sigma_0^2}+\frac{\sum{x_j}}{\sigma^2}}{\frac{{q_j}{\sigma_0^2}}{\sigma_0^2}+\frac{k_j}{\sigma^2}}, \frac{1}{\frac{q_j}{\sigma_0^2}+\frac{k_j}{\sigma^2}})
+\]
+Combine: $\mu = \frac{\sum{w_j}{\mu_j}}{\sum{w_j}}, w_j = \frac{q_j}{\sigma_0^2}+\frac{k_j}{\sigma^2}$\\
+\[
+\rightarrow \sum{w_j} =  \frac{q_j}{\sigma_0^2}+\frac{k_j}{\sigma^2} = \frac{1}{\sigma_0^2}+ \frac{n}{sigma^2}
+\]
+\[
+Var(\mu) = \frac{1}{ (\frac{1}{\sigma_0^2}+\frac{n}{\sigma^2})^2} \sum_j{w_j^2}Var(\mu_j)
+\]
+where $ \sum_j{w_j^2}Var(\mu_j) $ reduce  to$ \sum_j{w_j}$\\
+\[
+E[\mu] = \frac{\sum_j{w_j}E[\mu_j]}{\sum{w_j}} = \frac{\sum_j{\frac{{q_j}{\mu_0}}{\sigma_0^2}}+{\sum\sum{x_j}}}{\frac{1}{\sigma_0^2}+\frac{n}{\sigma^2}} = \frac{\frac{\mu_0}{\sigma_0^2}+\frac{\sum{x}}{\sigma^2}}{\frac{1}{\sigma_0^2}+\frac{n}{\sigma^2}}
+\]
+where $\sum{x} $ in the last term contains the full sum of data points \\
+\[
+\mu \sim N( E[\mu], Var[\mu])
+\]
+\item Comments:
+\end{itemize}
+\begin{enumerate}
+\item [1.] It's not gonna work if the data is not normal but suppose n is large and sub data size $ = \{d_1, ...d_s\} $. If the $d_{j's} $ are large what happens to $p(\theta|\vec{X_j}) ? $ \\
+$\rightarrow $ \underline{Become normal} (Posterior converge to normal: CLT result) \\
+\item [2.] If the $d_{j's}$ are large. They are approximately normal $\rightarrow$ consensus MC will still work well!! \\
+
+\end{enumerate}
+%\subsection{}
+
+
+
+\end{document}  
