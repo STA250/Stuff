@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -49,30 +50,71 @@ quarter as we cover more topics. For a description of how to format the final pr
 report please see <a href="Final_Project_Report.html">Final Project Report Guidelines</a>.</p>
 
 <ul>
-	<li><em>Applied Bayesian Modeling:</em> Brief description to appear here.</li>
-	<li><em>Advanced MCMC Techniques:</em> Brief description to appear here.</li>
-	<li><em>Hamiltonian Monte Carlo:</em> Brief description to appear here.
-	<a href="http://www.mcmchandbook.net/HandbookChapter5.pdf">Neal, R. (2011) MCMC using Hamiltonian Dynamics. Chapter 5 in the Handbook of Markov Chain Monte Carlo. Chapman and Hall/CRC.</a> 
-	</li>
-	<li><em>Parallel Tempering and Energy-based Samplers:</em> Brief description to appear here.
-	<a href="http://www.stat.umn.edu/geyer/f05/8931/c.pdf">Geyer, C.J. (1991) Markov Chain Monte Carlo Maximum Likelihood. Proceeding of the Interface.</a>
-	</li>
-	<li><em>Bag of Little Bootstraps:</em> Brief description to appear here.
-	<a href="http://arxiv.org/abs/1112.5016">Kleiner, A., Talwalkar, A., Sarkar, P., Jordan, M.I. (2011) A Scalable Bootstrap for Massive Data. arXiv: 1112.5016</a>
-	</li>
-	<li><em>Consensus Monte Carlo:</em> Brief description to appear here.</li>
-	<li><em>Applications using Hive:</em> Brief description to appear here.</li>
-	<li><em>Applications using MapReduce:</em> Brief description to appear here.</li>
-	<li><em>An Exploration of MCEM:</em> Brief description to appear here.</li>
-	<li><em>An Exploration of PXEM:</em> Brief description to appear here.
+    <li><em>Applied Bayesian Modeling:</em> In Homework 1 you had the opportunity to explore some preliminary ideas in Bayesian modeling and MCMC. Projects in this area provide the opportunity to explore more complex Bayesian modeling applications; recommended applications include Hierarchical models, Generalized Linear Mixed Models and Bayesian Time Series analysis. Examples include fitting Hierarchical logistic or probit regressions, Bayesian autoregressive models or Bayesian
+    approaches to variable selection or shrinkage. More theoretical projects could include reading and implementing more complex prior distributions (such as Probability
+    Matching Priors and Reference priors: see lecture slides for references). 
+    <br/><br/></li>
+
+	<li><em>Hamiltonian Monte Carlo:</em> Hamiltonian Monte Carlo (HMC) has become extremely popular in the MCMC community, and offers potential insights for the devleopment of efficient algorithms in high-dimensional and complex settings. For this project your task is to read the accompanying reference (below), and to implement the HMC algorithm to sample from the posterior distribution of one or more Bayesian models (e.g., section 5.3.3.4 has an example that you could decide to implement,
+    or any other model of your choosing). Depending on your background, you could also expore issues related to acceptance ratings, selection of tuning parameters and extensions of HMC.<br/>
+    <a href="http://www.mcmchandbook.net/HandbookChapter5.pdf">Neal, R. (2011) MCMC using Hamiltonian Dynamics. Chapter 5 in the Handbook of Markov Chain Monte Carlo. Chapman and Hall/CRC.</a><br/><br/>
+    </li>
+
+	<li><em>Parallel Tempering:</em> The Parallel Tempering algorithm of Geyer (1991) is one of the most popular MCMC algorithms for sampling from distributions with multiple separated modes. The algorithm involves constructing multiple MCMC chains at different &quot;temperatures&quot; and carefully allowing for the exchange of states between temperature levels. The algorithm is beautiful in its simplicity and effectiveness, although it can be prohibitively expensive to implement for
+    many problems. In this project you would read the reference (below) and implement the Parallel Tempering algorithm to sample from one or more distributions. Possible examples include mixtures of Gaussians, with separated modes (either in one or multiple dimensions). Key implementation choices include the choice of temperature ladder, frequency of Mutation and Random Exchange moves, and proposal strategies.<br/> 
+    <a href="http://www.stat.umn.edu/geyer/f05/8931/c.pdf">Geyer, C.J. (1991) Markov Chain Monte Carlo Maximum Likelihood. Proceeding of the Interface.</a><br/><br/>
+    </li>
+
+    <li><em>Equi-Energy Sampling:</em> The Equi-Energy Sampler (Kou, Zhou and Wong, 2006) is another algorithm designed to sample from highly complex distributions with multiple modes or other challenging structure. In this project your task would be to read the reference (below), implement the algorithm and study its performance with simulated data and/or a real data analysis. Similarly to Parallel Tempering, a good starting point is to implement the algorithm for mixtures of
+    separated Gaussians (ideally in multiple dimensions), as in the example in section 3.4 of the original paper. The choice of temperature ladder and other implementation choices could be investigated, as can the performance of the estimation methods presented in section 5 of the paper. Comparison to Parallel Tempering or regular Metropolis-Hastings could be considered.<br/>
+    <a href="http://www.people.fas.harvard.edu/~skou/papers/EE-AnnStat.pdf">Kou, S.C., Zhou, Q. and Wong, W.H. (2006) Equi-Energy Sampler with Applications in Statistical Inference and Statistical Mechanics (with discussion). The Annals of Statistics. 34-4, 1581--1619.</a><br/><br/></li>
+
+	<li><em>Bag of Little Bootstraps:</em> As implemented in Homework 2, the Bag of Little Bootsraps is a potentially useful methodology for constructing standard error estimates and confidence intervals for large datasets. In this project you would be tasked with extending the applications performed in the homework. This could take a number of forms. For example, you could decide to explore more complicated statistical models (e.g., not just linear and logistic regression)
+    and investigate senstivity to the choice of tuning parameters (gamma, r, s etc.) Alternatively, you could seek to implement the BLB within the Map-Reduce framework on AWS. Similarly, investigating the performance of the BLB under model misspecification, or in the presence of irregular data could form the basis of a project, or attempting to replicate the results of the simulation studies in the paper.<br.>
+    <a href="http://arxiv.org/abs/1112.5016">Kleiner, A., Talwalkar, A., Sarkar, P., Jordan, M.I. (2011) A Scalable Bootstrap for Massive Data. arXiv: 1112.5016</a><br/><br/>
+    </li>
+
+    <li><em>Consensus Monte Carlo:</em> As presented in class, the Consensus Monte Carlo agorithm provides a framework for scalable MCMC. In this project you could explore the algorithm and implement it for one or more Bayesian models (a good starting point would be the Hierarchical Logistic Regression model example presented in the paper). You could either implement the algorithm using R and Python on Gauss, or else implement true multiple-machine Monte Carlo by implementing
+    on a Hadoop cluster within AWS. In addition to implementation, you could investigate the sensitivity to the data partitioning, and performance in non-Gaussian settings.<br/>  
+    <a href="http://research.google.com/pubs/pub41849.html">Scott, S.L., Blocker, A.W. and Bonassi, F.W. (2013) Bayes and Big Data: The Consensus Monte Carlo Algorithm. Bayes 250.</a><br/><br/>
+    </li>
+
+    <li><em>Applications using Hive:</em> As seen in Homework 2, Hive is a useful framework for manipulating large datasets within the HDFS. The homework did not even scratch the surface of what Hive can do, and the intricacies needed to manipulate data within Hive. In this project you can explore the capabilities of Hive by conducting a statistical analysis of a dataset of your choice. Convenient choices include datasets aleady housed on Amazon (<a href="http://aws.amazon.com/datasets">see
+        here</a>) such as the Google N-grams data. As well as learning how to manipulate data in Hive the project should also include some study of the efficiency of different operations, and strategies to automate common data analytic tasks.<br/><br/></li>
+
+    <li><em>Applications using MapReduce:</em> Again, in Homework 2 you were introduced to Hadoop and the MapReduce framework for computing with large datasets but barely scratched the surface of what can be done in this context. Possible final projects in this area include implementing more complex job flows such as chained jobs (e.g., using <a href="https://github.com/Yelp/mrjob">mrjob</a> as mentioned in class) or simply undertaking more complex tasks than constructing histograms
+    (e.g., <a href="http://aimotion.blogspot.com/2012/08/introduction-to-recommendations-with.html">Recommender Systems with Hadoop and mrjob</a>).<br/><br/>
+    </li>
+
+    <li><em>Applications using Mahout:</em> In class we heard about Mahout, a library for scalable Machine Learning Algorithms build on Hadoop, so this project provides an opportunity to familiarize yourself with Mahout. Here is your opportunity to apply popular Machine Learning algorithms such as Collaborative Filtering, Random Forests and K-means to large datasets within Hadoop. Starting points include:<br/>
+    <a href="https://cwiki.apache.org/confluence/display/MAHOUT/Mahout+on+Elastic+MapReduce">Mahout on Amazon Elastic MapReduce</a><br/>
+    <a href="http://mahout.apache.org/">Mahout Webpage</a><br/><br/></li>
+
+    <li><em>An Exploration of MCEM:</em> In homework 3 you have the opportunity to implement MCEM, but in this project you can go deeper into the issues, possibly exploring the use of dependent MCMC samples to approximate the E-step. Possible examples include the models presented in section 3 of the reference (below) such as the Logit-Normal and Probit Threshold model. Generalized Linear Mixed Models provide many opportunities for the applications of MCEM, so those with an interest in that
+    area could explore applications related to GLMMs.<br/>
+    <a href="www.jstor.org/stable/1391097">Levine, R.A. and Casella, G. (2001) Implementations of the Monte Carlo EM Algorithm. Journal of Computational and Graphical Statistics. 10-3, 422-439.</a>
+    <br/><br/></li>
+
+    <li><em>An Exploration of PXEM:</em> The idea of parameter expansion has proven to be highly successful in both a sampling and optimization context. In this project you will have the opportunity to implement the Parameter Expanded EM (PXEM) algorithm and apply it to one or more models of your choosing. Good starting points include the multivariate-t regression model or Linear Mixed Effects model (or other examples presented in section 4 of the paper).<br/>
     <a href="www.stat.ucla.edu/~ywu/research/papers/pxem.pdf">Liu, C., Rubin, D.B., Wu, Y.N. (1998) Parameter Expansion to Accelerate EM: The PX-EM Algorithm. Biometrika. 85, 4, pp.755-770.</a>
-	</li>
-	<li><em>An Exploration of IEM:</em> Brief description to appear here.</li>
-	<li><em>GPU Applications using PyCUDA:</em> Brief description to appear here.</li>
-	<li><em>GPU Applications using RCUDA:</em> Brief description to appear here.</li>
+    <br/><br/></li>
+
+    <li><em>An Exploration of IEM:</em> In module 3 you were introduced to the basics of the IEM algorithm. For a final project one possibility is to apply IEM in a new setting, possibly requiring Monte Carlo or numerical methods for the E- and M-steps. Possible examples include the Hierarchical Binomial model:
+    \[ Y_i | p_i \sim \textrm{Bin}(n_i,p_i) , \qquad p_i | \alpha, \beta \sim \textrm{Beta}(\alpha,\beta) \]
+    for \(i=1,\ldots,n\), or extensions of the Hierarchical Poisson model of Homework 3. Other applications include hierarchical Gaussian models and linear mixed effects models (more involved).
+    <br/><br/></li>
+
+    <li><em>GPU Applications using PyCUDA:</em> As seen in the final module of the course, PyCUDA provides a rich framework for programming with GPUs. In this module you can explore some of the more advanced features of PyCUDA such as metaprogramming or using libraries built on PyCUDA such as <a href="http://reikna.publicfields.net/">reikna</a> to perform statistical tasks. Comparing the speed of GPU-based computations to CPU-based alternatives would also provide a large source of possible
+    projects. 
+    <br/><br/></li>
+
+    <li><em>GPU Applications using RCUDA:</em> As seen in the final module of the course, RCUDA provides a rich framework for programming with GPUs. In this module you can explore some of the more advanced features of RCUDA to perform statistical tasks. Projects could include implementing statistical algorithms such as MCEM, Importance Sampling, Monte Carlo Integration or MCMC using RCUDA. Comparing the speed of GPU-based computations to CPU-based alternatives would also provide a large source of possible
+    projects.
+    <br/><br/></li>
+
 </ul>
 
-<p>Happy coding! :)</p>
+<p>(: Happy coding! :)</p>
       </section>
 
     </div>
