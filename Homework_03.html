@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013) by STA250</title>
+    <link rel="stylesheet" href="stylesheets/hwstyles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
+    </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/STA250/Stuff">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <a href="http://sta250.github.io/Stuff"><h1>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013)</h1></a>
+          <p>Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/STA250">STA250</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+<style TYPE="text/css">
+code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
+</style>
+
+<h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Homework Policy</h1>
+
+<p><em>For all questions you must show your work. This enables us to understand your thought process, give partial credit and prevent crude cheating. Please see the code of the conduct in the Syllabus for rules about collaborating on homeworks.</em></p>
+<p><em>For questions requiring computing, if you use <code>R</code>, <code>python</code> or any programming environment then you must turn in a printout of your output with your solutions.<br />In addition, a copy of your code must be uploaded to the appropriate <code>HW</code> directory of your forked GitHub repo within 24 hours of the homework due date.</em></p>
+<p><br/></p>
+
+<h2>Homework 03</h2>
+<h2>Due: In Class, Wed November 27th</h2>
+<h4>Assigned: Wednesday November 20th</h4>
+<h4>Bayesian Inference Module</h4>
+<p>(<a href="plain/Homework_03_plain.html">Click here for printable version</a>)</p>
+<p>
+In this homework you will implement several variants of the EM algorithm 
+discussed in lecture. This includes the regular EM algorithm, the MCEM
+algorithm and the IEM algorithm.
+</p>
+<ol start="0">
+    <li>Sync your fork of the course GitHub repo to include the latest updates using the instructions provided <a href="sync_fork.html">here</a>.</li>
+    <br/><br/>
+
+    <li>In this problem you will implement the most basic optimization algorithms presented in class: bisection and Newton-Raphson.</li>
+    <ol type="a">
+    <!-- ##### (a) ##### -->
+    <li>Write a general function to implement the bisection algorithm. The function should take the following arguments:</li>
+    <ul>
+        <li>The function to find the root of</li>
+        <li>The initial interval</li>
+        <li>The tolerance of the convergence criteria</li>
+        <li>Maximum number of iterations</li>
+        <li>A debugging option (e.g., to print status to the user)</li>
+    </ul>
+
+    <!-- ##### (b) ##### -->
+    <li>Write a general function to implement the Newton-Raphson algorithm. The function should take the following arguments:</li>
+    <ul>
+        <li>The function to find the root of</li>
+        <li>The derivative of the function</li>
+        <li>The starting value</li>
+        <li>The tolerance of the convergence criteria</li>
+        <li>Maximum number of iterations</li>
+        <li>A debugging option (e.g., to print status to the user)</li>
+    </ul>
+
+    <li>Consider the classic linkage problem from Rao (1969) with probabilities and counts:</li>
+    \begin{equation}
+    \begin{array}{ccc}
+    \textrm{Phenotype} & \textrm{Probability} & \textrm{Count} \\
+    \textrm{AB} & (3-2\theta+\theta^2)/4 & 125 \\
+    \textrm{Ab} & (2\theta-\theta^2)/4   & 18 \\
+    \textrm{aB} & (2\theta-\theta^2)/4   & 20 \\
+    \textrm{ab} & (1-2\theta+\theta^2)/4 & 34
+    \end{array}
+    \end{equation}
+    Defining \(\lambda=1-2\theta+\theta^2\), the likelihood is seen to be:
+    \begin{equation}
+    L(\lambda) \propto (2+\lambda)^{125}(1-\lambda)^{18+20}\lambda^{34}
+    \end{equation}
+    <em>Reference:</em> Rao, C.R. (1965) Linear Statistical Inference and its Applications (Second Edition). Wiley Series in Probability and Statistics.<br/>
+
+    <!-- ##### (c) ##### -->
+    <p>Use both of your functions to find the MLE for \(\lambda\) in the linkage example.</p>
+
+    <p>What to turn in:</p>
+    <ul>
+        <li>Code for your bisection and Newton-Raphson algorithms</li>
+        <li>Output showing the results of applying your code to the linkage problem</li>
+    </ul>
+    </ol>
+
+    <li>
+    In this question, you will implement EM for a multivariate-t regression model:
+    \begin{equation}
+    Y_i \sim t_{p}(\mu,\Psi,\nu) , \qquad i=1,\ldots,n \label{om}
+    \end{equation}
+    where \(t_p\) is a multivariate t-distribution in \(p\) dimensions. It turns out that the t-distribution has a convenient representation as a ratio of a normal and \(\chi^{2}\) distribution. Therefore, we can write the model in \eqref{om} as:
+    \begin{align}
+    Y_i | \tau_{i},\theta &\sim N_p\left(\mu,\frac{1}{\tau_{i}}\Psi\right) , \\
+    \tau_{i} &\sim \frac{\chi^{2}_{\nu}}{\nu} ,
+    \end{align}
+    where \(\theta=(\mu,\Psi)\) is the parameter to be estimated (\(\nu\) is fixed) with \(Y_{obs}=(Y_1,\ldots,Y_{n})\) and \(Y_{mis}=(\tau_{1},\ldots,\tau_{n})\). 
+    For convenience, define:
+    \begin{equation}
+    \tau_{i}^{(t+1)} = \mathbb{E}\left[\tau_{i}|Y_{obs},\theta^{(t)}\right] = \frac{\nu+p}{\nu+\left(Y_{i}-\mu^{(t)}\right)^{T}\left[\Psi^{(t)}\right]^{-1}\left(Y_{i}-\mu^{(t)}\right)} .
+    \end{equation}
+    
+    </li>
+
+    <ol type="a">
+
+    <!-- ##### (a) ##### -->
+    <li>Derive the EM algorithm for estimating \(\theta\) i.e., find \(\mu^{(t+1)}\) and \(\Psi^{(t+1)}\).</li>
+
+    <p>Some possibly useful facts:</p>
+    <ul>
+        <li>For \(A\) a \(p\times{}p\) matrix and \(c>0\) a constant:
+    \[
+    \textrm{det}(cA) = c^{p}\textrm{det}(A)
+    \]
+    </li>
+    <li>If \(X\sim{}\textrm{Gamma}(a,b)\) then:
+    \[
+    p(x|a,b) \propto x^{a-1}\exp\left\{-bx\right\} ,
+    \]
+    for \(a,b>0\) and \(\mathbb{E}\left[X\right]=\frac{a}{b}\).
+    </li>
+    <li>If \(A\) is a positive definite \(p\times{}p\) matrix then:
+    \begin{equation}
+    \textrm{argmax}_{A}\left\{n\log(\textrm{det}(A^{-1})) - \textrm{tr}\left(A^{-1}B\right)\right\} = \frac{1}{n}B .
+    \end{equation}
+    </li>
+    <li>Facts about the \(\textrm{trace}\) operator for scalar \(c\), vector \(x\) and square matrices \(A,B,C\):
+    \begin{gather}
+    \textrm{tr}(c) = c , \qquad \textrm{tr}(AB) = \textrm{tr}(BA) \\
+    \textrm{tr}(A+B) = \textrm{tr}(A)+\textrm{tr}(B) , \qquad \textrm{tr}(x^{T}Ax) = \textrm{tr}(xx^{T}A) .
+    \end{gather}
+</ul>
+
+    </ol>
+
+    <br/><br/>
+    <li>In this question you will implement two different EM algorithms for a Hierarchical Poisson model:
+    \begin{equation}
+    Y_i | \lambda_i \sim \textrm{Pois}(\lambda_i) , \qquad \lambda_i | \beta \sim \textrm{Gamma}(1,\beta) ,\label{eq1}
+    \end{equation}
+    where the pdf of a \(\textrm{Gamma}(1,b)\) random variable is defined to be
+    \[ 
+    p(x) = \mathcal{I}_{\left\{x>0\right\}}b\exp\left\{-bx\right\} ,
+    \]
+    i.e., \(\lambda_i\sim\textrm{Expo}(\beta)\). 
+    </li>
+
+    <ol type="a">
+
+    <!-- ##### (a) ##### -->
+    <li>Derive the EM algorithm for \(\beta\) for the model in \eqref{eq1}.</li>
+
+    <!-- ##### (b) ##### -->
+    <li>Construct an Ancillary Augmentation (AA) that preserves the observed data log-likelihood of the Hierarchical model in \eqref{eq1}. Hint: Use the strategy suggested in class! Derive the corresponding EM algorithm.</li>
+
+    <!-- ##### (c) ##### -->
+    <li>Using the SA and AA from (a) and (b), derive the corresponding Interwoven EM algorithm. You may select either the SA or AA as A1 (the resulting will be the same either way for this example).</li>
+
+    <!-- ##### (d) ##### -->
+    <li>Derive the observed data log-likelihood according to model \eqref{eq1} and compute the MLE for \(\beta\).</li>
+
+    <!-- ##### (e) ##### -->
+    <li>Compare the linear rate of convergence of each of the EM algorithms, and discuss when each algorithm will perform well (or not).</li>
+
+    </ol>
+
+
+</ol>
+
+<br/>
+
+<h3>(: Happy Coding! :)</h3>
+
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
+
