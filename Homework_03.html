@@ -72,7 +72,7 @@ algorithm and the IEM algorithm.
     <li>Write a general function to implement the bisection algorithm. The function should take the following arguments:</li>
     <ul>
         <li>The function to find the root of</li>
-        <li>The initial interval</li>
+        <li>The initial interval \((l,u)\) (with \(g(l)g(u)<0\)</li>
         <li>The tolerance of the convergence criteria</li>
         <li>Maximum number of iterations</li>
         <li>A debugging option (e.g., to print status to the user)</li>
@@ -130,6 +130,7 @@ algorithm and the IEM algorithm.
     \begin{equation}
     \tau_{i}^{(t+1)} = \mathbb{E}\left[\tau_{i}|Y_{obs},\theta^{(t)}\right] = \frac{\nu+p}{\nu+\left(Y_{i}-\mu^{(t)}\right)^{T}\left[\Psi^{(t)}\right]^{-1}\left(Y_{i}-\mu^{(t)}\right)} .
     \end{equation}
+    Note that there is no \(\sqrt{\cdot}\) for the \(\tau_{i}\)'s in the multivariate formulation used here (unlike in the standard univariate representation of a t-distribution). There are multiple different definitions of the multivariate \(t-\)distribution in the literature, although the one used here is standard in the EM and Bayesian communities. 
     
     </li>
 
