@@ -1,0 +1,211 @@
+\documentclass[12pt]{article}
+\pagestyle{plain}
+\usepackage[utf8]{inputenc}
+\usepackage[normalem]{ulem}
+\usepackage[fleqn]{amsmath}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\usepackage{amsfonts}
+\usepackage[fleqn]{mathtools}
+\usepackage{enumitem}
+\usepackage{ amssymb }
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+  \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\usepackage{MnSymbol,wasysym}
+\usepackage{amssymb}
+\linespread{1.3}
+\def\mathbi#1{\textbf{\em #1}}
+\title{STA 250 Lecture 15: EM IV -- Efficient algorithms }
+\author{Yuanzhe(Roger) Li}
+\date{November 20th, 2013}
+
+
+\begin{document}
+
+\maketitle
+
+\bigskip\noindent
+\begin{flushleft}
+\section*{\underline{Logistics}}
+\begin{itemize}
+    \item More guidelines on final project have been posted.
+    \item Homework 3 will be posted this evening and is due on class next Wednesday.
+\end{itemize}
+
+\section*{\underline{Recap}}
+\underline{EM} Last time we saw strategies to deal with ``complicated" EM applications (i.e., when the E$-$ \& or M$-$ step are hard).
+
+\section*{\underline{Today}}
+\underline{Example} ($V$ known)
+
+{\bf Sufficient augmentation (SA)}\\
+\begin{align*}
+&y_{obs}| y_{mis} \sim N(y_{mis},1)\\
+&y_{mis}| \theta \sim N(\theta,V)
+\end{align*}
+\underline{SAEM}: $\theta^{(t+1)}=\dfrac{\theta^{(t)}+Vy_{obs}}{V+1}$, The rate of convergence: $\dfrac{1}{V+1}$\\
+
+\bigskip
+{\bf Ancillary augmentation (AA)}
+\begin{align*}
+&y_{obs}| y_{mis} \sim N(y_{mis},1)\\
+&y_{mis}| \theta \sim N(\theta,V)
+\end{align*}
+\underline{AAEM}: $\theta^{(t+1)}=\dfrac{\theta^{(t)}V+y_{obs}}{V+1}$, The rate of convergence: $\dfrac{V}{V+1}$\\
+
+\bigskip
+So the two algorithms have ``opposite" performance as $V$ changes.\\
+If $V$ is unkonwn we can derive EM's for the SA \& AA and they have similar performance to when $V$ is known.\\
+For a given problem, how do we decide whether to use the SA or AA?\\
+Could code both and just see which converges faster.\\
+One idea could be to "alternate" updates according to the SA\&AA, i.e., compute:\\
+$\theta^{(t+0.5)}=\dfrac{\theta^{(t)}+Vy_{obs}}{V+1}$ \quad(SA)\\
+$\theta^{(t+1)}=\dfrac{\theta^{(t+0.5)}V+y_{obs}}{V+1}$ \quad(AA)\\
+i.e., $\theta^{(t+1)} = M_{AA}(M_{SA}(\theta^{(t)}))$.\\
+
+\bigskip
+\underline{Pros}\\
+$\longrightarrow$ Avoids need to select one of the algorithms\\
+
+\underline{Cons}\\
+$\longrightarrow$ Do no better than the best of the two algorithms, no worse than the worst of the two algorithms.\\
+$\longrightarrow$ Need to implement two algorithms.\\
+$[$ Note: computation time of thetwo algorithms may not be equal. $]$\\
+
+\bigskip
+{\bf Interwoven EM (IEM)}\\
+It turns out that there is a way to ``combine" two EMs into a single, improved update that utilizes ``joint information" contained in the two EM's.\\
+Consider:\\ 
+\underline{E-step in AA:} \quad $\tilde{y}_{mis}^{(t)}=\mathbb{E}[ \tilde{y}_{mis}|y_{obs}, \theta^{(t)}]$\\
+\underline{M-step in AA:} \quad $\theta^{(t+0.5)}=y_{obs}-\tilde{y}_{mis}^{(t)} (=\dfrac{\theta^{(t)}V+y_{obs}}{V+1})$\\ 
+$y_{mis}=H(\tilde{y}_{mis},\theta)=\tilde{y}_{mis}+\theta$\\
+Mappings betwenn SA \& AA.\\
+$y_{mis}=\tilde{y}_{mis}+\theta, \quad \tilde{y}_{mis}=y_{mis}-\theta$\\
+\bigskip
+\underline{E-step in SA:} \quad 
+\begin{align*}
+y_{mis}^{(t+0.5)}=\mathbb{E}[\mathbb{E}[y_{mis}|y_{obs},\theta^{(t+0.5)},\tilde{y}_{mis}]|y_{obs},\theta^{(t)}]
+\end{align*}
+Expectation w.r.t. $p(y_{mis}|y_{obs},\theta^{(t+0.5)},\tilde{y}_{mis})=f(\tilde{y}_{mis},\theta^{(t+0.5)})$
+\begin{align*}
+y_{mis}^{(t+0.5)} & = \mathbb{E}[\tilde{y}_{mis}+\theta^{(t+0.5)}|y_{obs},\theta^{(0.5)}]\\
+                  & = \theta^{(t+0.5)} + \underbrace{\mathbb{E}[\tilde{y}_{mis}|y_{obs},\theta^{(0.5)}]}_\text{E-step in AA}
+\end{align*}
+
+
+\bigskip
+\underline{M-step in SA:}
+\begin{align*}
+\theta^{(t+1)} & = y_{mis}^{(t+0.5)}\\
+               & = \theta^{(t+0.5)} + \tilde{y}_{mis}^{(t)}\\
+               & = y_{obs}-\tilde{y}_{mis}^{(t)}+\tilde{y}_{mis}^{(t)}\\
+\Longrightarrow & \theta^{(t+1)} = y_{obs}
+\end{align*}
+i.e., converges in one iteration! \smiley{}\\
+We can formalize this as follows:
+Define
+\begin{align*}
+Q_I=\mathbb{E}_{A2}[\mathbb{E}_{A1}[\log P_{A1}(y_{obs},y_{mis}|\theta)| y_{obs}, \tilde{y}_{mis}, \theta=G_{A2}(\theta^{(t)})]| y_{obs}, \theta^{(t)}]
+\end{align*}
+Then set
+\begin{align*}
+\theta^{(t+1)}= \argmax_{\theta} Q_I(\theta|\theta^{(t)})
+\end{align*}
+Where $A1$ is the augmentation scheme with missing data $y_{mis}$, $A2$ is the augmentation scheme with missing data $\tilde{y}_{mis}$.\\
+And $G_{A2}(\theta^{(t)})$ is the value from running one iteration of EM in the $A_2$ regime.\\
+
+\bigskip
+The algorithm can be summarized as follows:\\
+\begin{enumerate}
+  \item Run one iteration of A2-EM to obtain $\theta^{(t+0.5)}=G_{A2}( \theta^{(t})$;
+  \item Write down Q-function of the A1-EM;
+  \item Third item Replace $y_{mis}$ with $y_{mis}=H(\tilde{y}_{mis},\theta^{(t+0.5)})$;
+  \item Now the Q-function has expectations w.r.t. $\tilde{y}_{mis}$, so compute them (i.e., E-step in A2-EM).
+  \item Find maximizer 
+  \end{enumerate}
+  This can be formalized using the Q-function:
+  \begin{equation*}
+  Q_I(\theta|\theta^{(t)})=\mathbb{E}_{AA}[\mathbb{E}_{SA}[\log P_{SA}(y_{obs},y_{mis}|\theta)| y_{obs}, \tilde{y}_{mis}, \theta=G_{AA}(\theta^{(t)})]| y_{obs}, \theta^{(t)}]
+  \end{equation*}
+
+\bigskip
+\underline{Example}
+\begin{align*}
+&P_{SA}(y_{obs},y_{mis}|\theta) = P(y_{obs}|y_{mis})P(y_{mis}|\theta)\\
+&\Longrightarrow \log P_{SA}(y_{obs},y_{mis}|\theta)= -\dfrac{1}{2}(y_{obs}-y_{mis})^2-\dfrac{1}{2V}(y_{mis}-\theta)^2
+\end{align*}
+\begin{equation*} 
+\begin{split} 
+Q_I(\theta|\theta^{(t)})=\mathbb{E}_{AA}[ & \mathbb{E}_{SA}[-\dfrac{1}{2}(y_{obs}-y_{mis})^2|y_{obs}, \tilde{y}_{mis}, \\
+& \theta=G_{AA}(\theta^{(t)})]| y_{obs}, \theta^{(t)}] + \text{constant (not depending on  $\theta$)} 
+\end{split}
+\end{equation*}
+\begin{align*}
+\Longrightarrow \theta^{(t)} &= \mathbb{E}_{AA}[\mathbb{E}_{SA}[y_{mis}|y_{obs},\tilde{y}_{mis},G_{AA}\theta^{(t)}]|y_{obs}, \theta^{(t)})]\\
+& = \mathbb{E}_{AA}[\tilde{y}_{mis}+G_{AA}(\theta^{(t)})|y_{obs},\theta^{(t)})]\\
+& = G_{AA}(\theta^{(t)})+ \mathbb{E}_{AA}[\tilde{y}_{miss}|y_{obs},\theta^{(t)}]
+\end{align*}
+\begin{equation*}
+\Longrightarrow \theta^{(t+1)}= \dfrac{ \theta^{(t)}V+y_{obs}}{V+1}+\mathbb{E}_{AA}[\tilde{y}_{miss}|y_{obs},\theta^{(t)}]
+\end{equation*}\\
+\bigskip
+For AA:
+\begin{align*}
+& P(y_{obs},\tilde{y}_{miss}|\theta)\propto \exp \{-\dfrac{1}{2}(y_{obs}-\tilde{y}_{miss}-\theta)^2-\dfrac{1}{2V}\tilde{y}_{miss}\}\\
+& \Longrightarrow P(y_{obs},\tilde{y}_{miss}|\theta)\propto \exp \{ -\dfrac{1}{2}\tilde{y}_{miss}^2(1+\dfrac{1}{V})+ \tilde{y}_{miss}(y_{obs}-\theta) \}\\
+& \Longrightarrow y_{obs},\tilde{y}_{miss}|\theta^{(t)} \sim N((1+\dfrac{1}{V})^{-1}(y_{obs}-\theta^{(t)}), (1+\dfrac{1}{V})^{-1})\\
+& \qquad \text{i.e. }  y_{obs},\tilde{y}_{miss}|\theta^{(t)} \sim N((\dfrac{V}{V+1})(y_{obs}-\theta^{(t)}), \dfrac{V}{V+1})\\
+& \Longrightarrow \mathbb{E}[\tilde{y}_{miss}|y_{obs},\theta^{(t)}]=\dfrac{V}{V+1}(y_{obs}-\theta^{(t)})\\
+\text{So: } \theta^{(t+1)}&=(\dfrac{V}{V+1}) \theta^{(t)}+\dfrac{1}{V+1}y_{obs}+\dfrac{V}{V+1}y_{obs}-(\dfrac{V}{V+1}) \theta^{(t)}\\
+& = y_{obs} \qquad  \square
+\end{align*}
+
+\bigskip
+Notes about IEM algorithm:\\
+\begin{itemize}
+\item Generally requires no more computation (and often less, when the mapping between the two augmentations is deterministic) than the two EMs.
+\item  Convergence rate is generally much better than the best convergence rate of the two EM's: [Key: minimize "correlation" between the two schemes, using an SA\&AA turns out to be a great way to do this]
+\item IEM preserves monotone convergence and all convergence properties of EM.
+\end{itemize}
+
+\bigskip
+How to construct SA/AA pairs?\\
+Hierarchical models are usually written as SA's.\\
+\underline{Exampls}\\
+$Y_i | \lambda_i \sim Pois(\lambda_i)$ \\
+$\lambda_i | \alpha, \beta \sim Gamma(\alpha, \beta) $ \\
+In this case, to find the maximizer of $(\alpha, \beta)$, i.e. $(\widehat{\alpha}, \widehat{\beta})$, with $y_{obs} = \vec{y}, y_{mis} = \vec{\lambda}, \theta = (\alpha, \beta) $. This is an SA.\\
+\bigskip
+How to construct an AA?\\
+Transform $\tilde{y_{mis}}=H^{-1}(y_{mis},\theta)$ so that $\tilde{y_{mis}}$ doesn't depend on $\theta$.\\
+\underline{Example}\\
+\begin{align*}
+y_{mis}|\theta \sim N(\theta,V)
+\end{align*} 
+\begin{align*}
+H^{-1}(y_{mis},\theta) & \rightarrow \tilde{y}_{mis}=\dfrac{y_{mis}-\theta}{V^{1/2}}\\
+& \rightarrow \tilde{y}_{mis} \sim N(0,1)
+\end{align*}
+
+One recipe to obtain AA's of location-scale family is to recenter and rescale - What if we don't have a location-scale family?\\
+Apply CDF transform! (for homework) gives an ancillary guaranteed, i.e. $F_{X}(X) \sim \textrm{Unif}[0,1]$ if $X$ is univariate \\
+CDF Transform \\
+Set $\tilde{y}_{miss} = F(\lambda; \alpha, \beta) \sim Unif(0,1)$ where $F(x;a,b)$ is the CDF corresponding to parameters $a$ and $b$ evaluated at $x$.\\
+Then\\
+$y_{obs} | \tilde{y}_{miss}, \alpha, \beta \sim Pois(F^{-1}(\tilde{y}_{miss};\alpha,\beta))$ where $F^{-1}$ is the inverse CDF.
+	
+
+	
+
+
+
+
+
+
+\end{flushleft}
+
+
+
+
+
+\end{document}
