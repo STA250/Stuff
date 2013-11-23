@@ -1,0 +1,218 @@
+\documentclass[a4paper, 11pt]{report}
+
+\usepackage{amssymb, graphicx, amstext, amsmath, amsthm, enumerate, float, mathtools, csvsimple, bbm, calc, listings, textcomp, color}
+\usepackage[margin = .55in, footskip = 20pt]{geometry}  %geometry package to set margins thin
+
+\lstset{
+	language=R,
+	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
+	% keywordstyle=\color{black},
+	identifierstyle=\ttfamily,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	% commentstyle=\color{black}
+	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+	% stringstyle=\color{black},
+	showstringspaces=false,
+	basicstyle=\tiny,
+	numberstyle=\tiny,
+	numbers=left,
+	stepnumber=1,
+	numbersep=10pt,
+	tabsize=2,
+	breaklines=true,
+	breakatwhitespace=false,
+	aboveskip={1.5\baselineskip},
+  columns=fixed,
+  upquote=true,
+  extendedchars=true,
+}
+
+\newcommand{\tab}{\hspace*{1.0em}} % multiple of width of a capital M
+\newcommand{\imply}{\tab \Longrightarrow \tab}
+\newcommand{\yo}{Y_{obs}}
+\newcommand{\ym}{Y_{mis}}
+\newcommand{\ymf}{Y_{mis}^{(t+0.5)}}
+\newcommand{\ymo}{Y_{mis}^{(t+1)}}
+
+\newcommand{\yt}{\widetilde{Y}_{mis}}
+\newcommand{\ytt}{\widetilde{Y}_{mis}^{(t)}}
+
+\newcommand{\tht}{\theta^{(t)}}
+\newcommand{\thf}{\theta^{(t+0.5)}}
+\newcommand{\tho}{\theta^{(t+1)}}
+
+\begin{document}
+
+
+\begin{center}
+	\LARGE 
+	\textbf{STA 250 \textit{Adv Statistical Computing}}\\
+	\Large
+	Lecture Notes Wednesday 2013/11/20\\
+	\normalsize
+\end{center}
+\noindent\rule{\textwidth}{1pt} \\
+
+
+ 
+\noindent 
+\underline{Annoucements:} 
+\begin{itemize}
+	\item Final Projects - 10 pages max, suggested topics posted on the course website, extensions of our homework assignments, implementations of new algorithms, deepen skills learned such as Hadoop or Hive, etc.
+	
+	\item Homework \#3 has will be posted and due 1 week later on 11/27.	
+
+\end{itemize}
+\noindent\rule{\textwidth}{1pt} \\
+
+
+\noindent
+\underline{EM Algo:}
+\begin{itemize}
+
+	\item Last time we saw strategies to deal with complicated EM applications (i.e. E-Step and/or M-Step are difficult)
+	
+	\item Today we see how to speed up EM
+	
+	\item ``Sufficient Augmentation'' = ``SA'' \\
+		$\yo \vert \ym \sim N(\ym,1)$ \\
+		$\ym \vert \theta \sim N(\theta,v)$ \\
+		EM: \tab $\tho = \frac{\tht+v\yo}{v+1}$ \\
+		Rate of Convergence is $\frac{1}{v+1}$ which is fast if $v$ is large \\ 
+		
+		We can reparameterize as: \\
+		``Ancillary Augmentation'' = ``AA'' \\
+		$\yo \vert \yt,\theta \sim N(\yt+\theta,1)$ \\
+		$\yt \sim N(0,v)$ \\		
+		EM: \tab $\tho = \frac{\tht v +\yo}{v+1}$ \\
+		Rate of Convergence is $\frac{v}{v+1}$ which is fast if $v$ is small \\ \\
+		Note: smaller rate of convergence is faster \\
+		Note: ``SA'' and ``AA'' have ``opposite'' performance in convergence speed \\ 
+		Note: If $v$ is unknown, we can still derive EMs for SA and AA and they have similar performance to when $v$ is known. \\ \\
+		Question: How do we pick which algorithm version to run, AA or SA, if $v$ is unknown? \\
+		- Code both, run a few iterations of each, and see which appears to converge faster \\
+		- Try AEM or IEM (see below)
+
+	\item \underline{Alternating EM - AEM} \\
+		- EM has monotone convergence so use both algorithms, alternate between each algorithm for two ``half steps'' to do one update/iteration \\
+		$\thf = \frac{\tht+v\yo}{v+1}$ \tab ``SA'' \\
+		$\tho = \frac{\thf{}v+\yo}{v+1}$ \tab ``AA'' \\		
+		$\tho = M_{AA}(M_{SA}(\tht))$ \tab in terms of update mappings \\ 
+		
+		or could be the other order of AA and SA and will get different updates in general (but equivalent rates of convergence). \\ 
+		
+		Pros/Cons \\
+		- If $v$ is extreme (small or large), then one of SA and AA converges very slowly and the other very quickly so basically one step gets nowhere and is wasted and the other step is doing all the work \\
+		- Update step could be very difficult/expensive to compute \\
+		- Performance/convergence is somewhere between the worst convergence and the best convergence of the two algorithms \\
+		- Computation of each step may or may not have the same computation time (i.e. one may be in closed form and the other requires MC) \\
+		
+	\item \underline{Interwoven EM - IEM} \\
+		Turns out there is a way to combine both algorithms into a single, improved update using their joint info so consider: \\
+		AA E-step \tab $\ytt = \mathbb{E}\left[\yt \vert \yo,\tht \right]$ \\
+		AA M-step \tab $\thf = \yo - \ytt = \frac{\tht v + \yo}{v+1}$ \\ 
+		
+		Recall: \\
+		``Sufficient Augmentation'' = ``SA'' \\
+		$\yo \vert \ym \sim N(\ym,1)$ \\
+		$\ym \vert \theta \sim N(\theta,v)$ \\
+		
+		``Ancillary Augmentation'' = ``AA'' \\
+		$\yo \vert \yt,\theta \sim N(\yt+\theta,1)$ \\
+		$\yt \sim N(0,v)$ \\ 
+		
+		Then $\ym = H(\yt,\theta) = \yt + \theta \imply \yt = \ym - \theta$ \\
+		i.e. map between SA and AA \\ 
+		
+		SA E-step: 
+		\begin{align*}		
+			\ymf &= \mathbb{E}\left[ \left. \underbrace{  \mathbb{E}\left[  \ym \vert \yo,\thf,\yt \right]}_{\textbf{w.r.t. } P(\ym \vert \yo,\thf,\yt)}  \right| \yo,\tht \right] \\
+				%&= \mathbb{E}\left[ \left. \mathbb{E}\left[ \yt + \theta \vert \thf \right] \right| \yo,\tht \right] \\
+				&= \mathbb{E}\left[ \left. \yt + \thf \right| \yo,\tht \right] \\
+				&= \thf +  \underbrace{  \mathbb{E}\left[  \yt \vert \yo,\tht \right] }_{\textbf{E-step in AA}}
+		\end{align*}		
+		
+		SA M-step:
+		\begin{align*}		
+			\tho &= \ymf \\ &= \thf + \ytt \\ &= \yo - \ytt - \ytt \\ &= \yo  
+		\end{align*}
+		So $\tho = \yo \imply $ Convergence in 1-iteration to the MLE $= \yo$ using the joint info 
+		
+	\item \underline{Formalize as follows:} \\
+		Define $Q_I(\theta|\tht) = \mathbb{E}_{A2} \left[ \left. \mathbb{E}_{A1} \left[ log P_{A1}\left(  \yo,\ym | \theta \right) \Big| \yo, \yt, \theta = G_{A2} \left(\tht \right) \right]  \right| \yo, \tht \right]$ \\
+		$\tho = \operatorname*{arg\,max}_{\theta}  Q_I \left( \theta | \tht \right)$ \\
+		
+		A1 is the first augmentation scheme with missing data $\ym$ \\
+		A2 is the second augmentation scheme with missing data $\yt$ \\
+		$ G_{A2} \left(\tht \right) $ is the value from one iteration of EM in A2 scheme \\
+		
+		\textbf{The Interwoven EM Algorithm (IEM)}:
+		\begin{enumerate}[1)]
+			\item Run 1 iteration in A2 scheme to plug into Q and get $ G_{A2} \left(\tht \right) = \thf $
+			
+			\item Write down Q function of A1 EM
+			
+			\item Replace $\ym = H(\yt, \thf)$
+			
+			\item Now Q fct has expecation with respect to $\yt$ so compute it, i.e. do A2 E-step
+			
+			\item Find maximizer
+		
+		\end{enumerate}
+
+		\underline{Example} A2 = AA, A1 = SA \\
+		$$ Q_I \left( \theta | \tht \right) = \mathbb{E}_{AA} \left[ \left. \mathbb{E}_{SA} \left[ log P_{SA}\left(  \yo,\ym | \theta \right) \Big| \yo, \yt, \theta = G_{AA} \left(\tht \right) \right]  \right| \yo, \tht \right] $$
+		$$ P_{SA}\left(  \yo,\ym | \theta \right) = P(\yo | \ym)P(\ym|\theta) $$
+		$$ \imply log \, P_{SA}\left(  \yo,\ym | \theta \right) = -\frac{1}{2}(\yo - \ym)^2 - \frac{1}{2v}(\ym - \theta)^2 \\ $$
+		$$ Q_I \left( \theta | \tht \right) = \mathbb{E}_{AA} \left[ \left. \mathbb{E}_{SA} \left[ - \frac{1}{2v}(\ym - \theta)^2  \Big| \yo, \yt, \theta = G_{AA} \left(\tht \right) \right]  \right| \yo, \tht \right] + constant $$
+		$$ \Rightarrow {} \quad \text{  Maximized at } \theta = \mathbb{E}\left[\ym\right] . $$
+		\begin{align*}
+			\tho &= \mathbb{E}_{AA} \left[ \left. \mathbb{E}_{SA} \left[ \ym  \Big| \yo, \yt, G_{AA}\left(\tht\right) \right]  \right| \yo, \tht \right] \\  
+			&= \mathbb{E}_{AA} \left[ \left. \yt + G_{AA}\left(\tht\right) \right| \yo, \tht \right]  \qquad \textrm{ (Mapping from SA to AA) } \\
+			&= G_{AA}\left(\tht\right) + \mathbb{E}_{AA} \left[ \left. \yt \right| \yo, \tht \right] \\
+			&= \frac{\tht v + \yo}{v+1} +  \underbrace{ \mathbb{E}_{AA} \left[ \left. \yt \right| \yo, \tht \right] }_{\mathbb{E} \textrm{ wrt. } P(\yo,\yt | \theta)} \\
+			& \qquad \qquad \qquad \quad P(\yo,\yt | \theta) \propto \exp\left\lbrace -\frac{1}{2}(\yo - \yt - \theta)^2 - \frac{1}{2v} \yt \right\rbrace \\
+			& \qquad \qquad \qquad \imply P(\yo,\yt | \theta) \propto \exp\left\lbrace -\frac{1}{2} \yt^2 \left(1+\frac{1}{v}\right) + \yt (\yo-\theta) \right\rbrace \\
+			& \qquad \qquad \qquad \qquad \yt | \yo,\tht \sim N\left( \left(1+\frac{1}{v}\right)^{-1}\left(\yo-\tht\right), \, 			\left(1+\frac{1}{v}\right)^{-1} \right) \\
+			& \qquad \qquad \qquad \qquad \yt | \yo,\tht \sim N\left( \frac{v}{v+1}\left(\yo-\tht\right), \, \frac{v}{v+1} \right) \\
+			& \qquad \qquad \qquad \imply \mathbb{E}_{AA} \left[ \left. \yt \right| \yo, \tht \right] = \frac{v}{v+1} \left(\yo-\tht\right) \\
+			&= \frac{\tht v + \yo}{v+1} + \frac{v}{v+1}\left(\yo-\tht\right) \\
+			&= \yo			
+		\end{align*}
+
+	\item \underline{Notes about IEM} \\
+	- Generally requires no more computation (and often less, when the mapping between the two augmentations is deterministic) than the two EMs \\
+		\tab - AIM has 4 steps \\
+		\tab - IEM has 3 steps (the fourth is just a deterministic mapping between the two schemes)\\
+	- Preserves monotone convergence and all main convergence properties of EM \\
+	- Convergence rate is generally faster than either of the 2 individual schemes (proofs posted on website) \\
+		\tab - Often ven better than the better of the two individual schemes \\
+		\tab - Key is to minimize the ``correlation'' between 2 schemes i.e. use SA and AA to get fast convergence \\
+		
+	How to construct SA/AA pairs? \\
+	Hierarchical models are naturally written as SA \\
+	\underline{Homework Problem:} \\
+	$Y_i | \lambda_i \sim Pois(\lambda_i)$ \\
+	$\lambda_i | \alpha, \beta \sim Gamma(\alpha, \beta) $ \\
+	To find the maximizer of $(\alpha, \beta)$, i.e. $(\widehat{\alpha}, \widehat{\beta})$, with $\yo = \vec{Y}, \ym = \vec{\lambda}, \theta = (\alpha, \beta) $ \\
+	This is an SA - separates the layers \\
+	
+	How to construct AA? \\
+	Transform $\yt = H^{-1}(\ym, \theta)$ to remove dependence on $\theta = (\alpha, \beta) $ \\
+	$\yt | \theta \sim N(\theta,v)$ \\
+	$\yt = \ym - \theta$ where $\yt \sim N(0,v)$ \\
+	$H^{-1}(\ym, \theta)$ so use $\yt = \ym - \theta$ to get $\yt \sim N(0,v)$
+	If $v$ were also a parameter, then transform is $\yt = (\ym-\theta)/v^{1/2 }$ to get $\yt \sim N(0,1)$ \\
+	
+	- One recipe for AA of location-scale family is to recenter and rescale as above.\\
+	- If not location-scale family, then CDF transform gives an ancillary guaranteed, i.e. $F_{X}(X) \sim \textrm{Unif}[0,1]$ if $X$ is univariate \\
+	
+	CDF Transform \\
+	Set $\yt = F(\lambda; \alpha, \beta) \sim Unif(0,1)$ where $F(x;a,b)$ is the CDF corresponding to parameters $a$ and $b$ evaluated at $x$.\\
+	$\yo | \yt, \alpha, \beta \sim Pois(F^{-1}(\yt;\alpha,\beta))$ where $F^{-1}$ is the inverse CDF, i.e. quantile function.
+	
+\end{itemize}
+
+\noindent\rule{\textwidth}{1pt} \\
+
+\end{document}
