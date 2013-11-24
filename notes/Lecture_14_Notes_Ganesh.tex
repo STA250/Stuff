@@ -1,0 +1,173 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{MnSymbol}
+\usepackage[normalem]{ulem}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{question}[2][Question]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\DeclareMathOperator*{\E}{\mathbb{E}}
+
+\begin{document}
+% --------------------------------------------------------------
+%
+% --------------------------------------------------------------
+\title{HW3 - Selected Solutions}
+
+\date{}
+
+\maketitle
+
+\uline{Recap:} To maximize $l({\theta}|Y_{obs}) = log\hspace{1 mm} P(Y_{obs}|\theta)$, we construct,\\
+
+ $P(Y_{obs}, Y_{mis}|\theta)$ s.t. $\int P(Y_{obs}, Y_{mis}|\theta). dY_{mis} = P(Y_{obs}|\theta)$\\
+
+and use EM: $\hspace{3 mm} \theta^{(t+1)}= \underset{\theta}{\operatorname{argmax}}\hspace{2 mm} Q(\theta|\theta^{(t)})$\\
+
+where: $Q(\theta|\theta^{(t)})= \E[log\hspace{1 mm} P(Y_{obs}, Y_{mis}|\theta)|Y_{obs}, \theta^{(t)}]$
+\\
+\\
+\uline{Last time:} \hspace{2 mm} $l(\theta^{(t+1)})\geq l(\theta^{(t)})\hspace{3 mm}$ (corresponding to monotone convergence)
+\\
+\\
+\uline{Today:}\\
+(1) Some more theory\\
+(2) What do when the maximization is hard\\
+(3) What to do when it is hard to compute expectation\\
+\\
+From the monotonicity proof, we saw that - \\
+\\
+$l(\theta^{(t+1)})-l(\theta^{(t)}) = [Q(\theta^{(t+1)}|\theta^{(t)})-Q(\theta^{(t)}|\theta^{(t)})] + [H(\theta^{(t+1)}|\theta^{(t)})-H(\theta^{(t)}|\theta^{(t)})]$,\\
+\\
+where the latter term is non-negative for any $\theta^{(t)}$\\
+\\
+\\
+So, we just need to ensure that,\\
+\\
+$Q(\theta^{(t+1)}|\theta^{(t)})\geq Q(\theta^{(t)}|\theta^{(t)})$\\
+\\
+to guarantee montone convergence.  \\
+Thus, we don't need to maximize Q; we just need to increase it.  This approach is referred to as Generalized EM (GEM).\\
+\newpage
+\-\hspace{6 cm} \uline{Convergence rate of EM:}\\
+\\
+\uline{Idea:} EM gives an update - \hspace{2 mm} $\overrightharpoon{\theta}^{(t+1)}=M(\overrightharpoon{\theta}^{(t)})$\\
+\\
+Here, $M$ is the update/mapping operator:  $M:\R^p\rightarrow\R^p$\\
+\\
+To study convergence rate - let $\theta^*$ be the MLE.  Then:\\
+\\
+$M(\theta^{(t)})=\theta^* + \left[\frac{\partial}{\partial \theta}M(\theta) \biggr\rvert_{\theta=\theta^{*}}\right].[\theta^{(t)}-\theta^{*}]+ O(\|\theta^{(t)}-\theta^{*}\|^2)$\\
+\\
+$\Rightarrow \theta^{(t+1)}-\theta^{*}=M(\theta^{(t)})-\theta^{*} \simeq DM(\theta^{*}).(\theta^{(t)}-\theta^{*})$\\
+\\
+$\Rightarrow \underset{t\rightarrow\infty}{Lim} \frac{\|\theta^{(t+1)}-\theta^{*}\|}{\|\theta^{(t)}-\theta^{*}\|} = \rho$\\
+\\
+which means we have a \textit{linear rate of convergence} to $\rho$, the maximal eigenvalue of DM.\\
+\\
+\uline{Idea:} It can be shown that DM also has a representation as the \lq{}fraction of missing information\rq{} (not covered here).\\
+\\
+\\
+\-\hspace{5 cm} \uline{What to do when the E-step is hard:}\\
+\\
+\\
+Example: Probit regression - \\
+\\
+We saw that, 
+
+$Z_i^{(t+1)} \Bigr\rvert \beta^{(t)},y_i=
+\begin{cases}
+    TN(x_i^{T}\beta^{(t)}, 1; (-\infty, 0]),& \text{if } y_i=0\\
+    TN(x_i^{T}\beta^{(t)}, 1; [0, \infty)), & \text{if } y_i=1
+\end{cases}$
+\\
+\\
+\\
+Suppose we did not know the conditional expectation of a truncated normal - then what do we do?
+We have the following options:\\
+\\
+1. Use Monte Carlo to simulate from $N(x_i^{T}\beta^{(t)}, 1)$, throw away any samples outside the range, and compute the mean\\
+2. Simulate from $N(x_i^T\beta^{(t)}, 1)$; flip sign if necessary and compute the mean.\\
+3. Use inverse CDF sampling.\\
+4. If independent samples are not possible, we know that, $P(Y_{mis}\Bigr\rvert Y_{obs}, \theta^{(t)}) \propto P(Y_{mis}, Y_{obs} \Bigr\rvert \theta^{(t)})$.  So, can sample from $Y_{mis}\Bigr\rvert (Y_{obs}, \theta^{(t)})$ using MCMC; use samples to get the desired conditional expectations.\\
+5. For 1-D, we can use Numerical Integration (with the Trapezoidal rule, Quadrature, etc.)
+
+\newpage
+
+\-\hspace{4 cm} \uline{Sampling truncated Random Variables:}\\
+\\
+Let $X \sim F_X$.  Let $Z \sim X\Bigr\rvert X \in (a,b)$\\
+To sample from $Z$, sample from $U \sim U(F_X(a), F_X(b))$\\
+Then, $Z = F_X^{-1}(U)$\\
+It can be shown that $Z \sim X\Bigr\rvert X \in (a, b)$\\[1.8 mm]
+\uline{Note:} EM using a Monte Carlo E-step is called MCEM or MCMCEM (when using MCMC in the E-step).\\
+\\
+(Example code and path shown on projector for MCEM applied to the probit EM example when
+$Z_i^{(t+1)}=\E[Z_i|Y_i,\beta^{(t)}]$ is computed using inverse CDF sampling)\\[5 mm]
+
+\-\hspace{4 cm} \uline{What do to when the M-step is hard:}\\
+\\
+Suppose $\theta \in \R^p$ and finding $\underset{\theta}{\operatorname{Argmax}}\hspace{0.5 mm}Q(\theta|\theta^{(t)})$ is hard. Then,\\
+\\
+1. Increase $Q$ - that is, ensure that, $Q(\theta^{(t+1)}|\theta^{(t)}) \geq Q(\theta^{(t)}|\theta^{(t)})$ to get GEM.\\
+\\
+2. Conditionally maximize $Q(\theta|\theta^{(t)})$.  For example, let $\theta \in \R^{2}$.\\
+\\
+Set, $\theta_1^{(t+1)}=\underset{\theta_1}{\operatorname{argmax}}\hspace{2 mm}Q(\theta_1, \theta_2^{(t)}|\theta_1^{(t)}, \theta_2^{(t)})$\\
+Set, $\theta_2^{(t+1)}=\underset{\theta_2}{\operatorname{argmax}}\hspace{2 mm}Q(\theta_1^{(t+1)}, \theta_2|\theta_1^{(t)}, \theta_2^{(t)})$\\
+\\
+\uline{Note:} \begin{itemize}
+\item E-step is not recomputed between maximizations.
+\item Not guaranteed to give us the joint maximum over both $\theta_1$ and $\theta_2$
+\end{itemize}
+   
+\uline{\\Example:}\\ Let $Y_i\Bigr\rvert \alpha, \beta \sim$ Gamma$(\alpha, \beta)$\\
+Let $i=1, . . . , n = n_{obs} + n_{mis}$\\
+(Some $Y_i$s are missing - this is independent of all model components)
+
+\begin{align*}
+P(Y_i|\alpha, \beta) & = \frac{\beta^{\alpha}}{\Gamma \left( \alpha \right)}y_i^{\alpha - 1}e^{- \beta y_i} \text{\hspace{3 mm}}(y_i, \alpha, \beta > 0)\\
+Q(\theta|\theta^{(t)}) &= \E \left[ n \left( \alpha \log\beta - \log \Gamma \left( \alpha \right) \right)+ (\alpha-1)\overset{n}{\underset{i=1}{\sum}}\log(y_i) - \beta\overset{n}{\underset{i=1}{\sum}}y_i \Biggr\rvert Y_{obs}, \theta^{(t)}\right]\\
+\end{align*}
+
+This is harder to maximize w.r.t $\alpha$.\\
+We maximize w.r.t. $\beta$ as follows:
+$$
+\frac{\partial Q}{\partial \beta} = \frac{n\alpha}{\beta}-\left( \overset{n}{\underset{i=1}{\sum}}y_i + \overset{n_{obs}+n_{mis}}{\underset{i=n_{obs+1}}{\sum}}\E[Y_i|Y_{obs}, \theta^{(t)}] \right)
+$$
+Set $\alpha=\alpha^{(t)}$.  Solving for $\frac{\partial Q}{\partial \beta}=0$, we get,
+$$
+\beta^{(t+1)}=\frac{n\alpha^{(t)}}{\overset{n_{obs}}{\underset{i=1}{\sum}}y_i+n_{mis}\left(\frac{\alpha^{(t)}}{\beta^{(t)}}\right)}
+$$
+Now, to maximize w.r.t $\alpha$:
+$$
+\frac{\partial Q}{\partial \alpha}=n\log\beta-n \psi_o(\alpha)+\overset{n_{obs}}{\underset{i=1}{\sum}}\log(y_i)+n_{mis}\left( \psi_o(\alpha^{(t)})-\log\beta^{(t)}   \right)
+$$
+where, $\psi_r(\alpha)=\frac{\partial ^{r+1}}{\partial \alpha^{r+1} }\left(\log\hspace{1 mm}\Gamma\left( \alpha \right)\right)$
+
+\begin{align*}
+\text{If }\frac{\partial Q}{\partial \alpha}&=0 \text{,\hspace{3 mm}then use Newton-Raphson}\\
+\text{Next, }\frac{\partial ^2Q}{\partial \alpha^2}&=-n\left( \psi_1(\alpha) \right)\\
+\text{Let } \alpha_{NR}^{(0)}&=\alpha^{(t)} \text{\hspace{3 mm}   (here, we set j=0)}\\
+\text{Set } \alpha_{NR}^{j+1}&=\alpha_{NR}^{(j)}+\frac{g(\alpha_{NR}^{(j)})}{n\psi_1( \alpha_{NR}^{(j)})}\\
+\text{Increment } j &\rightarrow j+1 \text{ until convergence.}\\
+\\
+\text{Finally, set } &\alpha^{(t+1)}=\alpha_{NR}^{*} ,
+\end{align*}
+where $g(\cdot)$ is $\frac{\partial{}Q}{\partial\alpha}$, the function we are seeking the root of.
+
+
+\end{document}
