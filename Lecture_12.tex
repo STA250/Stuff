@@ -1,0 +1,172 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amsthm, amssymb, graphicx, psfrag, dcolumn, bm, accents, textcomp, hyperref, url}
+\usepackage{graphicx,psfrag,textcomp,amsmath,amsthm,amssymb,fancyhdr,fancybox}
+\usepackage{setspace,url,color,wasysym,pstricks,multirow,rotating}
+
+\setlength{ \topmargin}{-.5in} \setlength{ \oddsidemargin} {-.4in}
+\setlength{ \evensidemargin} {-.4in}
+\setlength{ \textwidth} {6.5in}
+\setlength{ \textheight} {9.0 in}
+
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+
+\usepackage{ifthen}
+\newboolean{solutions}
+\setboolean{solutions}{false}
+
+\newcommand{\sols}[2]{\ifthenelse{\boolean{solutions}}{\small\emph{#1}\normalsize}{#2}}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{positioning}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+%% 
+%% Custom colors...
+%%
+%\newrgbcolor{lightblue}{0. 0. 0.80}
+%\newrgbcolor{white}{1. 1. 1.}
+%\newrgbcolor{whiteblue}{.80 .80 1.}
+%\newrgbcolor{crimson}{0.6 0.00 0.20}
+%\newrgbcolor{lightcrimson}{0.6 0. 0.1}
+%\newrgbcolor{whitecrimson}{1. 0.8 0.8}
+%\newrgbcolor{indigo}{0.33 0. 0.49}
+
+%\renewcommand{\labelenumi}{(r\oman{enumi})}
+%\renewcommand{\labelenumii}{(\alph{enumii})}
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\theenumii}{\alph{enumii}}
+\renewcommand{\labelenumi}{\bf \theenumi.}
+\renewcommand{\labelenumii}{\bf (\theenumii)}
+
+\def\Pr{\mathbb{P}}
+
+\newenvironment{questions}{\begin{enumerate}}{\end{enumerate}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\hwknumber{2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\textbf{Lecture 12: Optimization + EM Lecture \# 1}
+
+\begin{itemize}
+
+\item Overview: Today we review basic optimization algorithms and the (vanilla) EM algorithm. In the rest of the module we will look at more advanced (and more useful) variants of the EM algorithm. 
+
+\item First, note that most optimization problems (e.g., finding MLE's, MAP's, even CI's) can be reduced to finding the root of an equation i.e., solving for:
+\begin{align*}
+ g(x) = 0 .
+\end{align*}
+i.e., to maximize $f(x)$, we can just solve $g(x)=f'(x)=0$. Lets review some basic root-finding algorithms: bisection, Newton-Raphson and Fisher Scoring.
+
+\item \textbf{Bisection}:
+\begin{itemize}
+\item Let $g:\mathbb{R}\mapsto\mathbb{R}$ be a continuous function on $[a,b]$ s.t. $g(a)\cdot{}g(b)<0$.
+\item Intermediate Value Theorem $\Rightarrow$ $g(x) = 0 $for some $x \in (a, b)$.
+\item Let $l=a$, $u=b$ be lower and upper boundaries and fix a precision $\epsilon>0$. The algorithm is as follows:
+\begin{verbatim}
+converged = False
+while (!converged):
+ c := (l + u)/2
+ if |g(c)| < epsilon:
+   converged = True #solved
+ else:
+   if (g(l) · g(c) < 0):
+     u = c
+   else: # g(c) x g(u) < 0
+     l = c     
+return c
+\end{verbatim}
+What is this doing graphically? Pro's and con's of the algorithm? Interval length?
+\end{itemize}
+
+\item \textbf{Newton-Raphson:} Arguably the most famous root-finding/optimization algorithm. Iterative algorithm to solve for $x_{*}$ where $g(x_{*})=0$. Let $x_{t}$ be the current guess for $x_{*}$ then update via:
+\begin{align*}
+ x_{t+1} = x_{t} + \eta_{t} .
+\end{align*} 
+How to select $\eta_{t}$? Taylor expansion of $g$, if $\eta_{t}$ is small:
+\begin{align*}
+ g(x_{t+1}) = g(x_{t}+\eta_{t}) \approx g(x_{t}) + \eta_{t}g'(x_{t}) + O(\eta_{t}^{2})
+\end{align*}
+Solving for $g(x_{t+1})=0$ gives $\eta_{t}=-g(x_{t})/g'(x_{t})$ i.e.,
+\begin{align*}
+ x_{t+1} = x_{t} - \frac{g(x_{t})}{g'(x_{t}+1)} .
+\end{align*}
+When \emph{maximizing} $l(\theta)$ this becomes:
+\begin{align*}
+ x_{t+1} = x_{t} - \frac{l'(x_{t})}{l''(x_{t}+1)} .
+\end{align*}
+For multivariate $g:\mathbb{R}^{p}\mapsto{}\mathbb{R}^{p}$ we obtain:
+\begin{align*}
+ \vec{x}_{t+1} = \vec{x}_{t} - \left[\nabla{}g(\vec{x}_{t})\right]^{-1}g(\vec{x}_{t}) .
+ \end{align*}
+ e.g., to \emph{maximize} $\ell:\mathbb{R}^{p}\mapsto{}\mathbb{R}$: 
+\begin{align*}
+ \vec{x}_{t+1} = \vec{x}_{t} - \left[\nabla{}\nabla^{T}\ell(\vec{x}_{t})\right]^{-1}\nabla{}\ell(\vec{x}_{t}) .
+\end{align*}
+Quadratic convergence:
+\begin{align*}
+ \lim_{t\rightarrow\infty} \frac{|x_{t+1}-x_{*}|}{|x_{t}-x_{*}|^{2}} = c < \infty .
+\end{align*}
+ Pros and cons?
+ 
+ \item \textbf{Scoring:} Here we introduce a special modification of Newton-Raphson tailored to statistical applications. Recall the NR update to maximize $\ell$:
+\begin{align*}
+ \theta_{t+1} = \theta_{t} - \frac{\ell{}'(\theta_{t})}{\ell{}''(\theta_{t})} .
+\end{align*}
+The scoring algorithm instead uses:
+\begin{align*}
+ \theta_{t+1} = \theta_{t} + \frac{\ell{}'(\theta_{t})}{\mathcal{I}(\theta_{t})} ,
+\end{align*}
+where:
+\begin{align*}
+\mathcal{I}(\theta_{t}) = \mathbb{E}\left[-\frac{\partial^{2}\ell}{\partial{}\theta^{2}}\right] ,
+\end{align*}
+ is the expected Fisher information. Multivariate version:
+\begin{align*}
+ \theta_{t+1} = \theta_{t} + \mathcal{I}^{-1}(\theta_{t})\ell{}'(\theta_{t})
+\end{align*}
+Pros and cons?
+
+\item Examples\ldots
+
+\item \textbf{The EM Algorithm:} While NR and scoring are useful for many problems, there are many more where complications arise. For example, the likelihood may involve integrals with no analytic form e.g., Generalized Linear Mixed Models. Simple nested Binomial GLMM with Normal random effects:
+\begin{align*}
+\eta_{ij} &= x_{ij}^{T}\beta + z_{i}^{T}\gamma_{i} , \\
+Y_{ij} | \gamma_{i} &\sim \textrm{Bin}(n_{ij},g^{-1}(\eta_{ij})) , \\
+\gamma_{i} &\sim N\left(0,\Sigma^{-1}\right) . 
+\end{align*}
+What is the likelihood here?\\
+$ $\\
+ Enter the EM algorithm: designed for maximizing likelihoods (or posterior distributions) in the presence of \lq{}missing data\rq{}. As we will see, it turns out that \lq{}missing data\rq{} is defined very loosely, and in reality there does not need to be any actual \lq{}data\rq{} that is missing.\\
+$ $\\
+The algorithm is based upon the Q-function, the expected complete-data log-likelihood:
+\begin{equation}
+Q(\theta{}|\theta^{(t)}) = \mathbb{E}\left[l(Y_{com}|\theta{})|Y_{obs},\theta{}=\theta^{(t)}\right]
+\end{equation}
+The algorithm works by selecting an initial $\theta^{(0)}$, setting $t=0$ and iteratively computing:
+\begin{align*}
+\theta^{(t+1)} = \argmax_{\theta} Q(\theta{}|\theta^{(t)})
+\end{align*}
+It can be shown that $\lim_{t\rightarrow\infty}\theta^{(t)}=\theta_{*}$ where $\ell{}'(\theta_{*})=0$ i.e., the algorithm converges to a (possibly local) mode of the log-likelihood function. 
+\begin{itemize}
+\item Example: Probit Regression.
+\item Important implementation notes. 
+\item Proof of convergence.
+\item Extension to finding MAP estimators.
+\end{itemize}
+
+\item The EM alphabet soup. Next few lectures, we will some of these variants...
+\begin{itemize}
+\item ECM, MCEM, MCECM, MCMCEM, MCMCECM, AECM, PXEM, IEM  
+\end{itemize}
+These variants are designed to address various complications that arise in practice. Some are designed to improve the rate of convergence, some to improve tractability, some to approximate quantities that cannot be computed analytically.
+
+\end{itemize}
+
+\end{document}
