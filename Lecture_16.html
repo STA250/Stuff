@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250 Lecture 16</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 Lecture 16">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250 Lecture 16</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- 
+
+# To compile, from R:
+library(slidify)
+slidify("Lecture_16.Rmd")
+
+-->
+
+<h2>Welcome to STA 250!</h2>
+
+<p>Today is the &quot;Efficient Computing: Parallelization and GPUs&quot; module (otherwise known as the GPU module), lecture 1.<br/></p>
+
+<p>Reminder: Homework 3 due Wednesday.<br/></p>
+
+<p><em>Note: No code swap for homework 3 (not enough code to make it worthwhile)</em><br/></p>
+
+<p>On the menu for today...</p>
+
+<ol class = "build">
+<li><p>Intro to GPUs</p></li>
+<li><p>Programming GPUs</p></li>
+</ol>
+
+<p>Credit: Lots of slides taken from the web!</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>GPUs @ UCD</h2>
+  </hgroup>
+  <article>
+    <p>For HW4 you will have a chance to program some algorithms on some
+GPUs kindly provided by NVIDIA and Duncan Temple Lang. The main GPUs (Tesla K20&#39;s) reside on <code>lipschitz</code> and <code>pearson</code>. </p>
+
+<p>To obtain access, please email <a href="mailto:nnismail@ucdavis.edu"><a href="mailto:nnismail@ucdavis.edu">nnismail@ucdavis.edu</a></a> with your UCD email and public key. 
+Note: Stat/Biostat students who already have access to these servers do not need to email Nehad.</p>
+
+<pre><code># To login:
+ssh username@lipschitz.ucdavis.edu
+ssh username@pearson.ucdavis.edu
+</code></pre>
+
+<p><img src="pics/nvidia.jpg" scale="width: 120px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Background and History</h2>
+  </hgroup>
+  <article>
+    <p>Graphical Processing Units (GPUs) are specialized units designed for rendering computer graphics.<br/>
+<br/>
+They work very differently from CPU&#39;s (central processing units) which perform the bulk of the tasks on your computer.<br/>
+<br/></p>
+
+<p>Rendering high-definition computer graphics quickly and smoothly requires billions of simple calculations to be performed in seconds. GPU&#39;s are designed specifically for this task.<br/>
+<br/></p>
+
+<p>In recent years, there has been a great deal of progress in using GPU&#39;s for more general purpose calculations, not just graphics.<br/>
+<br/>
+NVIDIA (and their language CUDA) are at the forefront of this effort. The other main GPU producer AMD (and the OpenCL language, backed by Apple) also offer potential in this arena.<br/>
+<br/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Low-Level Programming for GPU&#39;s</h2>
+  </hgroup>
+  <article>
+    <p>Languages:</p>
+
+<ul class = "build">
+<li>CUDA :: <a href="http://www.nvidia.com/object/cuda_home_new.html">http://www.nvidia.com/object/cuda_home_new.html</a></li>
+<li>OpenCL :: <a href="http://www.khronos.org/opencl/">http://www.khronos.org/opencl/</a></li>
+<li>Which to use? <a href="http://wiki.tiker.net/CudaVsOpenCL">http://wiki.tiker.net/CudaVsOpenCL</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>About CUDA</h2>
+  </hgroup>
+  <article>
+    <p>CUDA is...</p>
+
+<ul class = "build">
+<li>a bunch of C/C++ libraries allowing the coder to use the GPU</li>
+<li>a fine-grain, low-level language (user controls all memory management, synchronicity etc)</li>
+<li><p>for NVIDIA GPU&#39;s only (will not work on AMD GPU&#39;s)</p></li>
+<li><p>There are also new higher-level interfaces to CUDA that do much of the dirty work for you, we will see these in later lectures.</p></li>
+</ul>
+
+<p>Before we talk specifics... what you need to know... </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Types of Parallelism</h2>
+  </hgroup>
+  <article>
+    <p>Two main types of parallelism:<br/>
+<br/></p>
+
+<ul>
+<li><strong>Type I: Task Parallelism:</strong><br/>
+Idea is to parallelize different tasks that do not depend on other uncompleted tasks.<br/>
+The taks being parallelized can be completely different.<br/>
+<br/>
+<em>Example:</em> Computing multivariate normal densities:</li>
+</ul>
+
+<ol class = "build">
+<li>Compute Cholesky decomposition</li>
+<li>Compute inverse of Cholesky factor</li>
+<li>Compute determinant of Cholesky factor</li>
+<li>Finish computing the density</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Task Parallelism Example</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/Task_Parallelism.jpg" style="width: 900px;"/>
+<br/>
+Credit: CS264 (N. Pinto)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Parallelism II: Data Parallelism</h2>
+  </hgroup>
+  <article>
+    <p>GPU&#39;s are not especially useful for task parallelism (CPUs are), for are useful for a different kind of parallelism: data parallelism.<br/>
+<br/>
+<strong>Type II: Data Parallelism:</strong><br/> Perform the same task on multiple pieces of data.<br/>
+<br/>
+<em>Examples:</em></p>
+
+<ul class = "build">
+<li>Matrix multiplication: same task (multiplication), on multiple pieces of data (matrix elements)</li>
+<li>Numerical integration: same task (function evaluation), on multiple pieces of data (integration grid) </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Data Parallelism Example</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/Data_Parallelism.jpg" style="width: 1000px;"/>
+<br/>
+Credit: CS264 (N. Pinto)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>CPU vs. GPU</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/CPU_GPU_layout.png" style="width: 750px;"/>
+<br/>
+ALU: Arithmetic Logic Unit (thing that does calculations!) Credit: CS264 (N. Pinto)</p>
+
+<ul class = "build">
+<li><strong>CPU:</strong> Lots of fast memory (cache), few ALUs</li>
+<li><strong>GPU:</strong> Little fast memory, lots of ALUs</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <p><img src="pics/Definitions.jpg" style="width: 750px;"/>
+<br/>
+Credit: CS264 (N. Pinto)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Grids and Blocks</h2>
+  </hgroup>
+  <article>
+    <p>When programming in CUDA it is generally up to the programmer to 
+determine the grid/block structure. The choice of grid/block
+arrangement can have a large impact on efficiency, so we will 
+see some experiments to select appropriate sizes.</p>
+
+<ul>
+<li>3D Grid: <code>gridDim.x</code>, <code>gridDim.y</code>, <code>gridDim.z</code> </li>
+<li>3D Block: <code>blockDim.x</code>, <code>blockDim.y</code>, <code>blockDim.z</code> </li>
+</ul>
+
+<p>Note: Do not need to use all dimensions (e.g., 1D grid of 2D blocks is fine).</p>
+
+<p>Later on, we will also see more general approaches to automatically 
+determining the block/grid structure.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>10-Series Tesla Architecture</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/Ten_Series.jpg" style="width: 600px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Terminology:</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Host: The CPU</li>
+<li>Device: The GPU</li>
+<li>Kernel: Function that runs on the device</li>
+<li>Thread: Think of as a series of calculations/operations</li>
+</ul>
+
+<p>So...</p>
+
+<ul class = "build">
+<li>Kernels are typically executed by lots of threads</li>
+<li>One kernel is executed at a time</li>
+<li>Threads are cheap to launch on GPUs</li>
+<li>Gains in efficiency come with using large numbers of threads to perform calculations in parallel</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>CUDA</h2>
+  </hgroup>
+  <article>
+    <p>Basics of CUDA:</p>
+
+<ul>
+<li>Memory management: The GPU has its own memory, which must be allocated, (possibly) initialized, and freed.</li>
+<li>Data transfer: Data required by the GPU is copied from host to device</li>
+<li>Kernel launch: The kernel is launched, with specified grid/block configuration.</li>
+<li>Result transfer: If needed, the results must be copied back from the CUDA device to the host. </li>
+</ul>
+
+<p>Notes: </p>
+
+<ul>
+<li>These lines are becoming blurred as the CUDA API develops and hybrid CPU-GPU systems are developed. For example,
+using <a href="http://en.wikipedia.org/wiki/CUDA_Pinned_memory">pinned memory</a> host memory can be accessed by 
+the GPU (time permitting we may see some examples of this).</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>CUDA: Hello World!</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p>example0: Hello world! (See code).</p></li>
+<li><p>example1: Illustrating <code>cudaMalloc</code> and <code>cudaMemcpy</code> (See code).</p></li>
+<li><p>example2: Hello world! (See code).</p></li>
+</ul>
+
+<!-- <img src="pics/CUDA_Kernels.jpg" style="width: 600px;"/> -->
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Arrays of Threads</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/Arrays_of_Threads.jpg" style="width: 600px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Thread Batching</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/Thread_Batching.jpg" style="width: 600px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>The NVIDIA Compiler</h2>
+  </hgroup>
+  <article>
+    <p>CUDA code is compiled by the NVIDIA compiler <code>nvcc</code>, which functions
+in much the same way as <code>gcc</code> and <code>g++</code> for those familiar with C and
+C++. Linking and header files require care (just as they do with 
+vanilla C/C++).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Example CUDA Program</h2>
+  </hgroup>
+  <article>
+    <p>My example, modified from some code on the NVIDIA forums:</p>
+
+<p>See <code>CUDA_example_01.cu</code></p>
+
+<p>Compile with:</p>
+
+<pre><code>nvcc CUDA_example_01.cu # plain: makes a.out
+nvcc CUDA_example_01.cu -use_fast_math -o CUDA_example_01.out
+</code></pre>
+
+<p>Run with:</p>
+
+<pre><code>./CUDA_example_01.out
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Compiling Schematic</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/NVCC_Compiling.jpg" style="width: 700px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Kernel Memory Access</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/Kernel_Memory_Levels.jpg" style="width: 700px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>CUDA Variable Types</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/CUDA_Variable_Types.jpg" style="width: 700px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>CUDA Variable Performance</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/CUDA_Variable_Performance.jpg" style="width: 700px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>CUDA Variable Scale</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/CUDA_Variable_Type_Scale.jpg" style="width: 700px;"/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-26" style="background:;">
+  <hgroup>
+    <h2>CUDA Performance Example</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/GPU_example_time.jpg" style="width: 600px;"/>
+<br/>
+Credit: CS264 (N. Pinto)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-27" style="background:;">
+  <hgroup>
+    <h2>Perspective on GPU&#39;s</h2>
+  </hgroup>
+  <article>
+    <p><strong>What tasks are they good for?</strong><br/>
+<br/></p>
+
+<ul class = "build">
+<li>&#9786; Numerical integration (nearly always)</li>
+<li>&#9786; (Very) slow iteration MCMC (use within-iteration parallelism)</li>
+<li>&#9786; &quot;Simple&quot; bootstraps</li>
+<li>&#9786; Particle Filtering (Sequential Monte Carlo)</li>
+<li>&#9786; (Extremely difficult) brute force optimization</li>
+<li>&#9786; Large matrix calculations (with sufficient expertise)</li>
+<li>&#9786; Single-use applications</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-28" style="background:;">
+  <hgroup>
+    <h2>Perspective on GPU&#39;s</h2>
+  </hgroup>
+  <article>
+    <p><strong>What tasks are they not good for?</strong><br/>
+<br/></p>
+
+<ul class = "build">
+<li>&#9785; Fast iteration MCMC</li>
+<li>&#9785; &quot;Difficult&quot; bootstraps</li>
+<li>&#9785; (Many) optimization problems </li>
+<li>&#9785; Methodological work (portable code) [may change]</li>
+<li>&#9785; Any problem that is not worth the additional effort...</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-29" style="background:;">
+  <hgroup>
+    <h2>Resources</h2>
+  </hgroup>
+  <article>
+    <ul class = "build">
+<li><a href="http://www.nvidia.com/object/cuda_home_new.html">http://www.nvidia.com/object/cuda_home_new.html</a></li>
+<li><a href="http://developer.nvidia.com/cuda-downloads">http://developer.nvidia.com/cuda-downloads</a></li>
+<li><a href="http://developer.nvidia.com/nvidia-gpu-computing-documentation">http://developer.nvidia.com/nvidia-gpu-computing-documentation</a></li>
+<li><a href="http://developer.nvidia.com/cuda-training#2">http://developer.nvidia.com/cuda-training#2</a></li>
+<li><a href="http://developer.nvidia.com/getting-started-parallel-computing">http://developer.nvidia.com/getting-started-parallel-computing</a></li>
+<li><a href="http://docs.nvidia.com/cuda/">http://docs.nvidia.com/cuda/</a> CUDA Documentation</li>
+<li><a href="http://docs.nvidia.com/cuda/cublas/">http://docs.nvidia.com/cuda/cublas/</a> CUBLAS Documentation</li>
+<li><a href="http://www.nvidia.com/content/cudazone/download/Advanced_CUDA_Training_NVISION08.pdf">http://www.nvidia.com/content/cudazone/download/Advanced_CUDA_Training_NVISION08.pdf</a> Advanced CUDA Slides (NVIDIA)</li>
+<li><a href="http://people.maths.ox.ac.uk/gilesm/cuda/lecs/lecs.pdf">http://people.maths.ox.ac.uk/gilesm/cuda/lecs/lecs.pdf</a> Mike Giles&#39; CUDA Slides</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>Getting started:</h2>
+  </hgroup>
+  <article>
+    <ul class = "build">
+<li>Find a CUDA-enabled computer and install CUDA first!</li>
+<li>For those without an NVIDIA GPU, use Pearson + Gauss</li>
+<li>NVIDIA GPU Computing SDK has lots of (rich) examples</li>
+<li>Work through lecture examples, try to modify</li>
+<li>See lecture links on course website for more examples</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Appendix: Installation (Mac &amp; Linux)</h2>
+  </hgroup>
+  <article>
+    <p>See: </p>
+
+<ul>
+<li><p>Mac<br/><a href="http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-mac-os-x/index.html">http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-mac-os-x/index.html</a></p></li>
+<li><p>Linux<br/><a href="http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-linux/index.html">http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-linux/index.html</a></p></li>
+<li><p>Windows<br/><a href="http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-microsoft-windows/index.html">http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-microsoft-windows/index.html</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-32" style="background:;">
+  <hgroup>
+    <h2>CUDA on my Macbook Pro (10.8)</h2>
+  </hgroup>
+  <article>
+    <pre><code>Device 0: &quot;GeForce 320M&quot;
+  CUDA Driver Version / Runtime Version          5.5 / 5.5
+  CUDA Capability Major/Minor version number:    1.2
+  Total amount of global memory:                 253 MBytes (265027584 bytes)
+  ( 6) Multiprocessors x (  8) CUDA Cores/MP:    48 CUDA Cores
+  GPU Clock rate:                                950 MHz (0.95 GHz)
+  Memory Clock rate:                             1064 Mhz
+  Memory Bus Width:                              128-bit
+  Max Texture Dimension Size (x,y,z)             1D=(8192), 2D=(65536,32768), 3D=(2048,2048,2048)
+  Max Layered Texture Size (dim) x layers        1D=(8192) x 512, 2D=(8192,8192) x 512
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       16384 bytes
+  Total number of registers available per block: 16384
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  1024
+  Maximum number of threads per block:           512
+  Maximum sizes of each dimension of a block:    512 x 512 x 64
+  Maximum sizes of each dimension of a grid:     65535 x 65535 x 1
+  ...
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 5.5, CUDA Runtime Version = 5.5, NumDevs = 1, Device0 = GeForce 320M
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-33" style="background:;">
+  <hgroup>
+    <h2>Testing CUDA</h2>
+  </hgroup>
+  <article>
+    <pre><code>$ ./bandwidthTest # locate bandwidthTest to find in SDK
+ Device 0: GeForce 320M
+
+ Host to Device Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)    Bandwidth(MB/s)
+   33554432         1024.1
+
+ Device to Host Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)    Bandwidth(MB/s)
+   33554432         1565.8
+
+ Device to Device Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)    Bandwidth(MB/s)
+   33554432         6448.6
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-34" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/sneaky.gif" alt="Keep Off" align="middle" style="width: 500px;"/></p>
+
+<p><br/><a href="http://www.pbh2.com/wordpress/wp-content/uploads/2012/08/funniest-dog-gifs-clever-dog.gif">Source</a>. Wed: More GPUs.*</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
