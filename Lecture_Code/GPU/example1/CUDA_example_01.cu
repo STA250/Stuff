@@ -1,5 +1,7 @@
 /* Cuda Program for finding cos(0), cos(1*2*pi/N), ... , cos((N-1)*2*pi/N) */
 
+// nvcc CUDA_example_01.cu -use_fast_math -o CUDA_example_01.out
+
 /* --------------------------- header secton ----------------------------*/
 
 #include<stdio.h>
@@ -101,6 +103,7 @@ int main (int argc, char *argv[])
 	// cudaError_t cudaMalloc(void ** devPtr, size_t size);
 	
 	// Allocate N floats on the GPU for the argument 0,1,...,N-1, and make gpu_arg a pointer to that memory:
+	// NOTE: sizeof(gpu_arg[0]) is equivalent to sizeof(float) here
 	cudaStat = cudaMalloc((void **)&gpu_arg, N*sizeof(gpu_arg[0]));
 	if (cudaStat){
 		printf(" value = %d : Memory Allocation on GPU Device failed\n", cudaStat);
@@ -109,7 +112,8 @@ int main (int argc, char *argv[])
 	}
 
 	// Allocate N floats on the GPU to store the result, and make gpu_res a pointer to that memory:
-	cudaStat = cudaMalloc ((void **)&gpu_res, N*sizeof(gpu_res[0]));
+	// NOTE: sizeof(gpu_res[0]) is equivalent to sizeof(float) here
+	cudaStat = cudaMalloc((void **)&gpu_res, N*sizeof(gpu_res[0]));
 	if (cudaStat){
 		printf(" value = %d : Memory Allocation on GPU Device failed\n", (int)cudaStat);
 	} else {
@@ -120,7 +124,8 @@ int main (int argc, char *argv[])
 	// cudaError_t cudaMemcpy(void * dst, const void * src, size_t count, enum cudaMemcpyKind kind);	
 
 	// Copy the vector 0,1,...,N-1 from arg (on the host) to gpu_arg (on the device)
-	cudaStat = cudaMemcpy(gpu_arg, arg, N*sizeof(arg[0]), cudaMemcpyHostToDevice);
+	// NOTE: sizeof(arg[0]) is equivalent to sizeof(float) here
+    cudaStat = cudaMemcpy(gpu_arg, arg, N*sizeof(arg[0]), cudaMemcpyHostToDevice);
 	if (cudaStat){
 		printf(" Memory Copy from Host to Device failed.\n");
 	} else {
@@ -162,6 +167,12 @@ int main (int argc, char *argv[])
 		}
 
 	}
+
+    printf("Freeing memory...\n");
+    free(arg);
+    free(res);
+    cudaFree(gpu_arg);
+    cudaFree(gpu_res);
 
 	printf("\n\nFinished. :)\n\n");
 

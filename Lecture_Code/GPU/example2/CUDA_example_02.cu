@@ -1,5 +1,7 @@
 /* Cuda Program for finding cos(0), cos(1*2*pi/N), ... , cos((N-1)*2*pi/N) */
 
+// nvcc CUDA_example_02.cu -use_fast_math -lcublas -o CUDA_example_02.out
+
 /* --------------------------- header secton ----------------------------*/
 
 #include <stdio.h>
@@ -141,7 +143,7 @@ int main (int argc, char *argv[])
 	}
 
 	// Allocate N floats on the GPU to store the result, and make gpu_res a pointer to that memory:
-	cudaStat = cudaMalloc ((void **)&gpu_res, N*sizeof(gpu_res[0]));
+	cudaStat = cudaMalloc((void **)&gpu_res, N*sizeof(gpu_res[0]));
 	if (cudaStat){
 		printf(" value = %d : Memory Allocation on GPU Device failed\n", (int)cudaStat);
 	} else {
@@ -201,7 +203,7 @@ int main (int argc, char *argv[])
 				printf("cos(%f) = %f\n", arg[i], res[i] );
 			}
 		}
-		printf("\n####################\n\\int_{0}^{2*pi} |cos(x)| dx = %f\n####################\n\n",int_result);
+		printf("\n#########################################\n\\int_{0}^{2*pi} |cos(x)| dx = %f\n#######################################\n\n",int_result);
 	}
 
 
@@ -211,6 +213,12 @@ int main (int argc, char *argv[])
 	} else {
 		printf("CUBLAS shutdown failed...\n");
 	}
+
+    printf("Freeing memory...\n");
+    free(arg);
+    free(res);
+    cudaFree(gpu_arg);
+    cudaFree(gpu_res);
 
 	printf("\n\nFinished. :)\n\n");
 
