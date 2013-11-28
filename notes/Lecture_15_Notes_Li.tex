@@ -136,12 +136,13 @@ The algorithm can be summarized as follows:\\
 \end{align*}
 \begin{equation*} 
 \begin{split} 
-Q_I(\theta|\theta^{(t)})=\mathbb{E}_{AA}[ & \mathbb{E}_{SA}[-\dfrac{1}{2}(y_{obs}-y_{mis})^2|y_{obs}, \tilde{y}_{mis}, \\
+Q_I(\theta|\theta^{(t)})=\mathbb{E}_{AA}[ & \mathbb{E}_{SA}[-\dfrac{1}{2V}(y_{mis}-\theta)^2|y_{obs}, \tilde{y}_{mis}, \\
 & \theta=G_{AA}(\theta^{(t)})]| y_{obs}, \theta^{(t)}] + \text{constant (not depending on  $\theta$)} 
 \end{split}
 \end{equation*}
 \begin{align*}
-\Longrightarrow \theta^{(t)} &= \mathbb{E}_{AA}[\mathbb{E}_{SA}[y_{mis}|y_{obs},\tilde{y}_{mis},G_{AA}\theta^{(t)}]|y_{obs}, \theta^{(t)})]\\
+\Longrightarrow \theta^{(t)} &= \textrm{argmax}_{\theta}Q_I(\theta|\theta^{(t)}) \\
+ &= \mathbb{E}_{AA}[\mathbb{E}_{SA}[y_{mis}|y_{obs},\tilde{y}_{mis},G_{AA}\theta^{(t)}]|y_{obs}, \theta^{(t)})]\\
 & = \mathbb{E}_{AA}[\tilde{y}_{mis}+G_{AA}(\theta^{(t)})|y_{obs},\theta^{(t)})]\\
 & = G_{AA}(\theta^{(t)})+ \mathbb{E}_{AA}[\tilde{y}_{miss}|y_{obs},\theta^{(t)}]
 \end{align*}
