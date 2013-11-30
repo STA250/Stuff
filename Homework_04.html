@@ -106,6 +106,7 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
         <li>As explained in class, the inverse-CDF method is feasible, but requires that you create a `__device__` function for both the CDF and inverse CDF of a normal distribution.</li>
         <li>The simplest sampling method to implement is rejection sampling, for which you will want to specify the maximum number of attempts. This method will work well in most settings.</li>
         <li>For truncation regions in the tail of the distribution rejection sampling may be either inefficient or infeasible, so you will require fall back code for these cases. One option is to implement the algorithms in <a href="http://arxiv.org/pdf/0907.4010.pdf">Robert (2009)</a>. Another, simpler option is to implement a simpler but less accurate approximate method discussed in class. Note that ideally, given more time, the methods in the Robert paper are far superior to the approximate methods discussed.</li>
+        <li>To select the grid/block dimensions it is recommend to use the function 
     </ul>
     </li>
 
@@ -113,7 +114,12 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
     <li>Compile your CUDA kernel using <code>nvcc</code> and check it can be launched properly.</li>
     <p> The basic steps for doing this in <code>RCUDA</code> are as follows:</p>
     <ul>
-    	<li></li>
+      <li>Compile to ptx with `nvcc -o rtruncnorm.ptx rtruncnorm.c`</li>
+    	<li>Use `loadModule` to load in the ptx file</li>
+      <li>Copy a vector to the device to store the samples</li>
+      <li>Select the grid/block dimensions</li>
+      <li>Launch the kernel with `.cuda`</li>
+      <li>Copy the samples back to the CPU via `[]` or `copyFromDevice`</li>
     </ul>
     
     <!-- ##### (c) ##### -->
