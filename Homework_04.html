@@ -106,7 +106,7 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
         <li>As explained in class, the inverse-CDF method is feasible, but requires that you create a `__device__` function for both the CDF and inverse CDF of a normal distribution.</li>
         <li>The simplest sampling method to implement is rejection sampling, for which you will want to specify the maximum number of attempts. This method will work well in most settings.</li>
         <li>For truncation regions in the tail of the distribution rejection sampling may be either inefficient or infeasible, so you will require fall back code for these cases. One option is to implement the algorithms in <a href="http://arxiv.org/pdf/0907.4010.pdf">Robert (2009)</a>. Another, simpler option is to implement a simpler but less accurate approximate method discussed in class. Note that ideally, given more time, the methods in the Robert paper are far superior to the approximate methods discussed.</li>
-        <li>To select the grid/block dimensions it is recommend to use the function 
+        <li>To select the grid/block dimensions it is recommend to use the function inside `utility.R` in the GitHub repo.</li>
     </ul>
     </li>
 
@@ -186,7 +186,7 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
     <li>Test your code by fitting the mini dataset `mini_test.txt` supplied in the course GitHub repo. The first column of the dataset corresponds to `y`, with all other columns corresponding to `X`. Assume prior parameters \(\beta_{0}=\vec{0}\) and \(\Sigma_{0}^{-1}=0\). Verify that both functions give posterior means/medians that are at least relatively close to the true values (in `mini_pars.txt`) and the estimates produced by standard GLM functions.</li>
 
     <!-- ##### (d) ##### -->
-    <li>Run each of the following datasets using both your CPU and GPU code:<br/><br/>
+    <li>Run `sim_probit.R` to create each of the following datasets. Then analyze as many as possible, using both your CPU and GPU code:<br/><br/>
     <ol>
       <li>`data_01.txt`: \(n=1000\) for `niter=2000`, `burnin=500`.</li>
       <li>`data_02.txt`: \(n=10000\) for `niter=2000`, `burnin=500`.</li>
