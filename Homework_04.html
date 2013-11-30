@@ -188,13 +188,15 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
     <!-- ##### (d) ##### -->
     <li>Run each of the following datasets using both your CPU and GPU code:<br/><br/>
     <ol>
-    	<li>`data_01.txt`: \(n=1000\) for `niter=10000`, `burnin=1000`.</li>
-    	<li>`data_02.txt`: \(n=10000\) for `niter=10000`, `burnin=1000`.</li>
-    	<li>`data_03.txt`: \(n=100000\) for `niter=10000`, `burnin=1000`.</li>
-    	<li>`data_04.txt`: \(n=1000000\) for `niter=10000`, `burnin=1000`.</li>
-    	<li>`data_05.txt`: \(n=10000000\) for `niter=10000`, `burnin=1000`.</li>
+      <li>`data_01.txt`: \(n=1000\) for `niter=2000`, `burnin=500`.</li>
+      <li>`data_02.txt`: \(n=10000\) for `niter=2000`, `burnin=500`.</li>
+      <li>`data_03.txt`: \(n=100000\) for `niter=2000`, `burnin=500`.</li>
+      <li>`data_04.txt`: \(n=1000000\) for `niter=2000`, `burnin=500`.</li>
+      <li>`data_05.txt`: \(n=10000000\) for `niter=2000`, `burnin=500`.</li>
     </ol>
     Again, the first column of each dataset corresponds to `y`, with all other columns corresponding to `X`. Record the runtimes of `probit_mcmc_cpu` and `probit_mcmc_gpu` for each of the datasets.
+    <p>Note I: If your code is too slow, you may also run fewer iterations. It may take several minutes to fit each probit model using the GPU code.</p>
+    <em>Not II: The number of iterations used here is not sufficient to obtain reliable posterior estimates. This exercise is for illustration and learning purposes, if you want to actually use the estimates be sure to run the chains for longer and check the usual diagnostics!</em>
     </li>
 
     <!-- ##### (d) ##### -->
