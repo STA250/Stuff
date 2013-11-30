@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013) by STA250</title>
+    <link rel="stylesheet" href="stylesheets/hwstyles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/STA250/Stuff">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/STA250/Stuff/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <a href="http://sta250.github.io/Stuff"><h1>STA 250 :: Advanced Statistical Computing (UCD, Fall 2013)</h1></a>
+          <p>Code + goodies used in Prof. Baines' STA 250 Course (UC Davis, Fall 2013)</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/STA250">STA250</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+<style TYPE="text/css">
+code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
+</style>
+
+<h1><a name="stuff" class="anchor" href="#stuff"><span class="octicon octicon-link"></span></a>STA 250 :: Homework Policy</h1>
+
+<p><em>For all questions you must show your work. This enables us to understand your thought process, give partial credit and prevent crude cheating. Please see the code of the conduct in the Syllabus for rules about collaborating on homeworks.</em></p>
+<p><em>For questions requiring computing, if you use <code>R</code>, <code>python</code> or any programming environment then you must turn in a printout of your output with your solutions.<br />In addition, a copy of your code must be uploaded to the appropriate <code>HW</code> directory of your forked GitHub repo within 24 hours of the homework due date.</em></p>
+<p><br/></p>
+
+<h2>Homework 04</h2>
+<h2>Due: In Class, Fri December 6th</h2>
+<h4>Assigned: Wednesday November 27th</h4>
+<h4>GPU Module</h4>
+<p>(<a href="plain/Homework_04_plain.html">Click here for printable version</a>)</p>
+<p>
+In this homework you will implement several calculations using both 
+the CPU and GPU. For the GPU-related problems, you are welcome to 
+use either R (RCUDA), Python (PyCUDA) or C (CUDA C). 
+</p>
+<ol start="0">
+    <li>Sync your fork of the course GitHub repo to include the latest updates using the instructions provided <a href="sync_fork.html">here</a>.</li>
+    <br/><br/>
+    
+    <li>
+    In this question, you will implement a kernel to obtain samples from a truncated normal random variable, and test your code.
+    <ol type="a">
+
+    <!-- ##### (a) ##### -->
+    <li>Write a kernel in CUDA C to obtain samples from a truncated normal random variable of the form:
+    \[
+    X \sim \textrm{TN}\left(\mu,\sigma^{2};\left(a,b\right)\right) \equiv N(\mu,\sigma^{2})\mathbf{1}_{\left\{X\in\left(a,b\right)\right\}} .
+    \]
+    Your function should have (roughly) the following structure:<br/><br/>
+    <pre><code>
+    #include &lt;stdio.h&gt;
+    #include &lt;stdlib.h&gt;
+    #include &lt;cuda.h&gt;
+    #include &lt;curand_kernel.h&gt;
+    #include &lt;math_constants.h&gt;
+
+    extern "C"
+    {
+
+    __global__ void
+    truncnorm_kernel(
+      float *x,      // Vector to contain returned samples 
+      int n,         // Number of samples to return
+      float *mu,     // Vector of mu's
+      float *sigma,  // Vector of sigma's
+      float *a,      // Vector of lower-truncation values
+      float *b)      // Vector of upper-truncation values
+    {
+        // CODE ... blah
+        return;
+    }
+
+    } // END extern "C"
+
+    </code></pre>
+    Important notes:
+    <ul>
+        <li>In the above prototype, the function is vectorized for all arguments i.e., <code>mu</code>, <code>sigma</code>, <code>a</code> and <code>b</code> are all vectors. You could add more arguments to allow for recycling of scalar arguments if desired.</li>
+        <li>The above format provides the simplest interface i.e., each RNG needs to be initialized within the thread (unless you do something more sophisticated). If you want to develop more efficient code then consider passing in the pre-initialized random number generator states (and the number of RNGs). However, I strongly urge you to implement a simple version first and get it working before trying to optimize for speed.</li>
+        <li>As explained in class, the inverse-CDF method is feasible, but requires that you create a `__device__` function for both the CDF and inverse CDF of a normal distribution.</li>
+        <li>The simplest sampling method to implement is rejection sampling, for which you will want to specify the maximum number of attempts. This method will work well in most settings.</li>
+        <li>For truncation regions in the tail of the distribution rejection sampling may be either inefficient or infeasible, so you will require fall back code for these cases. One option is to implement the algorithms in <a href="http://arxiv.org/pdf/0907.4010.pdf">Robert (2009)</a>. Another, simpler option is to implement a simpler but less accurate approximate method discussed in class. Note that ideally, given more time, the methods in the Robert paper are far superior to the approximate methods discussed.</li>
+    </ul>
+    </li>
+
+    <!-- ##### (b) ##### -->
+    <li>Compile your CUDA kernel using <code>nvcc</code> and check it can be launched properly.</li>
+    <p> The basic steps for doing this in <code>RCUDA</code> are as follows:</p>
+    <ul>
+    	<li></li>
+    </ul>
+    
+    <!-- ##### (c) ##### -->
+    <li>Sample 10,000 random variables from \(TN(2,1;(0,1.5))\), and verify the expected value (roughly) matches the theoretical value (see class notes for details).</li>
+
+    <!-- ##### (d) ##### -->
+    <li>Write an R/Python/C function for sampling truncated normal random variables (possibly using a different algorithm). You may also use the code provide in the GitHub repo. Sample 10,000 random variables from this function and verify the mean (roughly) matches the theoretical values.</li>
+
+    <!-- ##### (e) ##### -->
+    <li>Time your (R/Py/C)CUDA function and pure R/Python/C function for \(n=10^{k}\) for \(k=1,2,\ldots,8\). Plot the total runtimes for both functions on the y-axis as a function of \(n\) (on the log-scale as the x-axis). At what point did/do you expect the GPU function to outperform the non-GPU function? You may also want to decompose the GPU runtimes into copy to/kernel/copy back times for further detailed analysis.</li>
+
+    <!-- ##### (f) ##### -->
+    <li>Verify that both your GPU and CPU code work for \(a=-\infty\) and/or \(b=+\infty\).</li>
+
+    <!-- ##### (g) ##### -->
+    <li>Verify that both your GPU and CPU code work for truncation regions in the tail of the distribution e.g., \(a=-5,b=-3,\mu=0,\sigma=1\).</li>
+
+    </ol>
+    </li>
+
+    <br/><br/>
+    <li>In this question you will implement Probit MCMC i.e., fitting a Bayesian Probit regression model using MCMC. This model turns out to be computationally nice and simple, lending itself to a Gibbs sampling algorithm with each distribution available in sample-able form. The model is as follows:
+    \[ Y_i | Z_i \sim \mathbf{1}_{\left\{Z_{i}>0\right\}} \\
+       Z_i | \beta \sim N(x_{i}^{T}\beta,1) \\
+       \beta \sim N(\beta_0,\Sigma_0) ,
+    \]
+    where \(\beta_0\) is a \(p\times{}1\) vector corresponding to the prior mean, and \(\Sigma_{0}^{-1}\) is the prior precision matrix. Note that for convenience we supply \(\Sigma_{0}^{-1}\) as an argument to the probit MCMC function, to allow for flat priors for \(\beta\).
+    </li>
+
+    <ol type="a">
+
+    <!-- ##### (a) ##### -->
+    <li>Write a C/R/Python function `probit_mcmc` to sample from the posterior distribution of \(\beta\) using the CPU only. The recommended function prototype is:
+    <pre><code>
+    probit_mcmc_cpu(
+      y,           # vector of length n 
+      X,           # (n x p) design matrix
+      beta_0,      # (p x 1) prior mean
+      Sigma_0_inv, # (p x p) prior precision 
+      niter,       # number of post burnin iterations
+      burnin      # number of burnin iterations
+      )
+    </code></pre>
+    Your function should return the posterior samples of \(\beta\) as a matrix/array or `mcmc` object (if using `R`). The posterior samples of \(Z\) do not need to be returned (and should not be stored -- they will take up too much memory!).
+    </li>
+
+    <li>Write a R/Py/C(CUDA) function `probit_mcmc` to sample from the posterior distribution of \(\beta\) using the CPU and GPU. The recommended function prototype is:
+    <pre><code>
+    probit_mcmc_gpu(
+      y,           # vector of length n 
+      X,           # (n x p) design matrix
+      beta_0,      # (p x 1) prior mean
+      Sigma_0_inv, # (p x p) prior precision 
+      niter,       # number of post burnin iterations
+      burnin,      # number of burnin iterations
+      block_dims,  # block dimensions
+      grid_dims    # grid_dimensions
+      )
+    </code></pre>
+    You can also compute the block and grid dimensions within your function if preferred. Note that the GPU should only be used for the sampling of the \(Z_i\) vector. Your function should return the posterior samples of \(\beta\) as a matrix/array or `mcmc` object (if using `R`). The posterior samples of \(Z\) do not need to be returned (and should not be stored -- they will take up too much memory!).
+    </li>
+
+    <!-- ##### (c) ##### -->
+    <li>Test your code by fitting the mini dataset `mini_test.txt` supplied in the course GitHub repo. The first column of the dataset corresponds to `y`, with all other columns corresponding to `X`. Assume prior parameters \(\beta_{0}=\vec{0}\) and \(\Sigma_{0}^{-1}=0\). Verify that both functions give posterior means/medians that are at least relatively close to the true values (in `mini_pars.txt`) and the estimates produced by standard GLM functions.</li>
+
+    <!-- ##### (d) ##### -->
+    <li>Run each of the following datasets using both your CPU and GPU code:<br/><br/>
+    <ol>
+    	<li>`data_01.txt`: \(n=1000\) for `niter=10000`, `burnin=1000`.</li>
+    	<li>`data_02.txt`: \(n=10000\) for `niter=10000`, `burnin=1000`.</li>
+    	<li>`data_03.txt`: \(n=100000\) for `niter=10000`, `burnin=1000`.</li>
+    	<li>`data_04.txt`: \(n=1000000\) for `niter=10000`, `burnin=1000`.</li>
+    	<li>`data_05.txt`: \(n=10000000\) for `niter=10000`, `burnin=1000`.</li>
+    </ol>
+    Again, the first column of each dataset corresponds to `y`, with all other columns corresponding to `X`. Record the runtimes of `probit_mcmc_cpu` and `probit_mcmc_gpu` for each of the datasets.
+    </li>
+
+    <!-- ##### (d) ##### -->
+    <li>Discuss the relative performance of your CPU and GPU code. At what point do you think your GPU code would become competitive with the CPU code?</li>
+
+    </ol>
+
+</ol>
+
+<br/>
+
+<h3>(: Happy Coding! :)</h3>
+
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
+
