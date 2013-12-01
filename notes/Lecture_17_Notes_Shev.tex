@@ -1,0 +1,122 @@
+\documentclass[]{article}
+
+\usepackage{amsmath, amssymb, fullpage, enumerate, verbatim}
+
+\begin{document}
+STA 250 \hfill 11/27/13
+
+\section*{Thread Batching}
+\begin{itemize}
+\item
+Kernel launches a grid of thread blocks
+\begin{itemize}
+\item
+Threads within a block can cooperate via shared memory
+\item
+Threads within a block can sync
+\item
+Threads in different blocks cannot cooperate
+\end{itemize}
+\item
+Allows programs to transparently scale to different GPUs
+\end{itemize}
+
+\section*{Kernel Memory Access}
+\begin{itemize}
+\item
+Per-thread:
+
+Register, Very fast on-chip memory
+
+Off-chip, uncached
+\item
+Per-block:
+Shared memory, on-chip small and fast
+
+\item
+Per-device:
+Off-chip large, persistent across kernel launches, Kernel I/O
+\end{itemize}
+
+\section*{CUDA Variable Speeds}
+\begin{itemize}
+\item
+Memory on register, shared and constant are very fast.  Local and global are much slower.  Try to avoid the latter two.  Important to use the right variables in the right place.
+\end{itemize}
+
+\section*{CUDA Performance}
+\begin{itemize}
+\item
+GPUs only suitable for statistics when calculations are highly parallelizable and take significant time.
+\item
+Only for very large problems.  
+\item
+\begin{itemize}
+\item
+numerical integration
+\item
+MCMC with very slow iterations (within-iteration parallelism)
+\item
+``Simple'' bootstraps
+\item
+particle filtering (sequential monte carlo)
+\item
+extremely difficult brute force optimization
+\item
+Large matrix calculation
+\item
+Single use applications, code is not very portable, hard for others to use.
+\end{itemize}
+\item
+Not good for:
+\begin{itemize}
+\item
+Fast iteration MCMC
+\item
+``difficult'' bootstrap
+\item optimization problems
+\item methodological work
+\item any problem not worth the effort
+\end{itemize}
+\end{itemize}
+
+
+\section*{RCUDA}
+\begin{itemize}
+\item
+Provides CUDA API for R
+
+\item
+Calls functions within CUDA API inside of R
+
+\item
+Hides some of the memory management stuff
+
+\item
+Kernel still needs to be written in CUDA C (For homework going to have to write C   ):   )
+
+\item
+Kernals are compiled to \texttt{ptx} code using \texttt{nvcc --ptx}
+
+\item
+Kernels are loaded via modules into R
+\end{itemize}
+
+\section*{Homework}
+Write kernel to generate truncated random normals
+
+Call from R to do tests, timings, etc
+
+ProbitMCMC
+\[y_{i}|z_{i} = I_{\{z_{i}>0\}}\]
+\[z_{i}|\beta \sim N(X_{i}^{T}\beta, 1)\]
+
+\textbf{EM:} Find 
+\[\mbox{argmax}_{\beta} P(y|\beta)[=\int p(y|z)p(z|\beta)dz]\]
+
+\textbf{MCMC:} Prior for $\beta$: $\beta\sim N(\beta_{0},\Sigma_{0})$.  Sample from $p(\beta|y)$ using Gibbs. 
+
+\[\mathbf{z} = (z_{1},\ldots,z_{n}) \quad  p(\beta|z,y) \leftarrow \mbox{Normal} \]
+\[P(\mathbf{z}|\beta, y) \leftarrow \mbox{truncated normals}\]
+
+\end{document}

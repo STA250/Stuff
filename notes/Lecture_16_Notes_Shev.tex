@@ -1,0 +1,101 @@
+\documentclass[]{article}
+
+\usepackage{amsmath, amssymb, fullpage, enumerate, verbatim}
+
+\begin{document}
+STA 250 \hfill 12/25/13
+
+\section*{GPUs at UCD}
+Two servers with GPUs.  Login with:
+\begin{itemize}
+\item \texttt{ssh username@lipschitz.ucdavis.edu}
+\item \texttt{ssh username@pearson.ucdavis.edu}
+\end{itemize}
+
+\section*{Background and History}
+\begin{itemize}
+\item
+GPUs are specialized units for rendering high definition graphics quickly and smoothly.
+\item
+Designed to do many simple calculations in parallel.
+\item
+In recent years there has been a great deal of progress in using GPUs for calculations, not just graphics.
+\item
+CUDA (extension of C and C++) is the forefront language for programming GPUs.  Other main language is OpenCL.
+\end{itemize}
+
+\section*{About CUDA}
+\begin{itemize}
+\item
+CUDA is a bunch of C/C++ libraries.  Low-level language.
+\item
+For NVIDIA GPUs only.
+\item
+Other higher level languages exist, PyCUDA, RCUDA.
+\end{itemize}
+
+\section*{Types of Parallelism}
+Two main types of parallelism:
+
+\begin{enumerate}
+\item
+Task Parallelism:  Simultaneously running different tasks that do not depend on other completed tasks. 
+\item
+Data parallelism: Perform the same task on multiple pieces of data. 
+\end{enumerate}
+
+\section*{Some Definitions}
+\begin{itemize}
+\item
+Kernel: GPU pogram that runs on a thread grid
+\item
+Thread Hierarchy:
+\begin{itemize}
+\item
+Grid: a set of blocks
+\item
+Block: a set of warps
+\item
+Warp: a SIMD group of 32 threads
+\item
+Grid size * block size = total \# of threads
+\end{itemize}
+\end{itemize}
+
+Up to the programmer to determine the grid/block structure.  Can have a large impact on efficiency.
+
+\section*{Terminology}
+\begin{itemize}
+\item
+Host: The CPU
+\item
+Device: The GPU
+\item
+Kernel: Function that runs on the device.
+\item
+Thread: Think of a series of calculations/operations
+\item
+Kernels are typically executed by lots of threads
+\item
+One kernel is executed at a time
+\item
+Threads are cheap to launch on GPUs
+\item
+Gains in efficiency come with using large number of threads to perform calculations in parallel.
+\end{itemize}
+
+
+\section*{Basics of CUDA}
+\begin{itemize}
+\item
+Memory management: GPU memory must be allocated, initialized, and freed.
+\item
+Data transfer: Data required by GPU is copied from host to device.
+\item
+Kernel Launch: The kernel is launched with specified grid/block configuration.
+\item
+Result transfer: If needed, the results must be copied back from CUDA device to host.
+\end{itemize}
+
+
+\end{document}

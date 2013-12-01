@@ -1,0 +1,163 @@
+% Created 2013-11-30 Sat 17:11
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{soul}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\usepackage{fullpage}
+\providecommand{\alert}[1]{\textbf{#1}}
+
+\title{Lecture Notes}
+\author{Stephanie Chan}
+\date{November 25, 2013}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs Org-mode version 7.9.3e}}
+
+\begin{document}
+
+\maketitle
+
+\section{GPUs}
+\label{sec-1}
+\subsection{Intro}
+\label{sec-1-1}
+
+Today, we'll talk about low level CUDA.  Next time, we'll be looking
+at PyCuda and RCuda.  GPUs are on Macs and Windows.  You can use the
+one on your desktop or on the school servers: \textbf{lipschitz} and \textbf{pearson}
+\subsection{Background and History}
+\label{sec-1-2}
+
+GPU stands for graphical processing unit, used for billions of
+simple calculations. NVIDIA's CUDA programming language 
+enables people to program GPUS.  The other main manufacturer of GPUs
+is AMD, whose GPUs can be programmed using OpenCL (a language backed
+by Apple and other tech companies).  At this stage, however, CUDA is
+preferred in the academic community.
+
+CUDA is a C/C++ library, it is low-level (must do memory management
+and synchronity) but also has high level interfaces
+\section{Parallelism}
+\label{sec-2}
+\subsection{Type 1. Task Parallelism}
+\label{sec-2-1}
+
+\begin{itemize}
+\item Which tasks depend on previous tasks to do, and which can be done in
+  parallel.
+\item Example: computing Multivariate Normal Density: after getting
+  Cholesky decomposition, computing the inverse and the determinant
+  can be done in parallel.
+\item Task parallelism is better for CPUs.
+\end{itemize}
+\subsection{Type 2: Data Parallelism}
+\label{sec-2-2}
+
+\begin{itemize}
+\item This is the same task with multiple pieces of data.
+\item Examples: matrix multiplication, row sum, column sum, numerical
+  integration.
+\item Key role is \textbf{kernel} (the function that is applied to all data).
+  Determine the appropriate kernel to do the task.
+\end{itemize}
+\section{CPU vs GPU}
+\label{sec-3}
+
+\begin{itemize}
+\item \textbf{CPU}: big cache, 4 ALUs
+\item \textbf{GPU}: little caches, lots of ALUs, little memory, so must use tons
+  of stuff in parallel to be efficient
+\end{itemize}
+\section{Definitions}
+\label{sec-4}
+
+\begin{itemize}
+\item \textbf{kernel}: GPU program on thread grid
+\item \textbf{Thread hierarchy}: \textbf{Grid} -> \textbf{Block} -> \textbf{Warp} -> \textbf{Threads}
+\item \textbf{SIMD}: single instruction multiple data
+\item Grids and Blocks have three dimensions, but we do not need to use
+  all three dimensions
+\item \textbf{Host}: CPU
+\item \textbf{Device} : GPU
+\item \textbf{Kernel}: function that runs on GPU
+\item \textbf{Thread}: series of calculations.  Threads are cheap on GPU, so
+  gains are made from launching large numbers of threads.
+\end{itemize}
+\section{Basics}
+\label{sec-5}
+
+\begin{enumerate}
+\item Allocate data in GPU
+\item Transfer data
+\item Launch Kernel
+\item Transfer Results
+\end{enumerate}
+Note: pinned memory can access data from CPU which saves on
+transfer.  GPU must also not waste the transferring data time in
+order to be efficient.
+\section{Lecture Code Examples}
+\label{sec-6}
+\subsection{Example0}
+\label{sec-6-1}
+
+\begin{itemize}
+\item specify Grid and Block dimensions and threads $20\times2\times512$
+\item Block dimensions are tyically in multiples of 2 because of warp sizes.
+\item Get more threads than data 20480 threads for 20000 helloworlds
+\item \textbf{main}: check the number of threads is large enough and launch kernel
+\item \textbf{kernel}: must be global, here it has no argument or output.  Global to know
+  block, thread indices.  Note: CUDA uses 0-indexing
+\item Make sure to check $n<N$ or else it will try to access memory it shouldn't.
+\item Use \verb~nvcc~ to compile code.  \verb~-arch=compute_20~ for printing, it
+  compiles to version 20
+\item The GPU prints to a buffer, so when it flushes, it will only flush
+  what is in the buffer.  Use \verb~cudaDeviceGetLimit~ and
+  \verb~cudaDeviceSetLimit~ to change the buffer size.
+\end{itemize}
+\subsection{Example1}
+\label{sec-6-2}
+
+\begin{itemize}
+\item Each thread does multiple cosines, to keep all the threads busy Functions to use, cosf or \_\_cos
+\item Check for CUDA device and what device
+\item What happens in main:
+\begin{enumerate}
+\item Use malloc, allocate memory on CPU, fill in the memory on the CPU
+\item Allocate memory on the device.  Make sure everything is properly allocated
+\item \verb~cudaMemcopy~ can copy both directions.
+\item lauch kernal.
+\item Free the memory when done.
+\end{enumerate}
+\item RCUDA and PyCUDA hide the memory allocation from you.
+\end{itemize}
+\subsection{Example2}
+\label{sec-6-3}
+
+\begin{itemize}
+\item In R, almost anytime you do linear algebra, it will call the BLAS or LAPACK
+  linear algebra libraries to ensure it does the matrix algebra really fast.
+  In GPUs, you would use \verb~cublas_v2~ to do basic linear algebra for the GPU.
+\item CUBLAS has \verb~Handle~ and \verb~Status~.
+\item First, it sets up the device, and then it checks cublas is set up
+  correctly.
+\item \verb~cublasSetVector~, \verb~cublasGetVector~
+\item Launch the same kernel as before, and then getting the sum of the
+  absolute values.
+\item shut down cublas with cublasDestroy
+\item For production matrix algebra, use libraries and/or other expert GPU code, it will be faster than anything you can write.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,208 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage{graphicx, amsmath, amsfonts, amsthm, mathtools, listings, color, caption, rotating, subfigure, fullpage, textcomp, enumerate, float, hyperref, listings, MnSymbol, wasysym}
+
+\lstset{
+	language=R,
+	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
+	identifierstyle=\ttfamily,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+	showstringspaces=false,
+	basicstyle=\tiny,
+	numberstyle=\scriptsize,
+	numbers=left,
+	stepnumber=1,
+	numbersep=10pt,
+	tabsize=2,
+	breaklines=true,
+	breakatwhitespace=false,
+	aboveskip={1.5\baselineskip},
+  columns=fixed,
+  upquote=true,
+  extendedchars=true,
+}
+
+\begin{document}
+\section{Lecture 17}\label{lecture-17}
+
+Monitoring GPU usage on Pearson and Lipschitz:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \texttt{ssh username@pearson.ucdavis.edu nvidia-smi -l}
+\item
+  \texttt{ssh username@lipschitz.ucdavis.edu nvidia-smi -l}
+\end{itemize}
+
+Who's online?
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \texttt{finger}
+\item
+  \texttt{who}
+\end{itemize}
+
+Arrays of Threads: The kernel launches a grid of thread blocks.
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Threads in different blocks \textbf{cannot} cooperate with other
+  blocks.
+\item
+  Threads within blocks can sync and share memory. This allows for GPUs
+  to transparently scale.
+\end{itemize}
+
+Kernel Memory Access:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Per-Thread: A. Registers a. VERY fast b. very small amount of memory
+  B. Local thread memory a. Off-chip b. uncached
+\item
+  Per-Block: Shared Block memory (still fast--not register fast)
+\item
+  Per-device: Global device memory (accessed from any block, off-chip,
+  large)
+\end{itemize}
+
+Types:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  int var (thread-scoped, in-register, fast)
+\item
+  int array\_var{[}10{]} (thread-scoped, local memory)
+\item
+  \texttt{\_\_shared\_\_} int (block-scoped, cached)
+\item
+  \texttt{\_\_device\_\_} (device-scoped, globally-scoped)
+\item
+  \texttt{\_\_constant\_\_} int (constant memory, fast)
+\end{itemize}
+
+Note: We take a 100x penalty for using global variables (int array\_var,
+\texttt{\_\_device\_\_})
+
+\subsection{How many variables do we
+store?}\label{how-many-variables-do-we-store}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  100K's of per-thread variables, R/W by only that one thread
+\item
+  100s of shared variables, R/W by hundreds of threads
+\item
+  1 global/constant variable, 100K's of R/W's
+\end{itemize}
+
+\subsection{When are GPUs good?}\label{when-are-gpus-good}
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Numerical Integration (give it tons of points, calculate a function at
+  each point, return function value)
+\item
+  MCMC where each iteration is \textbf{very} slow.
+\item
+  Simple bootstraps (calculate estimator on each subset in parallel)
+\item
+  Particle Filtering / Sequential Monte Carlo (take a parameter, get
+  samples for that parameter all at once, repeat on other
+  parameters--somewhat parallel)
+\item
+  Brute force optimization and grid search
+\item
+  Large matrix calculations (if you're a ninja)
+\item
+  When you don't care if other people can read your code
+\end{itemize}
+
+\subsection{When are GPUs a poor choice?}
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item Fast iteration MCMC
+\item ``Difficult'' bootstraps (where the estimator is difficult because of too much data)
+\item Sequential optimization problems
+\item Methodological work (GPUs lack portability)
+\end{itemize}
+
+In addition to writing CUDA C, we can write in Python or R, and use a binding to PyCUDA or RCUDA
+
+\subsection{\href{https://github.com/duncantl/RCUDA}{RCUDA}}
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item Full bindings to the NVIDIA CUDA API for R (mechanism to call any function within the CUDA API from within R)
+\item Have to write the kernel in C, then compile an intermediate representation using NVCC \texttt{nvcc -{}-ptx}.
+\item As with most C calls from R, you have to wrap your C code with an extern, like so: \texttt{extern "C" \{ put code here \}}
+\item To load in R, assign \texttt{loadModule("location/to/your/kernel.ptx")} to a variable (ex: \texttt{m})
+\item All kernels written in the kernel.ptx file will be in the variable m, so assign them to the default environment for ease.
+\end{itemize}
+
+Accessing memory:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item Copying memory to the GPU: \texttt{mem = copyToDevice(x)}
+\item Call CUDA code: \texttt{.cuda(kernel, kernelArguments, gridDim, blockDim)}
+\item Copy from GPU to Host: \texttt{cu\_ret = copyFromDevice()} or \texttt{cu\_ret = mem{[}{]}}
+\end{itemize}
+
+\paragraph{Note:}
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item GPUs work in single-precision floating points! R works with double precision. If you want double precision, GPUs are not a great choice.
+\item Grid dimensions \textbf{need} to be make integers, ie: \texttt{dim=c(100L, 1L, 5L)}.
+\end{itemize}
+
+\subsection{RNG on GPU}
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item You have to be careful about the state of the RNG. Setting the RNG seed is vital, within each thread.
+\item Solution: Set up each random number state in each thread
+\item More tricky: Set up the states outside of the thread and malloc them over to the device.
+\end{itemize}
+
+\subsection{General Algorithm for GPUs}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep1pt\parskip0pt\parsep0pt
+\item Copy memory from CPU to GPU
+\item Run the code on the GPU
+\item Copy Results from GPU to CPU
+\end{enumerate}
+
+\subsection{Thrust of the Homework}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep1pt\parskip0pt\parsep0pt
+\item Write a Kernel to generate truncated random normals (gene)
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item Generate regular normal and use acceptance-rejection algorithm (simple to write, inefficient algorithm)
+  \item qnorm/pnorm (not in CUDA standard library or cuRAND)
+  \end{enumerate}
+\item Call from R, do tests and timings of truncated normals.
+\item Probit MCMC
+
+  \begin{itemize}
+  \item $y_i | z_i = I_{\{z_i > 0\} }, z_i | \beta \sim N(x_i^T \beta, 1)$
+  \item EM: Want to find $argmax_{\beta} P(y | \beta) = \int p(y|z) p(z | \beta) dz$
+  \item Prior on $\beta$: $\beta \sim N( \beta_0, \Sigma_0)$
+  \item Sample from $p(\beta | y)$ using Gibbs
+  \item Then $P(\beta | z, y) \sim Normal$ and $P(z | \beta, y) \sim TruncNormal$
+  \end{itemize}
+\end{enumerate}
+
+\end{document}
