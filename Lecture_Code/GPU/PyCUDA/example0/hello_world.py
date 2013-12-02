@@ -35,7 +35,7 @@ dest = np.zeros_like(a)
 
 # Launch the kernel:
 
-multiply_them(drv.Out(dest), drv.In(a), drv.In(b), dev.In(n), block=(int(n),1,1), grid=(1,1))
+multiply_them(drv.Out(dest), drv.In(a), drv.In(b), drv.In(n), block=(int(n),1,1), grid=(1,1))
 
 #
 # Notes:
@@ -50,5 +50,12 @@ multiply_them(drv.Out(dest), drv.In(a), drv.In(b), dev.In(n), block=(int(n),1,1)
 
 print("sum(abs(dest - a*b)")
 print(np.sum(np.abs(dest-a*b)))
+
+print("a[0:9]:")
+print(a[0:9])
+print("b[0:9]:")
+print(b[0:9])
+print("dest[0:9]:")
+print(dest[0:9])
 
 
