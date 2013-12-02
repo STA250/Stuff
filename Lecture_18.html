@@ -280,16 +280,45 @@ Vanilla R time:            6.264s
 
       <slide class="" id="slide-11" style="background:;">
   <hgroup>
-    <h2>PyCUDA</h2>
+    <h2>CUBLAS</h2>
   </hgroup>
   <article>
-    <p>See code examples for <code>GPUArray</code> examples and other more involved functionality.</p>
+    <p>Neither <code>RCUDA</code> or <code>PyCUDA</code> currently offer access to the <code>CUBLAS</code> libraries. </p>
+
+<blockquote>
+<p>[CUDA] is composed of two APIs:</p>
+
+<ul>
+<li>A low-level API called the CUDA driver API,</li>
+<li>A higher-level API called the CUDA runtime API that is implemented on top of the CUDA driver API. These APIs are mutually exclusive: An application should use either one or the other.</li>
+</ul>
+
+<p>Ditto for <code>RCUDA</code>.</p>
+
+<p>See: <a href="http://wiki.tiker.net/PyCuda/FrequentlyAskedQuestions#Are_the_CUBLAS_APIs_available_via_PyCUDA.3F">here</a> for more details.</p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
       <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>PyCUDA</h2>
+  </hgroup>
+  <article>
+    <p>See code examples for <code>GPUArray</code> examples and other more involved functionality.</p>
+
+<p><code>GPUArray</code> provides neat functionality in that arrays on the GPU can be treated very similarly to regular <code>numpy</code> arrays. They have <code>sum</code>, <code>min</code>, <code>max</code> and other methods, can be added, subtracted, multipled etc.</p>
+
+<p>To transfer back to host use the <code>get()</code> method.</p>
+
+<p>Also enables direct generation of random numbers into a <code>GPUArray</code>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-13" style="background:;">
   <hgroup>
     <h2>That is enough for today... :)</h2>
   </hgroup>
