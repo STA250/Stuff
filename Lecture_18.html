@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STA 250 Lecture 18</title>
+  <meta charset="utf-8">
+  <meta name="description" content="STA 250 Lecture 18">
+  <meta name="author" content="Paul D. Baines">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "libraries/widgets/quiz/css/jquery-quiz.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href = "libraries/widgets/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>STA 250 Lecture 18</h1>
+        <h2>Advanced Statistical Computation</h2>
+        <p>Paul D. Baines<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Homework 4</h2>
+  </hgroup>
+  <article>
+    <p>Homework 4 has been posted. It should be a fun foray into the world of GPUs. </p>
+
+<p>You will get to see the potential, and drawbacks of using GPUs via higher-level languages. </p>
+
+<p>For Q2(d), just do the best you can i.e., analyze as many as datasets as you can.
+Due to time constraints it is fine to run for fewer iterations just to get things to 
+run and allows for runtime comparisons. </p>
+
+<p>For example, my RCUDA code to run dataset 5 takes a <em>long</em> time. So if you only manage 
+to run, say, the first 3 datasets that is fine. Or run datasets 4 and 5 for a very small
+number of iterations (e.g., 100). Obviously the posterior samples are not useful at that
+point, but this homework is more about learning CUDA so that is fine.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Sampling Truncated Normal Random Variates</h2>
+  </hgroup>
+  <article>
+    <p>I have posted a link to a <a href="http://arxiv.org/pdf/0907.4010.pdf">paper by Christian Robert</a> about efficient sampling for truncated normal variates.</p>
+
+<p>As explained last week, sampling truncated rvs on GPUs is easier using rejection sampling, but some care is needed to handle cases where rejection sampling is prohibitively inefficient. For the MCMC sampling in Q2 it is very important that your sampling function handles all cases well (otherwise the MCMC will break).</p>
+
+<p>Key things to do:</p>
+
+<ul class = "build">
+<li>Add a <code>maxtries</code> argument to avoid ending up in an endless <code>while</code> loop</li>
+<li>Handle the corner cases via rejection sampling as per the Robert paper</li>
+<li>Approximate methods may also be acceptable if empirical performance is verified</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>CURAND</h2>
+  </hgroup>
+  <article>
+    <p>Be careful with how you set the curand generators across kernel launches and threads.</p>
+
+<p>As per the CUDA documentation:</p>
+
+<blockquote>
+<p>For the highest quality parallel pseudorandom number generation, each experiment should be assigned a unique seed. Within an experiment, each thread of computation should be assigned a unique sequence number. If an experiment spans multiple kernel launches, it is recommended that threads between kernel launches be given the same seed, and sequence numbers be assigned in a monotonically increasing way. If the same configuration of threads is launched, random state can be preserved in global memory between launches to avoid state setup time.</p>
+</blockquote>
+
+<p>See: <a href="http://docs.nvidia.com/cuda/curand/device-api-overview.html#device-api-overview">http://docs.nvidia.com/cuda/curand/device-api-overview.html#device-api-overview</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>RCUDA</h2>
+  </hgroup>
+  <article>
+    <p><code>RCUDA</code> provides full bindings to the NVIDIA CUDA API for <code>R</code> users i.e., it provides
+a mechanism to call any function within the CUDA API from within R. In addition to this,
+it also provides higher level functionality that can hide some of the memory
+management associated with CUDA.</p>
+
+<ul>
+<li>Kernels still need to be written in CUDA C.</li>
+<li>Kernels are compiled to <code>ptx</code> code using <code>nvcc --ptx</code></li>
+<li>Kernels are loaded via modules into R</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>PyCUDA</h2>
+  </hgroup>
+  <article>
+    <p>From <a href="http://mathema.tician.de/software/pycuda/">http://mathema.tician.de/software/pycuda/</a></p>
+
+<blockquote>
+<p>PyCUDA lets you access Nvidia‘s CUDA parallel computation API from Python. Several wrappers of the CUDA API already exist–so what’s so special about PyCUDA?</p>
+
+<ul>
+<li><em>Object cleanup tied to lifetime of objects</em>. This idiom, often called RAII in C++, makes it much easier to write correct, leak- and crash-free code. PyCUDA knows about dependencies, too, so (for example) it won’t detach from a context before all memory allocated in it is also freed.</li>
+<li><em>Convenience</em>. Abstractions like pycuda.driver.SourceModule and pycuda.gpuarray.GPUArray make CUDA programming even more convenient than with Nvidia’s C-based runtime.</li>
+<li><em>Completeness</em>. PyCUDA puts the full power of CUDA’s driver API at your disposal, if you wish.</li>
+<li><em>Automatic Error Checking</em>. All CUDA errors are automatically translated into Python exceptions.</li>
+<li><em>Speed</em>. PyCUDA’s base layer is written in C++, so all the niceties above are virtually free.</li>
+<li><em>Helpful Documentation</em>.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Example</h2>
+  </hgroup>
+  <article>
+    <pre><code>import pycuda.autoinit
+import pycuda.driver as drv
+import numpy as np
+from pycuda.compiler import SourceModule
+
+# Define the kernel within a SourceModule within Python:
+
+mod = SourceModule(&quot;&quot;&quot;
+__global__ void multiply_them(float *dest, float *a, float *b)
+{
+  const int i = threadIdx.x;
+  dest[i] = a[i] * b[i];
+}
+&quot;&quot;&quot;)
+
+# Extract the kernel function
+multiply_them = mod.get_function(&quot;multiply_them&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Example cont...</h2>
+  </hgroup>
+  <article>
+    <p>In <code>PyCUDA</code>:</p>
+
+<pre><code>m = SourceModule(&quot;&quot;&quot;
+// Define kernel
+&quot;&quot;&quot;)
+my_kernel = m.get_function(&quot;multiply_them&quot;)
+</code></pre>
+
+<p>Is the analogue of the following <code>RCUDA</code> code:</p>
+
+<pre><code>system(&quot;nvcc --ptx -o foo.ptx foo.cu&quot;)
+m &lt;- loadModule(&quot;foo.ptx&quot;)
+my_kernel &lt;- m$multiply_them
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Example cont...</h2>
+  </hgroup>
+  <article>
+    <p>For <code>PyCUDA</code>:</p>
+
+<pre><code># Sample two random vectors:
+a = np.random.randn(400).astype(numpy.float32)
+b = np.random.randn(400).astype(numpy.float32)
+
+# Storage for the result:
+dest = np.zeros_like(a)
+
+# Launch the kernel as a regular function:
+multiply_them(drv.Out(dest), drv.In(a), drv.In(b),
+              block=(400,1,1), grid=(1,1))
+
+print dest-a*b
+</code></pre>
+
+<p>The kernel launch specifies the block and grid dimensions, just as with <code>.cuda</code>. </p>
+
+<p>See <code>hello_world.py</code> in the course GitHub repo for a slight modification of this example.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>PyCUDA Basics</h2>
+  </hgroup>
+  <article>
+    <p>Just as with <code>RCUDA</code>, we have to very careful to ensure that the supplied data types match what <code>CUDA</code> is expecting.</p>
+
+<p>For <code>PyCUDA</code>, arguments to the kernel should be <code>numpy</code> datatypes (typically <code>float32</code>, <code>int32</code> or vectors thereof).
+For example, to pass the value <code>100</code> as an <code>int</code> use:</p>
+
+<pre><code>n = np.int32(100)
+</code></pre>
+
+<p>The block and grid sizes must be specified as regular <code>Python</code> ints:</p>
+
+<pre><code>kernel_func(...,n,...,block=(int(n),1,1),grid=(1,1)) 
+</code></pre>
+
+<p>Do not wrap scalar arguments with <code>drv.In()</code> or <code>drv.InOut()</code>, those are only used for pointer arguments.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>PyCUDA vs. RCUDA</h2>
+  </hgroup>
+  <article>
+    <p>See <code>PyCUDA/example1</code> in the  GitHub repo.</p>
+
+<p>Evaluating \(10^8\) normal densities:</p>
+
+<pre><code>PyCUDA SourceModule time:  0.153s
+scipy time:               28.126s
+Breakdown of RCUDA time:   2.052s
+Copy to device:            0.727s
+Kernel:                    0.028s
+Copy from device:          1.195s
+Vanilla R time:            6.264s 
+</code></pre>
+
+<p>Clearly PyCUDA is smarter with copying than naive usage of RCUDA.</p>
+
+<p>Note: Those doing the homework with PyCUDA will likely get far faster code than unoptimized RCUDA code.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>PyCUDA</h2>
+  </hgroup>
+  <article>
+    <p>See code examples for <code>GPUArray</code> examples and other more involved functionality.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>That is enough for today... :)</h2>
+  </hgroup>
+  <article>
+    <p><img src="pics/pillow.gif" alt="Pillow" align="middle" style="width: 380px;"/></p>
+
+<p><br/><a href="http://www.doggifpage.com/page/5/">Source</a>. Wed: More GPUs.*</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script src='libraries/widgets/quiz/js/jquery.quiz.js'></script>
+<script src='libraries/widgets/quiz/js/mustache.min.js'></script>
+<script type="text/javascript">
+ $('.quiz').find('li:has(em)').addClass('quiz-answer')
+ $('li.quiz-answer em').replaceWith(function(){
+   return $(this).contents()
+ })
+ $('.quiz').find('li').addClass('quiz-option')
+ $.quiz();
+</script>
+<script src='libraries/widgets/bootstrap/js/bootstrap.min.js'></script>
+<script>  
+$(function (){ 
+  $("#example").popover(); 
+  $("[rel='tooltip']").tooltip(); 
+});  
+</script>  
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
