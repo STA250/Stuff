@@ -38,19 +38,20 @@ if (nthreads < N){
     stop("Grid is not large enough...!")
 }
 
-cat("TODO: Add cudaDeviceSynchronize() to see if initialization is affecting timing...\n")
-
 cat("Running CUDA kernel...\n")
+
 cu_time <- system.time({
     cat("Copying random N(0,1)'s to device...\n")
     mem = copyToDevice(x)
-    .cuda(k, mem, N, mu, sigma, inplace = TRUE, gridDim = grid_dims, blockDim = block_dims)
+    .cuda(k, mem, N, mu, sigma, gridDim = grid_dims, blockDim = block_dims)
     cat("Copying result back from device...\n")
     cu_ret = copyFromDevice(obj=mem,nels=mem@nels,type="float")
 })
+
 r_time <- system.time({
     r_ret <- dnorm(x,mean=mu,sd=sigma)
 })
+
 cat("done. Finished profile run! :)\n")
 
 # Not the best comparison but a rough real-world comparison:
@@ -62,7 +63,7 @@ print(r_time)
 
 # Differences due to floating point vs. double...
 tdiff <- sum(abs(cu_ret - r_ret))
-cat("Diff = ",tdiff,"\n")
+cat("Difference in RCUDA vs R results = ",tdiff,"\n")
 
 cat("Differences in first few values...\n")
 print(abs(diff(head(cu_ret)-head(r_ret))))
@@ -70,6 +71,13 @@ print(abs(diff(head(cu_ret)-head(r_ret))))
 cat("Differences in last few values...\n")
 print(abs(diff(tail(cu_ret)-tail(r_ret))))
 
-# TODO: free memory...
+# Note: the CUDA kernel can be launched without ever allocating
+# memory on the device! To do this:
+cu_ret_v2 <- .cuda(k, "x"=x, N, mu, sigma, gridDim=grid_dims, blockDim=block_dims, outputs="x")
+cdiff <- sum(abs(cu_ret - cu_ret_v2))
+cat("Difference in RCUDA methods = ",cdiff,"\n")
+
+# Free memory...
+rm(list=ls())
 
 
