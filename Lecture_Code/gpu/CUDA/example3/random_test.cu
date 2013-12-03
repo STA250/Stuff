@@ -15,22 +15,21 @@
 
 #define N 200
 #define GRID_D1 4
-#define GRID_D2 2
-#define BLOCK_D1 32
-#define BLOCK_D2 1
-#define BLOCK_D3 1
+#define BLOCK_D1 64
 
 __global__ void rnorm_all_in_one_kernel(float *vals, int n, float mu, float sigma)
 {
-    // Usual block/thread indexing...
-    int myblock = blockIdx.x + blockIdx.y * gridDim.x;
-    int blocksize = blockDim.x * blockDim.y * blockDim.z;
-    int subthread = threadIdx.z*(blockDim.x * blockDim.y) + threadIdx.y*blockDim.x + threadIdx.x;
+    // 1D-1D thread indexing for simplicity...
+    int myblock = blockIdx.x;
+    int blocksize = blockDim.x;
+    int subthread = threadIdx.x;
     int idx = myblock * blocksize + subthread;
 
     // Setup the RNG:
     curandState rng_state;
     curand_init(9131 + idx*17, 0, 0, &rng_state);
+
+    printf("idx=%d, mu=%f, sigma=%f\n",idx,mu,sigma);
 
 	if (idx < n) {
 	    vals[idx] = mu + sigma * curand_normal(&rng_state);
@@ -70,9 +69,9 @@ int main(int argc,char **argv)
     printf("CUDA Runtime Version: %d\n",rtv);
     printf("============================================\n\n");
 
-    const dim3 blockSize(BLOCK_D1, BLOCK_D2, BLOCK_D3);
-    const dim3 gridSize(GRID_D1, GRID_D2, 1);
-    int nthreads = BLOCK_D1*BLOCK_D2*BLOCK_D3*GRID_D1*GRID_D2;
+    const dim3 blockSize(BLOCK_D1, 1, 1);
+    const dim3 gridSize(GRID_D1, 1, 1);
+    int nthreads = BLOCK_D1*GRID_D1;
     if (nthreads < N){
         printf("\n============ NOT ENOUGH THREADS TO COVER N=%d ===============\n\n",N);
     } else {
@@ -97,7 +96,7 @@ int main(int argc,char **argv)
     rnorm_all_in_one_kernel<<<gridSize, blockSize>>>(gpu_x,n,mu,sigma);
     cudaerr = cudaDeviceSynchronize();
   
-    cudaStat = cudaMemcpy(x, gpu_x, n*sizeof(gpu_x[0]), cudaMemcpyDeviceToHost);
+    cudaStat = cudaMemcpy(x, gpu_x, n*sizeof(float), cudaMemcpyDeviceToHost);
     if (cudaStat){
         printf(" value = %d : Memory copy from GPU Device failed\n", cudaStat);
     } else {
