@@ -12,7 +12,7 @@ or:
 Then, run the R script execute the kernel. The basics of the R script are:
 
 + Load `RCUDA` using `library(RCUDA)`
-+ Load the `ptx` module using `m = loadModule(\"dnorm.ptx\")`
++ Load the `ptx` module using `m = loadModule("dnorm.ptx")`
 + Extract the kernel using `m$kernel_name`
 + Decide on the block/grid size (as integers, using `L` or `as.integer`)
 + Launch the kernel with `.cuda(kernel_func, args, blockDims, GridDims, outputs)`. In this example:
