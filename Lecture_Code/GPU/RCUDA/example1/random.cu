@@ -7,14 +7,19 @@
 extern "C"
 {
 
-__global__ void setup_kernel(curandState  *state)
+__global__ void setup_kernel(curandState  *state, int n, int verbose)
 {
     // Usual block/thread indexing...
     int myblock = blockIdx.x + blockIdx.y * gridDim.x;
     int blocksize = blockDim.x * blockDim.y * blockDim.z;
     int subthread = threadIdx.z*(blockDim.x * blockDim.y) + threadIdx.y*blockDim.x + threadIdx.x;
     int idx = myblock * blocksize + subthread;
-    curand_init(9131 + idx*17, idx, 0, &state[idx]);
+    if (verbose){
+        printf("Setting up RNG in thread %d (n=%d)...\n",idx,n);
+    }
+    if (idx < n){
+    	curand_init(9131 + idx*17, idx, 0, &state[idx]);
+    }
     return;
 }
 
