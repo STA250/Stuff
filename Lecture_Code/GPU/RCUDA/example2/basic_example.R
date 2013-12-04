@@ -2,20 +2,6 @@ library(RCUDA)
 
 verbose <- TRUE
 
-"compute_grid" <- function(N,threads_per_block=512L)
-{ 
-    # if...
-    # N = 1,000,000
-    # => 1954 blocks of 512 threads will suffice
-    # => (62 x 32) grid, (512 x 1 x 1) blocks
-    # Fix block dims:
-    block_dims <- c(threads_per_block, 1L, 1L)
-    grid_d1 <- floor(sqrt(N/threads_per_block))
-    grid_d2 <- ceiling(N/(grid_d1*threads_per_block))
-    grid_dims <- c(grid_d1, grid_d2, 1L)
-    return(list("grid_dims"=grid_dims,"block_dims"=block_dims))
-}
-
 if (verbose){
     cat("Setting cuGetContext(TRUE)...\n")
 }
@@ -24,7 +10,7 @@ cuGetContext(TRUE)
 if (verbose){
     cat("Loading module...\n")
 }
-m <- loadModule(system.file("sampleKernels", "dnorm.ptx", package = "RCUDA"))
+m <- loadModule("dnorm.ptx")
 if (verbose){
     cat("done. Extracting kernel...\n")
 }
@@ -83,8 +69,7 @@ cu_time <- system.time({
 })
 
 
-y <- x
-cu_kernel2_time <- system.time({.cuda(dnorm_kernel, "y"=y, N, mu, sigma, gridDim=bg$grid_dims, blockDim=bg$block_dims, outputs="y")})
+cu_kernel2_time <- system.time({y <- .cuda(dnorm_kernel, "x"=x, N, mu, sigma, gridDim=bg$grid_dims, blockDim=bg$block_dims, outputs="x")})
 
 cat("")
 r_time <- system.time({
