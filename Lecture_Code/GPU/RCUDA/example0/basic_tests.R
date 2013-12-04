@@ -5,7 +5,7 @@ cuGetContext(TRUE)
 cat("done. Profiling CUDA code...\n")
 
 cat("Loading module...\n")
-m = loadModule(system.file("sampleKernels", "dnorm.ptx", package = "RCUDA"))
+m = loadModule("dnorm.ptx")
 cat("done. Extracting kernel...\n")
 k = m$dnorm_kernel
 cat("done. Setting up miscellaneous stuff...\n")
