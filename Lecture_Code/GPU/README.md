@@ -12,6 +12,8 @@ For using AWS:
 
 + Log in to your AWS account and go the `EC2` tab
 
++ Verify that the region is set to `US - Oregon`, and if it is not, switch to it
+
 + Click on the `AMIs` tab under `Images` in the left-pane of the console
 
 + Search for image number `ami-58107568`
@@ -34,5 +36,5 @@ For using AWS:
 
 + Once logged in, both `RCUDA` and `PyCUDA` are already installed. To use `RCUDA` simply use `library(RCUDA)` within `R`. To use `PyCUDA`, you will need to invoke python v2.7 by launching `python2.7` instead of just `python`. `PyCUDA` can then be imported in the usual manner.
 
-
+**Please remember to terminate your AWS instance when you have finished using it!**
 
