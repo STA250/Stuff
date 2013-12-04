@@ -1,5 +1,29 @@
 library(RCUDA)
 
+"compute_grid" <- function(N,sqrt_threads_per_block=16L,grid_nd=1,block_nd=1)
+{
+    # if...
+    # N = 1,000,000
+    # => 1954 blocks of 512 threads will suffice
+    # => (62 x 32) grid, (512 x 1 x 1) blocks
+    # Fix block dims:
+    if (block_nd==1){
+      block_dims <- c(as.integer(sqrt_threads_per_block*sqrt_threads_per_block), 1L, 1L)
+    } else {
+      block_dims <- c(as.integer(sqrt_threads_per_block), as.integer(sqrt_threads_per_block), 1L)
+    }
+    threads_per_block <- prod(block_dims)
+    if (grid_nd==1){
+      grid_d1 <- as.integer(max(1L,ceiling(N/threads_per_block)))
+      grid_d2 <- 1L
+    } else {
+      grid_d1 <- as.integer(max(1L, floor(sqrt(N/threads_per_block))))
+      grid_d2 <- as.integer(ceiling(N/(grid_d1*threads_per_block)))
+    }
+    grid_dims <- c(grid_d1, grid_d2, 1L)
+    return(list("grid_dims"=grid_dims,"block_dims"=block_dims))
+}
+
 verbose <- TRUE
 
 if (verbose){
@@ -22,7 +46,7 @@ dnorm_kernel <- m$dnorm_kernel
 if (verbose){
     cat("done. Setting up miscellaneous stuff...\n")
 }
-N <- 1e8L
+N <- 1e7L
 x <- rnorm(N)
 if (verbose){
     cat("done. Setting mu and sigma...\n")
@@ -30,8 +54,8 @@ if (verbose){
 mu <- 0.3
 sigma <- 1.5
 
-threads_per_block <- 1024L
-bg <- compute_grid(N=N,threads_per_block=threads_per_block)
+sqrt_threads_per_block <- 32L
+bg <- compute_grid(N=N,sqrt_threads_per_block=sqrt_threads_per_block)
 
 if (verbose){
     cat("Grid size:\n")
@@ -59,7 +83,7 @@ cu_time <- system.time({
     }
     cu_copy_to_time <- system.time({mem <- copyToDevice(x)})
     # .cuda(kernel, args, gridDim, blockDim)
-    cu_kernel_time <- system.time({.cuda(dnorm_kernel, mem, N, mu, sigma, gridDim=bg$grid_dims, blockDim=bg$block_dims)})
+    cu_kernel_time <- system.time({.cuda(dnorm_kernel, mem, N, mu, sigma, gridDim=bg$grid_dims, blockDim=bg$block_dims, outputs=NULL)})
     if (verbose){
          cat("Copying result back from device...\n")
     }
