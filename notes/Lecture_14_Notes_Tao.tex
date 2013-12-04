@@ -1,0 +1,136 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath}
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\max}
+\begin{document}
+
+
+\title{STA250 Lecture 14}
+\date{November 18th, 2013}
+\maketitle
+
+
+\underline{\textbf{Recap}}: To maximize $l(\theta|y_{obs})=\log P(y_{obs}|\theta)$, we construct $P(y_{obs},y_{mis}|\theta)$, s.t. $\int P(y_{obs},y_{mis}|\theta) dy_{mis}=P(y_{obs}|\theta)$ and use EM:
+\[ \theta^{(t+1)} = \argmax_{\theta} Q(\theta|\theta^{(t)}),\]
+where $Q(\theta|\theta^{(t)})=E[log P(y_{obs},y_{mis}|\theta)|y_{obs},\theta^{(t)}]$
+
+\vspace{0.2in}
+\underline{\textbf{Last time}}: $l(\theta^{(t+1)}) \geq l(\theta^{(t)})$ [monotone convergence]
+
+ \underline{\textbf{Today:}} \begin{enumerate}
+\item A bit more theory
+\item What to do when maximization is hard
+\item What to do when the expectation is hard to compute
+\end{enumerate}
+
+\textbf{Note:} From the proof for monotonicity:\\
+\[0\leq l(\theta^{(t+1)})-l(\theta^{(t)}) = [Q(\theta^{(t+1)}|\theta^{(t)})-Q(\theta^{(t)}|\theta^{(t)})]+[H(\theta^{(t+1)}|\theta^{(t)})-H(\theta^{(t)}|\theta^{(t)})].\]\\
+Since $H(\theta^{(t+1)}|\theta^{(t)})\geq H(\theta^{(t)}|\theta^{(t)})$ always holds, one can obtain $l(\theta^{(t+1)})-l(\theta^{(t)})$ as long as $Q(\theta^{(t+1)}|\theta^{(t)})\geq Q(\theta^{(t)}|\theta^{(t)})$, i.e., we still get monotone convergence! This suggests that  we don't need to maximize $Q$, but rather simply increase it.
+
+This is called \textbf{Generalized EM (GEM)}.
+
+\vspace{0.1in}
+\underline{\textbf{Convergence rate of EM:}} 
+\textbf{idea:} EM gives an update $\theta^{(t+1)} = M(\theta^{(t)})$, i.e., a function of $\theta^{(t)}$. Here $M$ is the update mapping/operator, where $\theta \in \mathrm{R}^p$, $ M: \mathrm{R}^p\rightarrow \mathrm{R}^p$.
+
+To study convergence rate, let $\theta_*$ be the MLE, then:
+\[ (\text{near }\theta_*)\hspace{0.1in} M(\theta^{(t)})=\theta^* + (\theta^{(t)}-\theta_*)\frac{\partial}{\partial \theta}M(\theta)|_{\theta=\theta_*}+o(||\theta^{(t)}-\theta_*||^2)\]
+
+We see:
+\begin{eqnarray}
+ \theta^{(t+1)}-\theta_* &=& M(\theta^{(t)})-\theta_*\nonumber\\
+&\approx&\text{DM}(\theta_*)\times(\theta^{(t)}-\theta_*),\nonumber
+\end{eqnarray}
+then we see that:
+\[\lim_{t\rightarrow \infty}\frac{||\theta^{(t+1)}-\theta_*||}{||\theta^{(t)}-\theta_*||} = \rho,\]
+where $\rho$ is the maximal eigenvalue of DM.
+
+\underline{\textbf{Aside:}} It can also be shown that DM has a representation as the \lq{}fraction of missing information\rq{}.
+
+\vspace{0.2in}
+\underline{\textbf{When the E-step is hard:}} 
+
+\textit{example:[Probit regression]}
+
+ We saw that $Z^{(t+1)}_i |(\beta^{(t+1)},y_i) = \left\{\begin{array}{c}TN(X_i^T\beta^{(t)},1;(-\infty,0])\text{ if }y_i=0 \\TN(X_i^T\beta^{(t)},1;[0,\infty)) \text{ if }y_i=1\end{array}\right.$.  
+ 
+\vspace{0.1in}
+ Suppose we didn't know the expected value of a truncated normal, what could we do?
+ 
+ \vspace{0.1in}
+ Monte Carlo :
+ \begin{enumerate}
+ \item Simulate from $N(X_i^T\beta^{(t)},1)$, then throw away any samples outside the range and compute the mean.
+ \item Simulate from $N(X_i^T\beta^{(t)},1)$, and flip sign if needed (works only for truncation at 0).
+ \item Inverse-CDF sampling
+ \item Rejection sampling
+ \item Sample from $p(y_{\text{mis}}|y_{\text{obs}},\theta^{(t)})$ using MCMC, and use samples to approximate the desired conditional expectation.
+ \end{enumerate}
+ 
+ \vspace{0.2in}
+ \underline{\textbf{Sampling truncated r.v.'s: }(Monte Carlo method 3 (above))}
+ 
+ \vspace{0.1in}
+ Let $X\sim F_x$, $Z\sim X|X\in (a,b)$, to sample from $Z$:
+ \[U \sim \mathrm{U}(F_x(a),F_x(b))\]
+ 
+Let $Z=F_x^{-1}(U)$, then we can show that $Z\sim X|X\in(a,b)$. Note that in general  this method works if you can  compute $F_x^{-1}$, $F_x(a)$, $F_y(b)$ stably, which is not always the case.
+
+Numerical integration $\left\{\begin{array}{cc}\text{Trapezadal} & \text{usually restricted to univariate} \\ \text{Quadrature} & \text{or lower dimensional settings}\end{array}\right.$
+
+\vspace{0.1in}
+EM using a Monte Carlo E-step (as Monte Carlo method 4 listed above) is called \textbf{MCEM} (or \textbf{MCMCEM}).
+
+Let's see MCEM for the Probit EM example where $Z_i^{(t+1)} = E[Z_i|y_i,\beta^{(t)}]$ is computed using inverse CDF sampling method.
+
+\vspace{0.2in}
+\underline{\textbf{Remark:}} MCEM can't achieve monotone increasing property of EM, it only produces an approximate version of $Q$. 
+
+It is trickier to decide the convergence criterion for MCEM. See Levine \& Casella (2001) on webpage for more on MCEM. 
+
+\vspace{0.2in}
+\underline{\textbf{When the M-step is hard}}
+
+Suppose $\theta \in \mathrm{R}^p$, and finding $\argmax_\theta Q(\theta|\theta^{(t)})$ is hard, what to do?
+
+--Option 1: Just increase $Q$ (i.e., let $Q(\theta^{(t+1)}|\theta^{(t)}) \geq Q(\theta^{(t)}|\theta^{(t)})$ and we get a \textbf{GEM}
+
+--Option 2: Conditionally maximize $Q(\theta|\theta^{(t)})$,i.e., 
+
+e.g., $\theta \in \mathrm{R}^2$, $\theta=(\theta_1,\theta_2)^T$, set 
+\[\theta_1^{(t+1)} = \argmax_{\theta_1} Q\big((\theta_1,\theta_2^{(t)})|(\theta_1^{(t)},\theta_2^{(t)} )\big)\]
+\[\theta_2^{(t+1)} = \argmax_{\theta_1} Q\big((\theta_1^{(t+1)},\theta_2)|(\theta_1^{(t)},\theta_2^{(t)} )\big)\]
+
+\underline{\textbf{Note:}} the E-step is \underline{not} re-computed between the maximizations.
+
+\underline{\textbf{See:}} Meng \& Rubin(1993) for ECM + convergence properties.
+
+\vspace{0.2in}
+\textbf{\underline{example:}  } $y_i|\alpha,\beta \sim \text{Gamma}(\alpha,\beta)$, $i=1,2,\ldots$, $n_{\text{obs}}+n_{\text{mis}}=n$. Denote $\theta=(\alpha,\beta)$.
+
+Some $y_{i}'s$ are missing (assuming missingness is independent of all model components -- to make things simple)
+
+\[P(y_i|\alpha,\beta) = \frac{\beta^\alpha}{\Gamma(\alpha)}y_i^{\alpha-1}e^{-\beta y_i}(y_i,\alpha,\beta>0)\]
+\[Q(\theta|\theta^{(t)}) = E[n(\alpha \log \beta - \log \Gamma(\alpha) ) + (\alpha-1)\sum^{n}_{i=1}\log y_i -\beta \sum_{i=1}^n y_i|y_{\text{obs},\theta^{(t)}}]\]
+\[\frac{\partial Q}{\partial \beta}=\frac{n\alpha}{\beta}-\big(\sum_{i=1}^{n_{\text{obs}}}y_i+\sum_{i=n_{\text{obs}+1}}^{n_{\text{obs}}+n_{\text{mis}}}E[y_i|y_{\text{obs}},\theta^{(t)}]\big)\]
+Set $\alpha = \alpha^{(t)}$, solving for $\frac{\alpha Q}{\alpha \beta}=0$, one gets:
+\[\beta^{(t+1)} = n\alpha^{(t)}/\big(\sum_{i=1}^{n_{\text{obs}}}y_i + n_{\text{mis}} \frac{\alpha^{(t)}}{\beta^{(t)}}\big).\]
+To maximize w.r.t $\alpha$:
+\[\frac{\partial Q}{\partial \alpha}= n \log \beta - n \Psi_0(\alpha) + [\sum_{i=1}^{n_{\text{obs}}}\log y_i+ n_{\text{mis}}\big(\Psi_0(\alpha^{(t)} - \log(\beta^{(t)})\big)]=g(\alpha),\]
+where $\Psi_r(\alpha) = \frac{\partial ^ {r+1}}{\partial \alpha^{r+1}}\log \Gamma (\alpha)$. 
+
+
+\vspace{0.1in}
+\underline{FACT:} $y \sim Gamma(\alpha,\beta)$, $E[\log y] = \Psi_0(\alpha) - \log \beta$
+
+\vspace{0.1in}
+Set $\frac{\partial Q}{\partial \alpha}=0$, use Newton-Raphson (NR), $\frac{\partial ^2 Q}{\partial \alpha^2}= - n \Psi_1(\alpha)$.
+
+\underline{Use NR}: Let $\alpha_{\text{NR}}^{(0)} = \alpha^{(t))}$, set $j=0$ 
+
+set $\alpha_{\text{NR}}^{(j+1)} = \alpha_{\text{NR}}^{(j)}  + \frac{g(\alpha_{\text{NR}}^{(j)})}{n\Psi_1(\alpha_{\text{NR}}^{(j)})}$, increment $j\rightarrow j+1$ until convergence.
+
+Set $\alpha^{(t+1)} = \alpha_{\text{NR}}^{*}$ -- final value from NR.
+
+
+\end{document}

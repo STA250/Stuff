@@ -1,0 +1,248 @@
+\documentclass[a4paper, 11pt]{report}
+
+\usepackage{amssymb, graphicx, amstext, amsmath, amsthm, enumerate,
+    float, mathtools, csvsimple, bbm, calc, listings, textcomp, color,
+    tikz, enumitem}
+
+\usepackage[margin = .7in]{geometry}  
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{%
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+
+\begin{document}
+
+\begin{center}
+\LARGE
+\textbf{STA 250: Lecture 18 Notes} \\
+\LARGE
+   \emph{Ozan Sonmez}\\
+\textbf{12/2/2013}
+\end{center}
+\vspace{-.2in}
+\noindent\rule{\textwidth}{2pt}
+\normalsize
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bigskip
+
+ \underline{\bf {Final Projects}} \normalsize \\
+-Extra Office Hours (maybe Wed or Thu)\\
+-HW4 is due Friday (Dec 6th) at 11:59pm. HW4 and final projects will be handed in via email.
+
+\bigskip
+
+ \underline{\bf {HW4-comments}} \normalsize \\
+-PyCUDA is more mature than RCUDA so it will be interesting to compare the performance of PyCUDA and RCUDA\\
+-PyCUDA currently provides more informative error explanation than RCUDA. When using RCUDA, you will need to look up the error codes in \texttt{/usr/local/cuda/include/cuda.h}. this will likely be improved in future RCUDA releases.\\
+-For problem2, do Gibbs Sampler: successivley sampling $\beta$ and the $z$'s
+
+\bigskip
+
+\underline{\bf {Probit MCMC}} \normalsize \\
+
+\begin{equation}
+\begin{aligned}
+&Y_i|Z_i=I_{\{z_i>0\}}\\
+&Z_i|\beta \sim N(X_i'\beta,1)\\
+&\beta \sim N(\beta_{0},\Sigma_0)\\
+&\Rightarrow \quad P(\beta|Z,Y)\sim \text{Normal}\\
+&\Rightarrow \quad P(Z_i|\beta,Y_i) \sim \text{Truncated Normal}
+\end{aligned} \nonumber
+\end{equation}
+
+\underline{\bf {MCMC}} \normalsize \\
+
+\begin{verbatim}
+for (iter in 1:(niter+burnin))
+      if (use GPU){
+          z=rtruncnormGPU(...)  #(...) is cudo/kernel
+       }else{
+          z=rtruncnormCPU(...)  #(...) is Regular R/Python
+       }
+    beta=rmvnorm(...)
+\end{verbatim}
+Note: In practice you may want to avoid having \texttt{rtruncnorm} be a separate function and instead directly call \texttt{.cuda} (if using \texttt{RCUDA}) to avoid unnecessary memory copies).\\
+\underline{Question1}: Write code to obtain samples from a truncated normal\\
+\underline{Question2}: Problem1 needs to be coded robustly to do Problem 2\\
+
+\bigskip
+
+\underline{\bf {C/C++}} \normalsize \\
+\begin{itemize}
+\item C is a fast, compiled language 
+\item You need to explicitly tell C about all data types
+ \item Data types need to be explicitly defined
+\item Vectors/matrices do not have a natural data type in \texttt{C}
+ \item Vector/matrices are typically implemented using \lq{}pointers\rq{}
+\item Pointers point to memory locations, from which you can look up values or those memory locations.
+\end{itemize}
+\begin{equation}
+\begin{aligned}
+x \quad \rightarrow \quad [x_{[0]}|x_{[1]}|x_{[2]}|x_{[3]}|...|x_{[n-1]}]
+\end{aligned} \nonumber
+\end{equation}
+
+\underline{HW kernel}\\
+-\lq{}\texttt{\_\_global\_\_}\rq: Tell the compiler this function is a kernel (i.e., visible to both host and device)\\
+-\lq{}\texttt{void}\rq{} : The kernel does not return anything (in R \texttt{dnorm(...) return(exp(-x*x/2))} will return to the value ). In C it does not return to anything (there is no return value). Instead, the value is written into the memory locations pointed to by the input arguments. 
+
+\bigskip
+
+\bigskip
+
+\underline{{\bf More code}}\\
+-Need to figure out what thread you are in, i.e., 
+\begin{verbatim}
+threadIdx.x, threadIdx.y, threadIdx.z, blockIdx.x,...
+\end{verbatim}
+-Map these into simple index: idx\\
+-Check whether your index (idx) is $<n$ (since we launch more than than we need, make sure to check that for the HW )\\
+-Initialize Random Number Generator (RNG) (for HW initialize within each thread)\\
+-then add integers\\
+\begin{verbatim}
+// To sample TN(mu,sigma^2,a,b):
+int rng_a // RNG seed constant
+int rng_b // RNG seed constant
+int rng_c // RNG seed constant
+curandState rng;
+curan_init(rng_a+idx*rng_b,rng_c,0,&rng);
+//Then sample the truncated normal
+//mu for this index is mu[idx]
+//sigma for this index is sigma[idx]
+//a for this index is a[idx]
+//b for this index is b[idx]
+//X_~ Truncated Normal (mu.i,sigma.i, [a.i,b.i])
+// Rejection sampling: while(...){...}
+//Sample N(mu,sigma^2)
+x[idx]=mu[idx]+sigma[idx]*curand_normal(&rng);
+//to obtain ~ U[0,1] use: curand_uniform(&rng)
+\end{verbatim}
+
+\begin{equation}
+Z_i \sim TN(\mu_i,1,[a_i,b_i])\nonumber
+\end{equation}
+-Add \texttt{maxtries} argument for safety\\
+-Handle the corner cases via rejection sampling described in Robert's paper.
+
+\bigskip
+
+\bigskip
+
+\underline{{\bf Truncated Normal Sampling}}\\
+ 
+if $X\sim N(\mu, \sigma^2)I_{\{x\in (a,b)\}}$, then $X\sim Truncated Normal(\mu, \sigma^2,a,b)$
+
+\begin{verbatim}
+accepted=False
+while (!accepted and numtries<maxtries){
+             numtries=numtries+1
+             X=rnorm(mu,sigma)
+    If (X>a and X <b){
+          accepted=True
+    }
+}
+return(X)
+\end{verbatim}
+
+if it still doesn't work , need to use different rejection/acceptance sampling (refer to Robert's paper)
+
+
+\bigskip
+
+\bigskip
+
+\underline{{\bf Rejection Sampling}}\\
+
+To sample from a distribution with pdf $f(x)$, if we can find another distribution with pdf $g(x)$ such that 
+
+\begin{equation}
+f(x)\leq M g(x)\nonumber
+\end{equation}
+
+
+then we can use g to sample from fas follows:\\
+
+\begin{itemize}
+\item(1) Sample a value $x_*$ from $g(x)$\\
+\item(2) Sample $U \sim U(0,1)$\\
+\item(3) If $U \leq \frac{f(x_*)}{Mg(x_*)}$ then accept $x_*$ else return (1).
+\end{itemize}
+-We need to scale $f$ such that $Mg(x)>f(x)$ for all $x$.\\
+- Ideally $f(x)$ and $Mg(x)$ should be "close" to have high acceptance rate.\\
+
+\bigskip
+
+\bigskip
+
+\underline{{\bf From Robert 2009}}\\
+
+To sample from $X\sim N(0,1,\mu^-,\infty)$ (lower truncated)
+
+\begin{itemize}
+\item(1) Generate $Z=\mu^-+Expo(\alpha)$
+\item(2) Compute 
+\[
+\Psi(z)=\left\{ 
+\begin{array}{c}
+e^{-\frac{(\alpha-z)^2}{2}}, \quad\text{if } \mu^-<\alpha\\ 
+e^{-\frac{(\mu^--\alpha)^2}{2}}e^{-\frac{(\alpha-z)^2}{2}}, \quad\text{if } \mu^-\geq\alpha
+\end{array}
+\right. 
+\]
+\item(3) if $U[0,1]<\Psi(z)$ accept, else try again
+\end{itemize}
+
+\bigskip
+
+\bigskip
+
+\underline{{\bf Optimal $\alpha$ is}}\\
+\begin{equation}
+\alpha=\frac{\mu^-+\sqrt{(\mu^-)^2+4}}{2}\nonumber
+\end{equation}
+We need $X\sim N(\mu,\sigma^2,a,\infty)$. Let $Z\sim N(0,1,\mu^-,\infty)$. What is the distribution of $Y=cZ+k$?
+
+\begin{equation}
+\begin{aligned}
+&cZ\sim N(0,c^2,c\mu^-,\infty)\\
+&cZ+k\sim N(k,c^2,c\mu^-+k,\infty)
+\end{aligned} \nonumber
+\end{equation}
+then figure out what to choose for $k,c,\mu^-$. Suppose we have $N(\mu,\sigma^2,a,\infty)$ then select $ k,c,\mu^-$ such that
+
+\begin{equation}
+\begin{aligned}
+k=\mu,\quad c^2=\sigma^2,\quad a=c\mu^-+k,\quad \mu^-=\frac{a-\mu}{\sigma}
+\end{aligned} \nonumber
+\end{equation}
+
+For right truncation, we can use left truncation because it is symmetric. (use the same algorithm and take the negative at the end).
+
+\underline{HW4 part-g}: Question will be changed for $a$ to be $-\infty$.(Only right truncation)\\
+-Be careful with PyCUDA: make sure to define data types as \texttt{numpy} data types e.g., (\texttt{np.int32} or \texttt{np.float32})\\
+-Write the Kernel inside the \texttt{SourceModule} function (In \texttt{RCUDA} the kernel is written in a different file and compiled)\\
+- See \texttt{example0} in the \texttt{Lecture\_Code > GPU > PyCUDA} directory of the course GitHub repo\\
+- \texttt{a} \texttt{b} live on the CPU\\
+-It will be copied to GPU via \texttt{drv.In(a)}  and \texttt{drv.In(b)}\\
+-The result will be copied back to CPU via \texttt{drv.Out}. Input and output arguments can use \texttt{drv.InOut}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
