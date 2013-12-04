@@ -8,3 +8,31 @@ Illustrations of using GPUs via three approaches:
 
 Details are provided in each directory.
 
+For using AWS:
+
++ Log in to your AWS account and go the `EC2` tab
+
++ Click on the `AMIs` tab under `Images` in the left-pane of the console
+
++ Search for image number `ami-58107568`
+
++ Click on the image and then click `Launch`
+
++ In the left tab select `GPU Instances` and select `g2.2xlarge`, then click `Review and Launch`
+
++ Check the summary and then click `Launch` (ignore the warnings for now)
+
++ Select the appropriate keypair for your AWS account and finalize the launch
+
++ You should receive a message informing you that `Your instance is now launching`
+
++ Go back to the `EC2` tab under `Services`
+
++ Check the status of your instance. After a few minutes, click refresh and if it is up and running, ssh into the instance in a similar manner as you did for HW2 i.e., 
+
+    ssh -i mykeypair.pem ec2-user@ec2-XX-XXX-XXX-XXX.us-west-2.compute.amazonaws.com
+
++ Once logged in, both `RCUDA` and `PyCUDA` are already installed. To use `RCUDA` simply use `library(RCUDA)` within `R`. To use `PyCUDA`, you will need to invoke python v2.7 by launching `python2.7` instead of just `python`. `PyCUDA` can then be imported in the usual manner.
+
+
+
