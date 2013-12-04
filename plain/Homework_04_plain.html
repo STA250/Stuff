@@ -80,7 +80,7 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
     <li>Compile your CUDA kernel using <code>nvcc</code> and check it can be launched properly.</li>
     <p> The basic steps for doing this in <code>RCUDA</code> are as follows:</p>
     <ul>
-       <li>Compile to ptx with `nvcc -o rtruncnorm.ptx rtruncnorm.c`</li>
+       <li>Compile to ptx with `nvcc --ptx -o rtruncnorm.ptx rtruncnorm.c`</li>
        <li>Use `loadModule` to load in the ptx file</li>
        <li>Copy a vector to the device to store the samples</li>
        <li>Select the grid/block dimensions</li>

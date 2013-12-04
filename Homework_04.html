@@ -114,7 +114,7 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
     <li>Compile your CUDA kernel using <code>nvcc</code> and check it can be launched properly.</li>
     <p> The basic steps for doing this in <code>RCUDA</code> are as follows:</p>
     <ul>
-      <li>Compile to ptx with `nvcc -o rtruncnorm.ptx rtruncnorm.c`</li>
+      <li>Compile to ptx with `nvcc --ptx -o rtruncnorm.ptx rtruncnorm.c`</li>
     	<li>Use `loadModule` to load in the ptx file</li>
       <li>Copy a vector to the device to store the samples</li>
       <li>Select the grid/block dimensions</li>
@@ -135,7 +135,7 @@ use either R (RCUDA), Python (PyCUDA) or C (CUDA C).
     <li>Verify that both your GPU and CPU code work for \(a=-\infty\) and/or \(b=+\infty\).</li>
 
     <!-- ##### (g) ##### -->
-    <li>Verify that both your GPU and CPU code work for truncation regions in the tail of the distribution e.g., \(a=-5,b=-3,\mu=0,\sigma=1\).</li>
+    <li>Verify that both your GPU and CPU code work for truncation regions in the tail of the distribution e.g., \(a=-\infty,b=-10,\mu=0,\sigma=1\).</li>
 
     </ol>
     </li>
