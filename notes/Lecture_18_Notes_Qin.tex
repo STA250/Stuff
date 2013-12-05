@@ -1,0 +1,142 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}	
+\usepackage{listings}			% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+
+\title{STA 250 Lecture 18 Notes}
+\author{Chuan Qin}
+\date{December 2, 2013}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+\begin{enumerate}
+\item \textbf{Notes on Homework 4}:
+\begin{itemize}
+\item Only need to write one kernel which obtains samples from a truncated normal distribution for both Q1 and Q2.
+\item Your code for the kernel in Q1 has to be robust/error free or else it might cause problem when used for Q2.
+\item \underline{Probit MCMC}:
+\[
+Y_i | Z_i = 1_{\{Z_i>0\}}
+\]
+\[
+Z_i | \beta \sim N(x_i^T\beta,1)
+\]
+\[
+\beta_i \sim N(\beta_0,\Sigma_0)
+\]
+\[
+\Rightarrow P(\beta | Z,Y) \sim \mathrm{Normal}
+\]
+\[
+\Rightarrow P(Z_i | \beta_i,Y_i) \sim \mathrm{Truncated \ Normal}
+\]
+\underline{MCMC}:
+\begin{center}
+\begin{verbatim}
+for (iter in (niter + burnin)){
+    if (use GPU){
+    z = rtruncnormGPU(...)   # CUDA and kernel in (...)
+    } else{
+    z = rtruncnormCPU(...)  # regular R/Python in (...)
+    }
+    beta = rmvnorm(...)
+}
+\end{verbatim}
+\end{center}
+\end{itemize}
+\vspace{1cm}
+
+\item \textbf{C/C++}
+\begin{itemize}
+\item C is a very fast complied language.
+\item Data types need to be explicitly defined.
+\item Vectors/matrices are typically implemented using ``pointers''.
+\item Pointers point to memory locations, from which you can look up values at those locations.
+\item About homework: \begin{itemize}
+\item ``\underline{\hspace{0.4cm}}global\underline{\hspace{0.4cm}} void'' tells the compiler that this function is a kernel and it does not return any value.
+\item The samples are written into the memory locations pointed by the input arguments, defined as pointers.
+\end{itemize}
+\end{itemize}
+\vspace{1cm}
+
+\item \textbf{Truncated Normal Sampling}\vspace{0.2cm} \\
+If 
+\[
+x\sim N(\mu, \sigma^2) 1_{\{x\in (a,b)\}},
+\]
+then
+\[
+x \sim \mathrm{Truncated-Normal}(\mu,\sigma^2;(a,b)).
+\] 
+The simplest sampling method to implement is rejection sampling, which repeatedly sample from $N(\mu, \sigma^2)$ until the value falls in the interval $(a,b)$:
+\begin{verbatim}
+accepted = False
+numtries = 0
+# Specify maxtimes as the maximum number of attempts
+while (! accepted and numtries < maxtimes ){    
+    numtimes = numtimes + 1
+    x = rnorm(mu, sigma)
+    if (x>=a and x<=b){
+    accepted = True
+    } 
+}
+\end{verbatim}
+However, this method is quite inefficient when $a$ is several standard deviations larger than $\mu$ or $b$ is several standard deviations smaller than $\mu$. Instead, it is more advisable to use the following \emph{rejection sampling} algorithm for sampling from tail truncated normal distribution.
+
+\underline{Rejection Sampling} \vspace{0.2cm}\\
+To sample from a distribution with p.d.f. $f(x)$, if we can find another distribution with p.d.f. $g(x)$ such that 
+\[
+f(x)\leq Mg(x), \hspace{1cm} \forall x,
+\]
+then we can use $g$ to sample from $f$ as follows:
+\begin{itemize}
+\item[(i)] Sample a value $x^*$ from $g(x)$.
+\item[(ii)] Sample $U\sim U[0,1]$.
+\item[(iii)] If 
+\[
+U \leq \frac{f(x^*)}{Mg(x^*)},
+\]
+then accept $x^*$. Otherwise return to (i). 
+\end{itemize}
+Remark: \vspace{0.1cm}\\
+It is clear that the bigger the gap between $f(x)$ and $Mg(x)$, the lower the accepting probability. Therefore, ideally, we should choose $g(x)$ so that $f(x)$ and $Mg(x)$ are ``close'' for all $x$.  \vspace{0.1cm}\\
+
+Robert (2009) proposed the following algorithm for sampling from a one-sided truncated normal distribution.
+
+\underline{Rejection Sampling One-sided Truncated Normal} \vspace{0.2cm}\\
+To sample from $X\sim N(0,1;(\mu^-,\infty))$,
+\begin{itemize}
+\item[(i)] Generate
+\[
+z = \mu^- + \mathrm{Expo}(\alpha).
+\]
+\item[(ii)] Compute
+\[
+\Psi(z) = \left\{\begin{array}{cl}
+\displaystyle \exp\left(-\frac{(\alpha-z)^2}{2}\right), & \mbox{if   } \mu^- < \alpha  \vspace{0.2cm}\\
+\displaystyle \exp\left(-\frac{(\alpha-z)^2}{2}-\frac{(\mu^- - \alpha)^2}{2}\right), & \mbox{if   } \mu^- \geq \alpha
+\end{array}\right.
+\]
+\item[(iii)] If $U[0,1] < \Psi(z)$, accept; else try again. 
+\end{itemize}
+Optimal choice of $\alpha$: 
+\[
+\alpha^* = \frac{\mu^- + \sqrt{(\mu^-)^2+4}}{2}.
+\]
+Remark: \vspace{0.1cm}\\
+In homework we need to sample from $N(\mu,\sigma^2;(a,\infty))$. To do this we can sample a value $x$ from
+\[
+N\left(0,1;\left(\frac{a-\mu}{\sigma},\infty\right)\right)
+\]
+and then use $\mu+\sigma x$ as our sample.
+
+\end{enumerate}
+
+\end{document}  
