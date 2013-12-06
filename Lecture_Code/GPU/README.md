@@ -19,7 +19,7 @@ For using AWS:
 + Search for image number:
   1. For `US - Oregon` use: `ami-58107568`
   2. For `US - Northern California` use: `ami-367e4e73`
-  3. For `US - Oregon` use: `ami-3b002d52`
+  3. For `US - N. Virginia` use: `ami-3b002d52`
 
 + Click on the image and then click `Launch`
 
