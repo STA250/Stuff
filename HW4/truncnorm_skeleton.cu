@@ -14,7 +14,8 @@ rtruncnorm_kernel(float *vals, int n,
                   float *lo, float *hi,
                   int mu_len, int sigma_len,
                   int lo_len, int hi_len,
-                  int maxtries)
+                  int maxtries,
+                  int rng_a, int rng_b, int rng_c)
 {
     // Usual block/thread indexing...
     int myblock = blockIdx.x + blockIdx.y * gridDim.x;
