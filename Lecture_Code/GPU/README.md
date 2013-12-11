@@ -12,11 +12,14 @@ For using AWS:
 
 + Log in to your AWS account and go the `EC2` tab
 
-+ Verify that the region is set to `US - Oregon`, and if it is not, switch to it
++ Verify that the region is set to `US - Oregon`, `US - Northern California` or `US - East` and if it is not, switch to it to one of those regions.
 
 + Click on the `AMIs` tab under `Images` in the left-pane of the console
 
-+ Search for image number `ami-58107568`
++ Search for image number:
+  1. For `US - Oregon` use: `ami-58107568`
+  2. For `US - Northern California` use: `ami-367e4e73`
+  3. For `US - N. Virginia` use: `ami-3b002d52`
 
 + Click on the image and then click `Launch`
 
@@ -32,7 +35,7 @@ For using AWS:
 
 + Check the status of your instance. After a few minutes, click refresh and if it is up and running, ssh into the instance in a similar manner as you did for HW2 i.e., 
 
-    ssh -i mykeypair.pem ec2-user@ec2-XX-XXX-XXX-XXX.us-west-2.compute.amazonaws.com
+    ssh -i mykeypair.pem ec2-user@ec2-XX-XXX-XXX-XXX.us-xxxx-xx.compute.amazonaws.com
 
 + Once logged in, both `RCUDA` and `PyCUDA` are already installed. To use `RCUDA` simply use `library(RCUDA)` within `R`. To use `PyCUDA`, you will need to invoke python v2.7 by launching `python2.7` instead of just `python`. `PyCUDA` can then be imported in the usual manner.
 
