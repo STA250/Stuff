@@ -1,0 +1,180 @@
+--
+-- Google-n-grams using EC2 + Hive Tutorial
+--
+-- Based on the excellent tutorial by Andrew Hitchcock
+-- Reference: http://aws.amazon.com/articles/5249664154115844
+--
+-- Notes: runtimes are on a small 4 node EC2 cluster
+--
+
+CREATE EXTERNAL TABLE english_1grams (
+    gram string,
+    year int,
+    occurrences bigint,
+    pages bigint,
+    books bigint
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS SEQUENCEFILE
+LOCATION 's3://datasets.elasticmapreduce/ngrams/books/20090715/eng-all/1gram/';
+
+-- Create empty table...
+
+CREATE TABLE normalized (
+ gram string,
+ year int,
+ occurrences bigint
+);
+
+-- Next command takes a long time (18m 17s for me)
+-- Results get inserted into the table
+-- Results usually get stored in tables using Hive
+-- Despite the name, there is no normalization
+-- involved here. It just produces a subtable, 
+-- the actual normalization comes at the next 
+-- stage of the process.
+--
+-- Notes:
+--
+-- lower-case words for consistency
+-- remove pre-1890 entries (too much noise)
+-- ensure only actual words are included
+
+INSERT OVERWRITE TABLE normalized
+SELECT
+ lower(gram),
+ year,
+ occurrences
+FROM
+ english_1grams
+WHERE
+ year >= 1890 AND
+ gram REGEXP "^[A-Za-z+'-]+$";
+
+-- Create empty table...
+
+CREATE TABLE by_decade (
+ gram string,
+ decade int,
+ ratio double
+);
+
+-- Next command takes a long time 
+-- (Stage 1: 4m 18s + Stage 2: 21m 11s + Stage 3: 13m 17s)
+--
+-- From: http://aws.amazon.com/articles/5249664154115844
+--
+-- Next we want to find the ratio of each word per decade. 
+-- More books are printed over time, so every word has a 
+-- tendency to have more occurrences in later decades. 
+-- We only care about the relative usage of that word over 
+-- time, so we want to ignore the change in size of corpus. 
+-- This can be done by finding the ratio of occurrences of
+-- this word over the total number of occurrences of all 
+-- words.
+
+INSERT OVERWRITE TABLE by_decade
+SELECT
+ a.gram,
+ b.decade,
+ sum(a.occurrences) / b.total
+FROM
+ normalized a
+JOIN ( 
+ SELECT 
+  substr(year, 0, 3) as decade, 
+  sum(occurrences) as total
+ FROM 
+  normalized
+ GROUP BY 
+  substr(year, 0, 3)
+) b
+ON
+ substr(a.year, 0, 3) = b.decade
+GROUP BY
+ a.gram,
+ b.decade,
+ b.total;
+
+-- Next, look at changes in usage by decade
+-- Create another results table:
+
+CREATE TABLE change_results (
+ gram string,
+ decade int,
+ ratio double,
+ increase double
+);
+
+
+-- Next command takes a long time 
+-- (Stage 1: 4m 44s + Stage 2: 1m 2s)
+--
+-- From: http://aws.amazon.com/articles/5249664154115844
+--
+-- We filter out any words with a ratio less than or equal 
+-- to 0.001% of the corpus for the decade we are observing.
+-- This blocks out most of the noisy words that only appear
+-- a few dozen times per decade, but have massive proportional
+-- swings per decade. This ratio was chosen on a whim, but 
+-- seems to work well.
+--
+-- We are using b.ratio as a denominator. However, we don't
+-- have to worry about dividing by zero because the join we
+-- are using ensures that b.ratio will always exist. If the 
+-- word was never used in the previous decade then the join 
+-- excludes that null row, preventing a divide by zero error. 
+-- However, this means we will not see any words that are
+-- completely new, they had to be used at least once in the 
+-- previous decade.
+-- 
+-- Also notice the DISTRIBUTE BY clause. That tells Hive which
+-- column should be used as a key to the reducer. Since we 
+-- only care about the ordering of words within a decade, we
+-- don't need to have a total ordering across all decades. This
+-- lets Hive run more than one reducer and significantly
+-- increases the parallelism. It must still do a total ordering
+-- within a decade, but that is much less data.
+
+INSERT OVERWRITE TABLE change_results
+SELECT
+ a.gram as gram,
+ a.decade as decade,
+ a.ratio as ratio,
+ a.ratio / b.ratio as increase
+FROM 
+ by_decade a 
+JOIN 
+ by_decade b
+ON
+ a.gram = b.gram and
+ a.decade - 1 = b.decade
+WHERE
+ a.ratio > 0.000001 and
+ a.decade >= 190
+DISTRIBUTE BY
+ decade
+SORT BY
+ decade ASC,
+ increase DESC;
+
+--
+-- Write results to file:
+-- Should be ~352,000 rows in 'change_results'
+-- Hive uses \1 delimiting in the output files
+-- Results written to local filesystem
+-- *.crc file is just checksum
+--
+-- Example output (formatted for readibility)
+--
+--      gram decade                ratio           increase
+-- dominions    197 5.008017539079073E-6 0.6868501707571323
+-- 
+
+INSERT OVERWRITE LOCAL DIRECTORY 'change_results' SELECT * FROM change_results;
+
+-- Follow with:
+--
+-- quit;
+--
+-- 
