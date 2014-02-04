@@ -1,8 +1,8 @@
 
 # Make 2D Histogram:
 
-#res <- read.table("mini_result.txt",sep=",",header=F)
-res <- read.table("full_results.txt",sep=",",header=F)
+res <- read.table("mini_results.csv",sep="\t",header=F)
+#res <- read.table("full_results.csv",sep=",",header=F)
 head(res)
 
 x <- apply(res[,1:2],1,mean)

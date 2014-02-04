@@ -1,4 +1,3 @@
-
 #
 # Based on the excellent UW Coursera Data Science Course Code:
 # https://github.com/uwescience/datasci_course_materials/blob/master/assignment1/twitterstream.py
@@ -9,8 +8,8 @@ import urllib2 as urllib
 
 ###########################################################################
 ## Fill these in using the README instructions
-access_token_key = "zzz999"
-access_token_secret = "zzz999"
+access_token_key = "1962147962-cT85dOFlRa57RdElAox5Fn5sfgKt3NFVG7L2Lo1"
+access_token_secret = "nKGWdb3czLqYmWlR9CJVHnU6NkIv0QufzHbBOnBcrs"
 consumer_key = "zzz999"
 consumer_secret = "zzz999"
 ###########################################################################
